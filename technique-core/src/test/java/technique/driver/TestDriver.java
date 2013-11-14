@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import technique.feed.FeedPartition;
 import technique.feed.FixedFeed;
+import technique.model.ITuple;
 import technique.model.Operator;
 import technique.model.Tuple;
 import technique.service.CollectorProcessor;
@@ -51,7 +52,7 @@ public class TestDriver {
   public void assertExpectedPairs(DriverNode finalNode, List<Tuple> expected) throws InterruptedException {
     for (int i = 0; i < expected.size(); i++) {
       Assert.assertNotNull(finalNode.getCollectorProcessor().getCollector().peek());
-      Tuple got = finalNode.getCollectorProcessor().getCollector().take();
+      ITuple got = finalNode.getCollectorProcessor().getCollector().take();
       Assert.assertTrue("element "+i+" comparing " + expected.get(i) + " " + got, expected.get(i).equals(got));
     }
     Assert.assertNull(finalNode.getCollectorProcessor().getCollector().peek());
@@ -71,8 +72,8 @@ public class TestDriver {
   public static Operator times2Operator(){
     return new Operator(){
       @Override
-      public void handleTuple(Tuple t) {
-        Tuple tnew = new Tuple();
+      public void handleTuple(ITuple t) {
+        ITuple tnew = new Tuple();
         tnew.setField("x", ((Integer) t.getField("x")).intValue() * 2);
         collector.emit(tnew);
       }
@@ -83,9 +84,9 @@ public class TestDriver {
   public static Operator minus1Operator(){
     return new Operator(){
       @Override
-      public void handleTuple(Tuple t) {
-        Tuple tnew = new Tuple();
-        tnew.setField("x", ((Integer) t.getField("x")).intValue()-1 );
+      public void handleTuple(ITuple t) {
+        ITuple tnew = new Tuple();
+        tnew.setField("x", ((Integer) t.getField("x")).intValue() - 1);
         collector.emit(tnew);
       }
     };

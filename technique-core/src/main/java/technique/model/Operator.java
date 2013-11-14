@@ -15,7 +15,7 @@ public abstract class Operator {
     this.properties = properties;
   }
   
-  public abstract void handleTuple(Tuple t);
+  public abstract void handleTuple(ITuple t);
   
   public void setCollector(ICollector i){
     this.collector = i;

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import technique.feed.Feed;
 import technique.feed.FeedPartition;
+import technique.model.ITuple;
 import technique.model.Tuple;
 
 public class FixedFeed extends Feed {
@@ -57,7 +58,7 @@ class FixedFeedPartition extends FeedPartition {
   }
 
   @Override
-  public boolean next(Tuple t) {
+  public boolean next(ITuple t) {
     t.setField("x", new Integer(current++));
     return current < max;
   }

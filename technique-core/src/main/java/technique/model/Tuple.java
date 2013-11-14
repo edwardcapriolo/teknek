@@ -3,7 +3,7 @@ package technique.model;
 import java.util.HashMap;
 import java.util.Map;
  
-public class Tuple {
+public class Tuple implements ITuple {
   private Map<String, Object> columns;
   
   public Tuple(){

@@ -3,6 +3,7 @@ package technique.service;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import technique.model.ICollector;
+import technique.model.ITuple;
 import technique.model.Tuple;
  
 /**
@@ -12,22 +13,22 @@ import technique.model.Tuple;
  */
 public class Collector extends ICollector {
 
-  private ArrayBlockingQueue<Tuple> collected;
+  private ArrayBlockingQueue<ITuple> collected;
 
   public Collector(){
-    collected = new ArrayBlockingQueue<Tuple>(4000);
+    collected = new ArrayBlockingQueue<ITuple>(4000);
   }
   
   @Override
-  public void emit(Tuple out) {
+  public void emit(ITuple out) {
     collected.add(out);
   }
 
-  public Tuple take() throws InterruptedException{
+  public ITuple take() throws InterruptedException{
     return collected.take();
   }
   
-  public Tuple peek() throws InterruptedException{
+  public ITuple peek() throws InterruptedException{
     return collected.peek();
   }
   

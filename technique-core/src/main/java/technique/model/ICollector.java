@@ -10,6 +10,6 @@ public abstract class ICollector {
    * Note: we may remove the source later
    * @param out
    */
-  public abstract void emit(Tuple out);
+  public abstract void emit(ITuple out);
 }
 

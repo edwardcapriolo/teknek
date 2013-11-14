@@ -1,6 +1,6 @@
 package technique.feed;
 
-import technique.model.Tuple;
+import technique.model.ITuple;
 
 public abstract class FeedPartition {
 
@@ -12,7 +12,7 @@ public abstract class FeedPartition {
   
   public abstract void initialize();
   
-  public abstract boolean next(Tuple t);
+  public abstract boolean next(ITuple t);
   
   public abstract void close();
 }

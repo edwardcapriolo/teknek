@@ -3,6 +3,7 @@ package technique.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import technique.model.ITuple;
 import technique.model.Operator;
 import technique.model.Tuple;
 
@@ -19,9 +20,9 @@ public class CollectorProcessor implements Runnable {
   public void run(){
     while(goOn){
       try {
-        Tuple pair = collector.take();
+        ITuple tuple = collector.take();
         for (Operator o: children){
-          o.handleTuple(pair);
+          o.handleTuple(tuple);
         }
       } catch (InterruptedException e) {       
         e.printStackTrace();
