@@ -1,6 +1,7 @@
 package technique.driver;
 
 import technique.feed.FeedPartition;
+import technique.model.ITuple;
 import technique.model.Operator;
 import technique.model.Tuple;
 import technique.service.CollectorProcessor;
@@ -25,7 +26,7 @@ public class Driver implements Runnable {
    * Begin processing the feed in a thread
    */
   public void run(){
-    Tuple t = new Tuple();
+    ITuple t = new Tuple();
     while (fp.next(t)){
       driverNode.getOperator().handleTuple(t);
       t = new Tuple();
