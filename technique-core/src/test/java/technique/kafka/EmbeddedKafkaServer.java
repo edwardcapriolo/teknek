@@ -58,7 +58,7 @@ public class EmbeddedKafkaServer {
     putZkConnect(brokerProps, "localhost:"+zookeeperTestServer.getPort());
     brokerProps.put("port","9092");
     brokerProps.setProperty("num.partitions", "10");
-    brokerProps.setProperty("log.dir", "/tmp/ks1logdir");
+    brokerProps.setProperty("log.dir", kdir);
     KafkaConfig config= new KafkaConfig(brokerProps);
     if (server == null) {
       server = new kafka.server.KafkaServer(config, new TimeImpl());
