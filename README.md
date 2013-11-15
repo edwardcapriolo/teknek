@@ -49,7 +49,9 @@ Operator three puts 35 on result topic
     myPlan> CREATE OPERATOR outtopic AS 'technique.kafka.TopicOut';
     outtopic> SET PROPERTY 'topic' AS 'outputtopic';
     outtopic> EXIT; 
-    myPlan> SET CHAIN 'plus2','times5', 'outtopic';
+    myPlan> SET ROOT 'plus2';
+    myPlan> FOR 'plus2' ADD CHILD 'times5'; 
+    myPlan> FOR 'times5 ADD CHILD 'outtopic';
     technique> COPY RUN START; #save settings cisco style
 
 We should also be able to define operators in the CLI (on the fly)
