@@ -1,7 +1,30 @@
 technique
 =========
 
-Notes con query language
+Stream Processing Platform.
+
+Terminology
+-----
+
+Feed - An abstraction for an input source. A feed produces tuples. A feed can be a message queue, new rows in a relational database, or anything else you may want to process.
+
+Tuple - a map that contains 0 or more key value pairs
+
+Operator - An abstraction that takes a tuple as input and optionally produces a tuple as output.
+
+Plan - Connects a feed to a series of operators . Data moves from the feed while being transformed be the operators.
+
+Components
+----
+Zookeeper - Zookeeper is a distributed coordination service. Technique uses zookeeper to store Plan's as well as the state of worker nodes
+
+Kafka - Kafka is a distributed message queue. Technique uses zookeeper to shuffle data between process nodes. It can use Kafka as a source of data.
+
+Technique-core(worker) - This component runs on a cluster of machine executing the work described by the plan
+
+Technique-web - This component provides the front end to configure and manage Technique. From the interface you can create and modify plans and debug the output and input from feeds and operators.
+
+Notes on query language
 -----
 
 A simple topology read from kafka, send data to operator 
