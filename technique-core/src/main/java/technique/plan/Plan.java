@@ -6,6 +6,7 @@ public class Plan {
   private FeedDesc feedDesc;
   private OperatorDesc rootOperator;
   private boolean disabled;
+  private int maxWorkers;
  
   public Plan(){
  
@@ -51,6 +52,13 @@ public class Plan {
     this.disabled = disabled;
   }
 
-  
+  public int getMaxWorkers() {
+    return maxWorkers;
+  }
+
+  public void setMaxWorkers(int maxWorkers) {
+    this.maxWorkers = maxWorkers;
+  }
+
 }
 

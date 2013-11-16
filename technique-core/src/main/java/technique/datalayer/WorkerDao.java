@@ -62,6 +62,13 @@ public class WorkerDao {
     } 
   }
   
+  public static List<String> findWorkersWorkingOnPlan(ZooKeeper zk, Plan p) throws WorkerDaoException{
+    try {
+      return zk.getChildren(PLANS_ZK + "/" + p.getName(), false);
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
   /**
    * 
    * @param zk

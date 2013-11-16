@@ -25,10 +25,9 @@ public class FixedFeed extends Feed {
 
 
   public List<FeedPartition> getFeedPartitions() {
-    List<FeedPartition> res= new ArrayList<FeedPartition>();
-    for (int i=0;i<numberOfPartitions;i++){
-      FixedFeedPartition sf = new FixedFeedPartition(this);
-      sf.setPartitionId(i);
+    List<FeedPartition> res = new ArrayList<FeedPartition>();
+    for (int i = 0; i < numberOfPartitions; i++) {
+      FixedFeedPartition sf = new FixedFeedPartition(this, String.valueOf(i));
       res.add(sf);
     }
     return res;
@@ -41,20 +40,12 @@ public class FixedFeed extends Feed {
 
 class FixedFeedPartition extends FeedPartition {
 
-  private int partitionId;
+
   private int current = 0;
   private int max = 10;
   
-  public FixedFeedPartition(Feed f) {
-    super(f);
-  }
-
-  public int getPartitionId() {
-    return partitionId;
-  }
-
-  public void setPartitionId(int partitionId) {                                                                                                                                                              
-    this.partitionId = partitionId;
+  public FixedFeedPartition(Feed f, String partitionId) {
+    super(f , partitionId);
   }
 
   @Override

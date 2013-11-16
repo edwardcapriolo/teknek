@@ -1,6 +1,7 @@
 package technique.deamon;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,9 +13,11 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.recipes.lock.WriteLock;
 
 import technique.datalayer.WorkerDao;
 import technique.datalayer.WorkerDaoException;
+import technique.plan.Plan;
 
 public class TechniqueDaemon implements Watcher{
 
@@ -26,12 +29,13 @@ public class TechniqueDaemon implements Watcher{
   private ExecutorService executor;
   private ZooKeeper zk;
   private long rescanMillis = 2000;
-  //private Map<IManThread, Object> workerThreads;
+  private Map<Plan, List<WorkerThread>> workerThreads;
   private boolean goOn = true;
   
   public TechniqueDaemon(Map<String,String> properties){
     myId = UUID.randomUUID();
     this.properties = properties;
+    workerThreads = new HashMap<Plan,List<WorkerThread>>();
   }
   
   
@@ -55,6 +59,9 @@ public class TechniqueDaemon implements Watcher{
           try {
             List<String> children = WorkerDao.finalAllPlanNames(zk);
             logger.debug("Children found in zk" + children);
+            for (String child: children){
+              considerStarting(child);
+            }
             Thread.sleep(rescanMillis);
           } catch (Exception ex){
             logger.error("Exception during scan "+ex);
@@ -64,6 +71,35 @@ public class TechniqueDaemon implements Watcher{
     }.start();
   }
 
+  private void considerStarting(String child){
+    Plan plan = null;
+    try {
+      plan = WorkerDao.findPlanByName(zk, child);
+    } catch (WorkerDaoException e) {
+      logger.error(e);
+    }
+    if (plan == null){
+      return;
+    }
+    WriteLock l = new WriteLock(zk, WorkerDao.PLANS_ZK + "/"+ plan.getName(), null);
+    try {
+      boolean gotLock = l.lock();
+      if (!gotLock){
+        return;
+      }
+      List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
+      if (children.size() >= plan.getMaxWorkers() ){
+        return;
+      }
+      
+    } catch (KeeperException | InterruptedException | WorkerDaoException e) {
+      logger.warn("getting lock", e); 
+    } finally {
+      l.unlock();
+    }
+    
+    
+  }
   @Override
   public void process(WatchedEvent event) {
     // TODO Auto-generated method stub    
