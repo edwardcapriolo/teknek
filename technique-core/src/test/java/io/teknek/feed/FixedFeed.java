@@ -1,4 +1,4 @@
-package technique.feed;
+package io.teknek.feed;
 
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;

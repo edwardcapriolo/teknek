@@ -1,9 +1,10 @@
-package technique.driver;
+package io.teknek.driver;
 
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.driver.Driver;
 import io.teknek.driver.DriverNode;
 import io.teknek.feed.FeedPartition;
+import io.teknek.feed.FixedFeed;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
@@ -16,7 +17,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import technique.feed.FixedFeed;
 
 public class TestDriver {
 

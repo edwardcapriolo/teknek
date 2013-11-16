@@ -1,5 +1,7 @@
-package technique.plan;
+package io.teknek.plan;
 
+import io.teknek.driver.TestDriver;
+import io.teknek.feed.FixedFeed;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
@@ -14,8 +16,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
-import technique.driver.TestDriver;
-import technique.feed.FixedFeed;
 
 
 public class TestPlan {

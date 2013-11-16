@@ -1,4 +1,4 @@
-package technique.kafka;
+package io.teknek.kafka;
 
 import kafka.utils.Time;
 

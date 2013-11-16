@@ -1,4 +1,4 @@
-package technique.kafka;
+package io.teknek.kafka;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +17,9 @@ import kafka.utils.VerifiableProperties;
 
 import org.junit.Test;
 
-public class IntegrationTest extends EmbeddedKafkaServer {
+public class CopyOfIntegrationTest extends EmbeddedKafkaServer {
 
-  public static final String EVENTS = "events";
+  public static final String EVENTS = "events2";
   @Test
   public void hello() throws InterruptedException {
    
