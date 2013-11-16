@@ -1,4 +1,4 @@
-package technique.datalayer;
+package io.teknek.datalayer;
 
 import kafka.admin.CreateTopicCommand;
 

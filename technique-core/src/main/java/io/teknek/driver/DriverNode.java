@@ -1,10 +1,11 @@
-package technique.driver;
+package io.teknek.driver;
+
+import io.teknek.collector.CollectorProcessor;
+import io.teknek.model.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import technique.model.Operator;
-import technique.service.CollectorProcessor;
 
 public class DriverNode {
 

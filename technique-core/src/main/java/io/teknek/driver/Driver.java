@@ -1,10 +1,10 @@
-package technique.driver;
+package io.teknek.driver;
 
-import technique.feed.FeedPartition;
-import technique.model.ITuple;
-import technique.model.Operator;
-import technique.model.Tuple;
-import technique.service.CollectorProcessor;
+import io.teknek.collector.CollectorProcessor;
+import io.teknek.feed.FeedPartition;
+import io.teknek.model.ITuple;
+import io.teknek.model.Operator;
+import io.teknek.model.Tuple;
 
 
 /** driver consumes data from a feed partition and inserts it into operators */

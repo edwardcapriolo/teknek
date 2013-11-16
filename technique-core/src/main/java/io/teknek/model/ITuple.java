@@ -1,4 +1,4 @@
-package technique.model;
+package io.teknek.model;
 
 public interface ITuple {
 

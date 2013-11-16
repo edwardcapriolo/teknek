@@ -1,11 +1,12 @@
-package technique.service;
+package io.teknek.collector;
+
+import io.teknek.model.ITuple;
+import io.teknek.model.Operator;
+import io.teknek.model.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import technique.model.ITuple;
-import technique.model.Operator;
-import technique.model.Tuple;
 
 public class CollectorProcessor implements Runnable {
   Collector collector;

@@ -1,10 +1,11 @@
-package technique.service;
+package io.teknek.collector;
+
+import io.teknek.model.ICollector;
+import io.teknek.model.ITuple;
+import io.teknek.model.Tuple;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import technique.model.ICollector;
-import technique.model.ITuple;
-import technique.model.Tuple;
  
 /**
  * Positioned between two operators. emit take and peek work

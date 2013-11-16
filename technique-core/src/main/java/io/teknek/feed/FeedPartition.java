@@ -1,6 +1,6 @@
-package technique.feed;
+package io.teknek.feed;
 
-import technique.model.ITuple;
+import io.teknek.model.ITuple;
 
 public abstract class FeedPartition {
 

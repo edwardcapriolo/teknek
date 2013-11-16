@@ -1,5 +1,13 @@
 package technique.driver;
 
+import io.teknek.collector.CollectorProcessor;
+import io.teknek.driver.Driver;
+import io.teknek.driver.DriverNode;
+import io.teknek.feed.FeedPartition;
+import io.teknek.model.ITuple;
+import io.teknek.model.Operator;
+import io.teknek.model.Tuple;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,12 +16,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import technique.feed.FeedPartition;
 import technique.feed.FixedFeed;
-import technique.model.ITuple;
-import technique.model.Operator;
-import technique.model.Tuple;
-import technique.service.CollectorProcessor;
 
 public class TestDriver {
 

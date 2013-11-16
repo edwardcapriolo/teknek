@@ -1,4 +1,4 @@
-package technique.plan;
+package io.teknek.plan;
 
 public class Plan {
 

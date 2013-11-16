@@ -1,4 +1,4 @@
-package technique.datalayer;
+package io.teknek.datalayer;
 
 public class WorkerDaoException extends Exception {
 

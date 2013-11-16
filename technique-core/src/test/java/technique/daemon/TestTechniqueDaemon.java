@@ -1,5 +1,7 @@
 package technique.daemon;
 
+import io.teknek.daemon.TechniqueDaemon;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +9,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import technique.deamon.TechniqueDaemon;
 import technique.kafka.EmbeddedKafkaServer;
 
 public class TestTechniqueDaemon extends EmbeddedKafkaServer {

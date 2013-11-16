@@ -1,15 +1,16 @@
 package technique.feed;
 
+import io.teknek.feed.Feed;
+import io.teknek.feed.FeedPartition;
+import io.teknek.model.ITuple;
+import io.teknek.model.Tuple;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-import technique.feed.Feed;
-import technique.feed.FeedPartition;
-import technique.model.ITuple;
-import technique.model.Tuple;
 
 public class FixedFeed extends Feed {
   public static final String NUMBER_OF_PARTITIONS = "number.of.partitions";

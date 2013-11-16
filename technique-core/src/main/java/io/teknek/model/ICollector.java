@@ -1,4 +1,4 @@
-package technique.model;
+package io.teknek.model;
 
 /**
  * A component that accepts tuples potentially storing or forwarding

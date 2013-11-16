@@ -1,4 +1,7 @@
-package technique.datalayer;
+package io.teknek.datalayer;
+
+import io.teknek.daemon.TechniqueDaemon;
+import io.teknek.plan.Plan;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,8 +17,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import technique.deamon.TechniqueDaemon;
-import technique.plan.Plan;
 
 /**
  * This component deals with persistence into zk for the worker node

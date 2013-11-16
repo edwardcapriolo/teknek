@@ -1,5 +1,8 @@
 package technique.feed;
 
+import io.teknek.feed.FeedPartition;
+import io.teknek.model.Tuple;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +10,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import technique.model.Tuple;
 
 public class TestFixedFeed {
 
@@ -21,7 +23,7 @@ public class TestFixedFeed {
     FixedFeed pf = new FixedFeed(prop);
     List<FeedPartition> parts = pf.getFeedPartitions();
     Assert.assertEquals(expectedPartitions, parts.size());
-    Tuple t = new technique.model.Tuple();
+    Tuple t = new io.teknek.model.Tuple();
     
     parts.get(0).next(t);
     Assert.assertEquals( t.getField("x"), 0);

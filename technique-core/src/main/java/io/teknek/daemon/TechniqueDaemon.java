@@ -1,4 +1,8 @@
-package technique.deamon;
+package io.teknek.daemon;
+
+import io.teknek.datalayer.WorkerDao;
+import io.teknek.datalayer.WorkerDaoException;
+import io.teknek.plan.Plan;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,9 +19,6 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.recipes.lock.WriteLock;
 
-import technique.datalayer.WorkerDao;
-import technique.datalayer.WorkerDaoException;
-import technique.plan.Plan;
 
 public class TechniqueDaemon implements Watcher{
 

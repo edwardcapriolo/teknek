@@ -1,4 +1,4 @@
-package technique.plan;
+package io.teknek.plan;
 
 import java.util.Map;
 

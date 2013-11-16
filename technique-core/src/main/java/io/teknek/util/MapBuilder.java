@@ -1,4 +1,4 @@
-package technique.util;
+package io.teknek.util;
 
 import java.util.HashMap;
 import java.util.Map;

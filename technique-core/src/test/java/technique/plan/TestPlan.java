@@ -1,5 +1,10 @@
 package technique.plan;
 
+import io.teknek.plan.FeedDesc;
+import io.teknek.plan.OperatorDesc;
+import io.teknek.plan.Plan;
+import io.teknek.util.MapBuilder;
+
 import java.io.IOException;
 
 import junit.framework.Assert;
@@ -11,7 +16,6 @@ import org.junit.Test;
 
 import technique.driver.TestDriver;
 import technique.feed.FixedFeed;
-import technique.util.MapBuilder;
 
 
 public class TestPlan {

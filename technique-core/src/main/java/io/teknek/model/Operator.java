@@ -1,4 +1,4 @@
-package technique.model;
+package io.teknek.model;
 
 import java.util.Map;
 

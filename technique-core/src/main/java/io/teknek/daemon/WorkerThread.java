@@ -1,10 +1,11 @@
-package technique.deamon;
+package io.teknek.daemon;
+
+import io.teknek.feed.Feed;
+import io.teknek.feed.FeedPartition;
+import io.teknek.plan.Plan;
 
 import java.util.List;
 
-import technique.feed.Feed;
-import technique.feed.FeedPartition;
-import technique.plan.Plan;
 
 public class WorkerThread {
   private Plan plan;

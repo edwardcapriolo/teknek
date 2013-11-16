@@ -1,10 +1,11 @@
-package technique.plan;
+package io.teknek.plan;
+
+import io.teknek.model.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import technique.model.Operator;
 
 
 public class OperatorDesc {
