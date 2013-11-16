@@ -1,5 +1,6 @@
 package technique.datalayer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import technique.deamon.TechniqueDaemon;
 import technique.plan.Plan;
 
 /**
@@ -43,17 +45,21 @@ public class WorkerDao {
    * @throws KeeperException
    * @throws InterruptedException
    */
-  public static void createZookeeperBase(ZooKeeper zk) throws KeeperException, InterruptedException {
-    if (zk.exists(BASE_ZK, true) == null) {
-      logger.info("Creating "+BASE_ZK+" heirarchy");
-      zk.create(BASE_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-    }
-    if (zk.exists(WORKERS_ZK, false) == null) {
-      zk.create(WORKERS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-    }
-    if (zk.exists(PLANS_ZK, true) == null) {
-      zk.create(PLANS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-    }
+  public static void createZookeeperBase(ZooKeeper zk) throws WorkerDaoException {
+    try {
+      if (zk.exists(BASE_ZK, true) == null) {
+        logger.info("Creating "+BASE_ZK+" heirarchy");
+        zk.create(BASE_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      if (zk.exists(WORKERS_ZK, false) == null) {
+        zk.create(WORKERS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      if (zk.exists(PLANS_ZK, true) == null) {
+        zk.create(PLANS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+    } catch (KeeperException  | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    } 
   }
   
   /**
@@ -63,16 +69,22 @@ public class WorkerDao {
    * @throws KeeperException
    * @throws InterruptedException
    */
-  public static List<String> finalAllPlanNames (ZooKeeper zk) throws KeeperException, InterruptedException {
-    return zk.getChildren(PLANS_ZK, false);
+  public static List<String> finalAllPlanNames (ZooKeeper zk) throws WorkerDaoException {
+    try {
+      return zk.getChildren(PLANS_ZK, false);
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
   }
   
-  public static Plan findPlanByName(ZooKeeper zk, String name) throws KeeperException, InterruptedException, JsonParseException, JsonMappingException, IOException{
-    Stat s = zk.exists(PLANS_ZK + "/"+ name, false);
-    byte[] b = zk.getData(PLANS_ZK + "/" + name, false, s);
-    Plan plan = deserializePlan(b);
-    return plan;
-    
+  public static Plan findPlanByName(ZooKeeper zk, String name) throws WorkerDaoException {
+    try {
+      Stat s = zk.exists(PLANS_ZK + "/"+ name, false);
+      byte[] b = zk.getData(PLANS_ZK + "/" + name, false, s);
+      return deserializePlan(b);
+    } catch (IOException | KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    } 
   }
   
   public static Plan deserializePlan(byte [] b) throws JsonParseException, JsonMappingException, IOException{
@@ -80,4 +92,40 @@ public class WorkerDao {
     Plan p1 = om.readValue(b, Plan.class);
     return p1;
   }
+  
+  public static byte[] serializePlan(Plan plan) {
+    ObjectMapper map = new ObjectMapper();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try {
+      map.writeValue(baos, plan);
+    } catch (IOException ex) {
+      logger.error(ex);
+    }
+    return baos.toByteArray();
+  }
+  
+  
+  public static void createOrUpdatePlan(Plan plan, ZooKeeper zk) throws WorkerDaoException {
+      Stat s;
+      try {
+        s = zk.exists(PLANS_ZK+ "/" + plan.getName(), false);
+        if (s != null) {
+          zk.setData(PLANS_ZK+ "/" + plan.getName(), serializePlan(plan), s.getVersion());
+        } else {
+          zk.create(PLANS_ZK+ "/" + plan.getName(), serializePlan(plan), Ids.OPEN_ACL_UNSAFE,
+                  CreateMode.PERSISTENT);
+        }
+      } catch (KeeperException | InterruptedException e) {
+        throw new WorkerDaoException(e);
+      }
+  }
+  
+  public static void createEphemeralNodeForDaemon(ZooKeeper zk, TechniqueDaemon d) throws WorkerDaoException {
+    try {
+      zk.create(WORKERS_ZK +"/"+d.getMyId().toString(), new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
+  
 }
