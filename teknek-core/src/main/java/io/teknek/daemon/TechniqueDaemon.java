@@ -5,6 +5,7 @@ import io.teknek.datalayer.WorkerDaoException;
 import io.teknek.plan.Plan;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.recipes.lock.WriteLock;
+
+import com.google.common.annotations.VisibleForTesting;
 
 
 public class TechniqueDaemon implements Watcher{
@@ -41,6 +44,7 @@ public class TechniqueDaemon implements Watcher{
   
   
   public void init() {
+    logger.debug("my UUID" + myId);
     executor = Executors.newFixedThreadPool(threadPoolSize);
     try {
       zk = new ZooKeeper(properties.get(ZK_SERVER_LIST).toString(), 100, this);
@@ -66,12 +70,22 @@ public class TechniqueDaemon implements Watcher{
             Thread.sleep(rescanMillis);
           } catch (Exception ex){
             logger.error("Exception during scan "+ex);
+            ex.printStackTrace();
           }
         }
       }
     }.start();
   }
 
+  @VisibleForTesting
+  public void applyPlan(Plan plan){
+    try {
+      WorkerDao.createOrUpdatePlan(plan, zk);
+    } catch (WorkerDaoException e) {
+      e.printStackTrace();
+    }
+  }
+  
   private void considerStarting(String child){
     Plan plan = null;
     try {
@@ -80,6 +94,7 @@ public class TechniqueDaemon implements Watcher{
       logger.error(e);
     }
     if (plan == null){
+      logger.error("did not find plan");
       return;
     }
     WriteLock l = new WriteLock(zk, WorkerDao.PLANS_ZK + "/"+ plan.getName(), null);
@@ -89,20 +104,35 @@ public class TechniqueDaemon implements Watcher{
         return;
       }
       List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
-      if (children.size() >= plan.getMaxWorkers() ){
+      int FUDGE_FOR_LOCK = 1;
+      if (children.size()  >= plan.getMaxWorkers() + FUDGE_FOR_LOCK){
+        logger.debug("already running max children:"+children.size()+" planmax"+plan.getMaxWorkers());
+        logger.debug("already running max children:"+children.size()+" planmax"+plan.getMaxWorkers()+" running:"+children);
+        
         return;
       }
-      Worker workerThread = new Worker(plan, children, this);
-      workerThread.init();
+      Worker worker = new Worker(plan, children, this);
+      worker.init();
+      worker.start();
+      addWorkerToList(plan, worker);
       
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
       logger.warn("getting lock", e); 
     } finally {
       l.unlock();
     }
-    
-    
   }
+  
+  private void addWorkerToList(Plan plan, Worker worker) {
+    List<Worker> list = workerThreads.get(plan);
+    if (list == null){
+      list = new ArrayList<Worker>();
+    }
+    list.add(worker);
+    workerThreads.put(plan, list);
+  }
+
+
   @Override
   public void process(WatchedEvent event) {
     // TODO Auto-generated method stub    
