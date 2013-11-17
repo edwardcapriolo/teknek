@@ -15,26 +15,25 @@ limitations under the License.
 */
 package io.teknek.driver;
 
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
-import io.teknek.plan.OperatorDesc;
-import io.teknek.plan.Plan;
-
 
 /** driver consumes data from a feed partition and inserts it into operators */
 public class Driver implements Runnable {
   private FeedPartition fp;
   private DriverNode driverNode;
+  private AtomicBoolean goOn;
 
   public Driver(FeedPartition fp, Operator operator){
     this.fp = fp;
     CollectorProcessor cp = new CollectorProcessor();
     driverNode = new DriverNode(operator, cp);
+    goOn = new AtomicBoolean(true);
   }
   
   public void initialize(){
@@ -45,10 +44,12 @@ public class Driver implements Runnable {
    * Begin processing the feed in a thread
    */
   public void run(){
-    ITuple t = new Tuple();
-    while (fp.next(t)){
-      driverNode.getOperator().handleTuple(t);
-      t = new Tuple();
+    while(goOn.get()){
+      ITuple t = new Tuple();
+      while (fp.next(t)){
+        driverNode.getOperator().handleTuple(t);
+        t = new Tuple();
+      }
     }
   }
 
@@ -66,5 +67,15 @@ public class Driver implements Runnable {
     sb.append("driver node "+ this.driverNode.toString());
     return sb.toString();
   }
+
+  public boolean getGoOn() {
+    return goOn.get();
+  }
+
+  public void setGoOn(boolean goOn) {
+    this.goOn.set(goOn);
+  }
+  
+  
   
 }

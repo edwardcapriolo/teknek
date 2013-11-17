@@ -41,6 +41,7 @@ public class Worker implements Watcher {
   private ZooKeeper zk;
   private Driver driver;
   private UUID myId;
+  private Thread driverThread;
   
   public Worker(Plan plan, List<String> otherWorkers, TechniqueDaemon parent){
     this.plan = plan;
@@ -74,10 +75,8 @@ public class Worker implements Watcher {
   }
 
   public void start(){
-    //todo we should user and executor service and retain this reference
-    //todo it will be needed later for shutdown
-    Thread t = new Thread(driver);
-    t.run();
+    driverThread = new Thread(driver);
+    driverThread.run();
   }
   
   /**
