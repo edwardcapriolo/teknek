@@ -8,10 +8,13 @@ import io.teknek.driver.DriverNode;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.Operator;
+import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +30,7 @@ public class WorkerThread implements Watcher {
   private List<String> otherWorkers;
   private TechniqueDaemon parent;
   private ZooKeeper zk;
+  private Driver driver;
   
   public WorkerThread(Plan plan, List<String> otherWorkers, TechniqueDaemon parent){
     this.plan = plan;
@@ -43,20 +47,16 @@ public class WorkerThread implements Watcher {
     } catch (IOException e1) {
       throw new RuntimeException(e1);
     }
-    Feed feed = null;
-    try {
-      feed = (Feed) Class.forName(plan.getFeedDesc().getFeedClass()).newInstance();
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-     throw new RuntimeException(e); 
-    }
+    Feed feed = Feed.buildFeed(plan.getFeedDesc());
     List<WorkerStatus> workerStatus = WorkerDao.findAllWorkerStatusForPlan(zk, plan, otherWorkers);
     FeedPartition toProcess = findPartitionToProcess(workerStatus, feed.getFeedPartitions());
-    Driver d = null;
+
     if (toProcess != null){
-      d = DriverFactory.createDriver(toProcess, plan);
+      driver = DriverFactory.createDriver(toProcess, plan);
     }
     
   }
+
 
   /**
    * TODO: in here it "should" be impossible fro a null return
