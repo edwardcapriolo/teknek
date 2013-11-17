@@ -9,6 +9,9 @@ noun
 
 a way of carrying out a particular task, esp. the execution or performance of an artistic work or a scientific procedure.
 
+Notes
+-----
+We are still putting the initial cut of the software together.  Stay tuned.
 
 Terminology
 -----
