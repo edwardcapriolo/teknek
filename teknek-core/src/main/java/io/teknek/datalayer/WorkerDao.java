@@ -153,4 +153,20 @@ public class WorkerDao {
     }
     return results;
   }
+  
+  /**
+   * Registers an ephemeral node representing ownership of a feed partition
+   * @param zk
+   * @param plan
+   * @param s
+   * @throws WorkerDaoException 
+   */
+  public static void registerWorkerStatus(ZooKeeper zk, Plan plan, WorkerStatus s) throws WorkerDaoException{
+    String writeToPath = PLANS_ZK + "/" + plan.getName() + "/" + s.getWorkerUuid();
+    try {
+      zk.create(writeToPath, s.getFeedPartitionId().getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
 }

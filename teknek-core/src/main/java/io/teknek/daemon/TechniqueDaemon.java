@@ -30,13 +30,13 @@ public class TechniqueDaemon implements Watcher{
   private ExecutorService executor;
   private ZooKeeper zk;
   private long rescanMillis = 2000;
-  private Map<Plan, List<WorkerThread>> workerThreads;
+  private Map<Plan, List<Worker>> workerThreads;
   private boolean goOn = true;
   
   public TechniqueDaemon(Map<String,String> properties){
     myId = UUID.randomUUID();
     this.properties = properties;
-    workerThreads = new HashMap<Plan,List<WorkerThread>>();
+    workerThreads = new HashMap<Plan,List<Worker>>();
   }
   
   
@@ -92,7 +92,7 @@ public class TechniqueDaemon implements Watcher{
       if (children.size() >= plan.getMaxWorkers() ){
         return;
       }
-      WorkerThread workerThread = new WorkerThread(plan, children, this);
+      Worker workerThread = new Worker(plan, children, this);
       workerThread.init();
       
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
