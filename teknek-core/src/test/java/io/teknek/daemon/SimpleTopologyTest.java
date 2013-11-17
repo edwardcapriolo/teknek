@@ -55,7 +55,7 @@ static TechniqueDaemon td = null;
     p.setMaxWorkers(1);
     td.applyPlan(p);
     try {
-      Thread.sleep(6000);
+      Thread.sleep(3000);
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

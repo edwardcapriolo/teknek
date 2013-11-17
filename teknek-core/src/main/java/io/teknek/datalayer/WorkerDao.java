@@ -47,7 +47,7 @@ public class WorkerDao {
   /**
    * Base directory of the entire application
    */
-  public static final String BASE_ZK = "/technique";
+  public static final String BASE_ZK = "/teknek";
   /**
    * ephemeral nodes for worker registration live here
    */
