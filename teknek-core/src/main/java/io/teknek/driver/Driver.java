@@ -1,10 +1,14 @@
 package io.teknek.driver;
 
+import java.util.List;
+
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
+import io.teknek.plan.OperatorDesc;
+import io.teknek.plan.Plan;
 
 
 /** driver consumes data from a feed partition and inserts it into operators */
@@ -39,6 +43,13 @@ public class Driver implements Runnable {
 
   public void setDriverNode(DriverNode driverNode) {
     this.driverNode = driverNode;
+  }
+  
+  public String toString(){
+    StringBuilder sb  = new StringBuilder();
+    sb.append("Feed Partition "+fp.getPartitionId()+" " );
+    sb.append("driver node "+ this.driverNode.toString());
+    return sb.toString();
   }
   
 }

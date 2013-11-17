@@ -62,6 +62,16 @@ public class DriverNode {
   public void setCollectorProcessor(CollectorProcessor collectorProcessor) {
     this.collectorProcessor = collectorProcessor;
   }
+
+  public List<DriverNode> getChildren() {
+    return children;
+  }
   
+  public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("Operator "+operator.toString()+"\n");
+    sb.append("children "+this.children);
+    return sb.toString();
+  }
   
 }

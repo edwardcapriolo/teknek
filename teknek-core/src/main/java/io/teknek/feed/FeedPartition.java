@@ -21,4 +21,9 @@ public abstract class FeedPartition {
   public abstract boolean next(ITuple t);
   
   public abstract void close();
+
+  public String getPartitionId() {
+    return partitionId;
+  }
+  
 }

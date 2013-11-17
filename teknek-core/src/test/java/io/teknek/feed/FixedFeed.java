@@ -41,7 +41,6 @@ public class FixedFeed extends Feed {
 
 class FixedFeedPartition extends FeedPartition {
 
-
   private int current = 0;
   private int max = 10;
   

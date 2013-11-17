@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class TestDriver {
 
-  private FeedPartition getPart(){
+  public static FeedPartition getPart(){
     Map<String,Object> prop = new HashMap<String,Object>();
     int expectedPartitions = 5;
     int expectedRows = 1000;
@@ -33,9 +33,9 @@ public class TestDriver {
   
   @Test
   public void aTest() throws InterruptedException {
-    Driver root = new Driver(getPart(), minus1Operator());
+    Driver root = new Driver(getPart(), new Minus1Operator());
     root.initialize();
-    DriverNode child = new DriverNode(times2Operator(), new CollectorProcessor());
+    DriverNode child = new DriverNode(new Times2Operator(), new CollectorProcessor());
     root.getDriverNode().addChild(child);
     
     Thread t = new Thread(root);
@@ -52,7 +52,7 @@ public class TestDriver {
     
   }
 
-  public void assertExpectedPairs(DriverNode finalNode, List<Tuple> expected) throws InterruptedException {
+  public static void assertExpectedPairs(DriverNode finalNode, List<Tuple> expected) throws InterruptedException {
     for (int i = 0; i < expected.size(); i++) {
       Assert.assertNotNull(finalNode.getCollectorProcessor().getCollector().peek());
       ITuple got = finalNode.getCollectorProcessor().getCollector().take();
@@ -71,29 +71,10 @@ public class TestDriver {
     Assert.assertTrue(t.equals(s));
   }
   
+ 
   
-  public static Operator times2Operator(){
-    return new Operator(){
-      @Override
-      public void handleTuple(ITuple t) {
-        ITuple tnew = new Tuple();
-        tnew.setField("x", ((Integer) t.getField("x")).intValue() * 2);
-        collector.emit(tnew);
-      }
-    };
 
-  }
-  
-  public static Operator minus1Operator(){
-    return new Operator(){
-      @Override
-      public void handleTuple(ITuple t) {
-        ITuple tnew = new Tuple();
-        tnew.setField("x", ((Integer) t.getField("x")).intValue() - 1);
-        collector.emit(tnew);
-      }
-    };
-  }
-  
   
 }
+
+

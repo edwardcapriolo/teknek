@@ -92,6 +92,8 @@ public class TechniqueDaemon implements Watcher{
       if (children.size() >= plan.getMaxWorkers() ){
         return;
       }
+      WorkerThread workerThread = new WorkerThread(plan, children, this);
+      workerThread.init();
       
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
       logger.warn("getting lock", e); 
@@ -110,7 +112,6 @@ public class TechniqueDaemon implements Watcher{
     return myId;
   }
 
-
   public void setMyId(UUID myId) {
     this.myId = myId;
   }
@@ -118,4 +119,9 @@ public class TechniqueDaemon implements Watcher{
   public void stop(){
     this.goOn = false;
   }
+
+  public Map<String, String> getProperties() {
+    return properties;
+  }
+  
 }

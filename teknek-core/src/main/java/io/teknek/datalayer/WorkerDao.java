@@ -1,10 +1,12 @@
 package io.teknek.datalayer;
 
 import io.teknek.daemon.TechniqueDaemon;
+import io.teknek.daemon.WorkerStatus;
 import io.teknek.plan.Plan;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -136,4 +138,19 @@ public class WorkerDao {
     }
   }
   
+  public static List<WorkerStatus> findAllWorkerStatusForPlan(ZooKeeper zk, Plan plan, List<String> otherWorkers){
+    List<WorkerStatus> results = new ArrayList<WorkerStatus>();
+    for (String worker : otherWorkers) {
+      String lookAtPath = PLANS_ZK + "/" + plan.getName() + "/" + worker;
+      Stat stat = null;
+      try {
+        stat = zk.exists(lookAtPath, false);
+        byte[] data = zk.getData(lookAtPath, false, stat);
+        results.add(new WorkerStatus(worker, new String(data)));
+      } catch (KeeperException | InterruptedException e) {
+        logger.error(e);
+      }
+    }
+    return results;
+  }
 }
