@@ -1,7 +1,14 @@
-technique
+teknek (tekˈnēk)
 =========
 
-Stream Processing Platform.
+Stream Processing Platform
+
+tech·nique
+/tekˈnēk/
+noun
+
+    1. a way of carrying out a particular task, esp. the execution or performance of an artistic work or a scientific procedure.
+
 
 Terminology
 -----
