@@ -19,7 +19,7 @@ import io.teknek.model.ITuple;
 
 public abstract class FeedPartition {
 
-  private Feed feed;
+  protected Feed feed;
   /**
    * This field uniquely identifies a partition of a feed. In could be critical
    * in cases where you wish client to re-bind to prospective feeds. 

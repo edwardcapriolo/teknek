@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * represents some data source
+ * represents some data source. A feed breaks down to one or more partition
  *
  */
 public abstract class Feed {
@@ -35,6 +35,11 @@ public abstract class Feed {
     this.properties = properties;
   }
   
+  /**
+   * Method is called by the framework, based on the class and optionally the properties it produces one or more 
+   * partitions. The list of partitions returned must be deterministic
+   * @return a list of partitions for the feed based on properties
+   */
   public abstract List<FeedPartition> getFeedPartitions();
   /**
    * Map of configuration options to explanation. Inline documentation
@@ -43,6 +48,11 @@ public abstract class Feed {
    */
   public abstract Map<String,String> getSuggestedBindParams();
   
+  
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
+
   //TODO this method might go better in driver or some other place that does not tangle the classes
   //TODO we need something better then runtime exception here
   /**
