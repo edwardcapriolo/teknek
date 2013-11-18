@@ -12,8 +12,6 @@ import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
-import kafka.serializer.StringDecoder;
-import kafka.utils.VerifiableProperties;
 
 
 import io.teknek.feed.Feed;
@@ -22,18 +20,20 @@ import io.teknek.model.ITuple;
 
 /**
  * This feed consumes events from kafka topics using the high level client. This client
- * will automatically handle rebalancing and offset storage. If you want to bind consumers
- * to specific partitions predictable do not use this.
+ * will automatically handle rebalancing and offset storage. 
+ * This feed produces tuples with two columns key and message both of type byte [].
  * @author edward
  *
  */
 public class SimpleKafkaFeed extends Feed {
   
+  public static final String KEY_FIELD = "key";
+  public static final String MESSAGE_FIELD = "message";
   public static final String TOPIC = "simple.kafka.feed.topic";
   public static final String CONSUMER_GROUP = "simple.kafka.feed.consumer.group";
   public static final String RESET_OFFSET = "simple.kafka.feed.reset.offset";
   public static final String ZOOKEEPER_CONNECT = "simple.kafka.feed.zookeeper.connect";
-  public static final String STREAMS_PER_WORKER = "simple.kafka.feed.streams.per.worker";
+  //public static final String STREAMS_PER_WORKER = "simple.kafka.feed.streams.per.worker";
   public static final String PARTITIONS = "simple.kafka.feed.partitions";
   
   public SimpleKafkaFeed(Map<String, Object> properties) {
@@ -60,7 +60,8 @@ public class SimpleKafkaFeed extends Feed {
 
 class SimpleKafkaFeedPartition extends FeedPartition {
 
-  ConsumerIterator<byte[], byte[]> iterator;
+  protected ConsumerIterator<byte[], byte[]> iterator;
+  protected ConsumerConnector consumerConnector;
   
   public SimpleKafkaFeedPartition(Feed feed, String partitionId) {
     super(feed, partitionId);
@@ -75,39 +76,38 @@ class SimpleKafkaFeedPartition extends FeedPartition {
       consumerProperties.put("auto.offset.reset", "smallest");
     }
     ConsumerConfig consumerConfig = new ConsumerConfig(consumerProperties);
-    ConsumerConnector consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
+    consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
+    
     Map<String, Integer> consumers = new HashMap<String, Integer>();
-    if (feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER) == null){
-      consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 1);
-    } else {
-      consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 
-              (Integer)(feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER)));
-    }
+    consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 1);
     Map<String, List<KafkaStream<byte[], byte[]>>> topicMessageStreams = consumerConnector
             .createMessageStreams(consumers);
     final List<KafkaStream<byte[], byte[]>> streams = topicMessageStreams.get(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString());
     final KafkaStream<byte[], byte[]> stream = streams.get(0);
     iterator = stream.iterator();
+    
   }
 
   @Override
   public boolean next(ITuple t) {
     MessageAndMetadata<byte[],byte[]> message = iterator.next();
-    t.setField("message", message.message());
-    t.setField("key", message.key());
-    return false;
+    t.setField(SimpleKafkaFeed.MESSAGE_FIELD, message.message());
+    t.setField(SimpleKafkaFeed.KEY_FIELD, message.key());
+    return true;
   }
 
   @Override
   public void close() {
-    // TODO Auto-generated method stub 
+    consumerConnector.shutdown();
   }
   
 }
 
 /*
-StringDecoder decoder = new StringDecoder(new VerifiableProperties());
-Map<String, List<KafkaStream<String, String>>> topicMessageStreams = consumerConnector
-       .createMessageStreams(consumers, decoder, decoder);
-final List<KafkaStream<String, String>> streams = topicMessageStreams.get(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString());
+if (feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER) == null){
+consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 1);
+} else {
+consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 
+        (Integer)(feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER)));
+}
 */
