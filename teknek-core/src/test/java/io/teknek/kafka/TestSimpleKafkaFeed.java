@@ -16,13 +16,23 @@ import org.junit.Test;
 public class TestSimpleKafkaFeed extends EmbeddedKafkaServer {
 
   private String TOPIC = "simplekafkafeed";
-  @Test
-  public void aTest(){
+  
+  private void sendData(){
     KafkaUtil.createTopic(TOPIC, 1, 1, zookeeperTestServer.getConnectString());
-    Producer<String, String> producer = new Producer<String, String>(super.createProducerConfig());
-    for (int i = 0; i < 5; i++) {
-      producer.send(new KeyedMessage<String, String>(TOPIC, "1", i + ""));
+    Map<String,Object> sendProps = new HashMap<String,Object>();
+    sendProps.put(KafkaOutputOperator.TOPIC, TOPIC);
+    sendProps.put(KafkaOutputOperator.ZOOKEEPER_CONNECT, this.zookeeperTestServer.getConnectString());
+    sendProps.put(KafkaOutputOperator.METADATA_BROKER_LIST, "localhost:9092");
+    KafkaOutputOperator o = new KafkaOutputOperator();
+    o.setProperties(sendProps);
+    for (int i =0;i<5;i++){
+      Tuple tout = new Tuple();
+      tout.setField(KafkaOutputOperator.KEY_FIELD, "1".getBytes());
+      tout.setField(KafkaOutputOperator.MESSAGE_FIELD, (i + "").getBytes());
+      o.handleTuple(tout);
     }
+  }
+  private void receiveData(){
     Map<String,Object> props = new HashMap<String,Object>();
     props.put(SimpleKafkaFeed.CONSUMER_GROUP, "group1");
     props.put(SimpleKafkaFeed.PARTITIONS, 1);
@@ -45,5 +55,17 @@ public class TestSimpleKafkaFeed extends EmbeddedKafkaServer {
     hasMore = a.next(t);
     Assert.assertTrue(hasMore);
     Assert.assertEquals("1", new String((byte[]) t.getField(SimpleKafkaFeed.KEY_FIELD)));
+  }
+  @Test
+  public void aTest(){
+    sendData();
+    receiveData();
+    /*
+    KafkaUtil.createTopic(TOPIC, 1, 1, zookeeperTestServer.getConnectString());
+    Producer<String, String> producer = new Producer<String, String>(super.createProducerConfig());
+    for (int i = 0; i < 5; i++) {
+      producer.send(new KeyedMessage<String, String>(TOPIC, "1", i + ""));
+    }*/
+    
   }
 }
