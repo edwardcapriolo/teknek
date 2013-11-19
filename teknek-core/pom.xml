@@ -15,6 +15,12 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <dependencies>
 
 	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>15.0</version>
+	</dependency>
+            
+	<dependency>
 		<groupId>org.codehaus.jackson</groupId>
 		<artifactId>jackson-mapper-asl</artifactId>
 		<version>1.9.13</version>
