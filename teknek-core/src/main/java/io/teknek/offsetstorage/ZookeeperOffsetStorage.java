@@ -21,6 +21,7 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
 
   public static final String TEKNEK_OFFSET = TEKNEK_ROOT + "/offset";
 
+  public static final String ZK_CONNECT = "zookeeper.connect";
   public ZookeeperOffsetStorage(FeedPartition feedPartition, Plan plan, Map<String,String> properties) {
     super(feedPartition, plan, properties);
   }

@@ -5,6 +5,7 @@ public class Plan {
   private String name;
   private FeedDesc feedDesc;
   private OperatorDesc rootOperator;
+  private OffsetStorageDesc offsetStorageDesc;
   private boolean disabled;
   private int maxWorkers;
  
@@ -60,6 +61,19 @@ public class Plan {
     this.maxWorkers = maxWorkers;
   }
 
+  public OffsetStorageDesc getOffsetStorageDesc() {
+    return offsetStorageDesc;
+  }
+
+  public void setOffsetStorageDesc(OffsetStorageDesc offsetStorageDesc) {
+    this.offsetStorageDesc = offsetStorageDesc;
+  }
+  
+  public Plan withOffsetStorageDesc(OffsetStorageDesc desc){
+    setOffsetStorageDesc(desc);
+    return this;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -85,8 +99,4 @@ public class Plan {
     return true;
   }
 
-  
-
-
 }
-

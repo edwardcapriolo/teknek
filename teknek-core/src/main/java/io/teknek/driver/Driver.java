@@ -16,6 +16,7 @@ limitations under the License.
 package io.teknek.driver;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.FeedPartition;
@@ -28,6 +29,7 @@ public class Driver implements Runnable {
   private FeedPartition fp;
   private DriverNode driverNode;
   private AtomicBoolean goOn;
+  private AtomicLong tuplesSeen;
 
   public Driver(FeedPartition fp, Operator operator){
     this.fp = fp;
@@ -48,11 +50,24 @@ public class Driver implements Runnable {
       ITuple t = new Tuple();
       while (fp.next(t)){
         driverNode.getOperator().handleTuple(t);
+        maybeDoOffset();
         t = new Tuple();
       }
     }
   }
 
+  /**
+   * We mark the offset every N rows. It would probably be better
+   * to mark in a background thread based on time or make it plugable, but this
+   * gets the point across for now
+   */
+  public void maybeDoOffset(){
+    long seen = tuplesSeen.getAndIncrement();
+    if (seen % 10000 == 0){
+      
+    }
+  }
+  
   public DriverNode getDriverNode() {
     return driverNode;
   }
