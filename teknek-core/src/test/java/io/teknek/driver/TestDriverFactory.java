@@ -39,7 +39,7 @@ public class TestDriverFactory {
     
     driver.initialize();
     Thread t = new Thread(driver);
-    t.run();
+    t.start();
     t.join(5000);
     //TODO we should attach a collector to this plan and assert results
     /*

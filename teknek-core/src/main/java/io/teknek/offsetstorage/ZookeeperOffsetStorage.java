@@ -53,14 +53,23 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
   @Override
   public Offset findLatestPersistedOffset() {
     String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + part.getFeed().getName()+ "-" + part.getPartitionId();
-    return null;
+    ZooKeeper zk = null;
+    try {
+      zk = new ZooKeeper("localhost", 100, this);
+      Stat stat = zk.exists(s, false);
+      byte [] bytes = zk.getData(s, false, stat);
+      ZookeeperOffset zo = new ZookeeperOffset(bytes);
+      zk.close();
+      return zo;   
+    } catch (IOException | KeeperException | InterruptedException e1) {
+      throw new RuntimeException(e1);
+    }
   }
 
 
   @Override
   public void process(WatchedEvent event) {
-    // TODO Auto-generated method stub
-    
+
   }
 
 }
