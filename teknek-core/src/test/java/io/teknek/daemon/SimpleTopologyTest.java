@@ -34,13 +34,13 @@ import io.teknek.util.MapBuilder;
 
 public class SimpleTopologyTest extends EmbeddedKafkaServer{
 
-static TechniqueDaemon td = null;
+static TeknekDaemon td = null;
   
   @BeforeClass
   public static void setup(){
     Map<String,String> props = new HashMap<String,String>();
-    props.put(TechniqueDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
-    td = new TechniqueDaemon(props);
+    props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
+    td = new TeknekDaemon(props);
     td.init();
   }
   

@@ -1,4 +1,4 @@
-This interface will manage Technique. It should be able to do a few things at minimum.
+This interface will manage Teknek. It should be able to do a few things at minimum.
 
 Primative Auth with Usename password
 View Configures plans as JSON (text box)

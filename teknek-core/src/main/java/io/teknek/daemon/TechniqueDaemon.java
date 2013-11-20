@@ -38,10 +38,10 @@ import org.apache.zookeeper.recipes.lock.WriteLock;
 import com.google.common.annotations.VisibleForTesting;
 
 
-public class TechniqueDaemon implements Watcher{
+public class TeknekDaemon implements Watcher{
 
-  public static final String ZK_SERVER_LIST = "technique.zk.servers";
-  final static Logger logger = Logger.getLogger(TechniqueDaemon.class.getName());
+  public static final String ZK_SERVER_LIST = "teknek.zk.servers";
+  final static Logger logger = Logger.getLogger(TeknekDaemon.class.getName());
   private int threadPoolSize = 4;
   private UUID myId;
   private Map<String,String> properties;
@@ -51,7 +51,7 @@ public class TechniqueDaemon implements Watcher{
   private Map<Plan, List<Worker>> workerThreads;
   private boolean goOn = true;
   
-  public TechniqueDaemon(Map<String,String> properties){
+  public TeknekDaemon(Map<String,String> properties){
     myId = UUID.randomUUID();
     this.properties = properties;
     workerThreads = new HashMap<Plan,List<Worker>>();

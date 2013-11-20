@@ -15,7 +15,7 @@ limitations under the License.
 */
 package io.teknek.daemon;
 
-import io.teknek.daemon.TechniqueDaemon;
+import io.teknek.daemon.TeknekDaemon;
 import io.teknek.kafka.EmbeddedKafkaServer;
 
 import java.util.HashMap;
@@ -26,15 +26,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
-public class TestTechniqueDaemon extends EmbeddedKafkaServer {
+public class TestTeknekDaemon extends EmbeddedKafkaServer {
 
-  static TechniqueDaemon td = null;
+  static TeknekDaemon td = null;
   
   @BeforeClass
   public static void setup(){
     Map<String,String> props = new HashMap<String,String>();
-    props.put(TechniqueDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
-    td = new TechniqueDaemon(props);
+    props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
+    td = new TeknekDaemon(props);
     td.init();
   }
   

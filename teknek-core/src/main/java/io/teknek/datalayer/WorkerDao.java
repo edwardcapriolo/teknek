@@ -15,7 +15,7 @@ limitations under the License.
 */
 package io.teknek.datalayer;
 
-import io.teknek.daemon.TechniqueDaemon;
+import io.teknek.daemon.TeknekDaemon;
 import io.teknek.daemon.WorkerStatus;
 import io.teknek.plan.Plan;
 
@@ -145,7 +145,7 @@ public class WorkerDao {
       }
   }
   
-  public static void createEphemeralNodeForDaemon(ZooKeeper zk, TechniqueDaemon d) throws WorkerDaoException {
+  public static void createEphemeralNodeForDaemon(ZooKeeper zk, TeknekDaemon d) throws WorkerDaoException {
     try {
       zk.create(WORKERS_ZK +"/"+d.getMyId().toString(), new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
     } catch (KeeperException | InterruptedException e) {
