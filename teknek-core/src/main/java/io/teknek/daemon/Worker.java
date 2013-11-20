@@ -37,13 +37,13 @@ import com.google.common.annotations.VisibleForTesting;
 public class Worker implements Watcher {
   private Plan plan;
   private List<String> otherWorkers;
-  private TechniqueDaemon parent;
+  private TeknekDaemon parent;
   private ZooKeeper zk;
   private Driver driver;
   private UUID myId;
   private Thread driverThread;
   
-  public Worker(Plan plan, List<String> otherWorkers, TechniqueDaemon parent){
+  public Worker(Plan plan, List<String> otherWorkers, TeknekDaemon parent){
     this.plan = plan;
     this.otherWorkers = otherWorkers;
     this.parent = parent;
@@ -55,7 +55,7 @@ public class Worker implements Watcher {
    */
   public void init(){
     try {
-      zk = new ZooKeeper(parent.getProperties().get(TechniqueDaemon.ZK_SERVER_LIST).toString(), 100, this);
+      zk = new ZooKeeper(parent.getProperties().get(TeknekDaemon.ZK_SERVER_LIST).toString(), 100, this);
     } catch (IOException e1) {
       throw new RuntimeException(e1);
     }
