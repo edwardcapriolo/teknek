@@ -24,20 +24,20 @@ public class TestKafkaOffsetStorage extends EmbeddedKafkaServer {
     List<FeedPartition> parts = pf.getFeedPartitions();
     
     ZookeeperOffsetStorage zos = new ZookeeperOffsetStorage(parts.get(0),TestPlan.getPlan(), props);
-    
-    Assert.assertEquals ( "0", parts.get(0).getOffset() );
+
+    Assert.assertEquals("0", parts.get(0).getOffset());
     Tuple t = new Tuple();
     parts.get(0).next(t);
-    Assert.assertEquals ( "1", parts.get(0).getOffset() );
+    Assert.assertEquals("1", parts.get(0).getOffset());
     ZookeeperOffset off = (ZookeeperOffset) zos.getCurrentOffset();
     Assert.assertEquals("1", new String(off.serialize()));
     zos.persistOffset(off);
-    
+
     ZookeeperOffset fromZk = (ZookeeperOffset) zos.getCurrentOffset();
     Assert.assertEquals("1", new String(fromZk.serialize()));
-    
+
     parts.get(0).next(t);
     zos.persistOffset(zos.getCurrentOffset());
-    Assert.assertEquals("1", new String(((ZookeeperOffset) zos.getCurrentOffset()).serialize()));
+    Assert.assertEquals("2", new String(((ZookeeperOffset) zos.getCurrentOffset()).serialize()));
   }
 }
