@@ -44,6 +44,7 @@ public class TestPlan {
                             10))).withRootOperator(
             new OperatorDesc(new Minus1Operator()).withNextOperator(new OperatorDesc(
                     new Times2Operator())));
+    p.setName("myplan");
     return p;
   }
   
