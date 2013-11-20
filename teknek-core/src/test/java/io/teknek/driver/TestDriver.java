@@ -54,7 +54,7 @@ public class TestDriver {
     root.getDriverNode().addChild(child);
     
     Thread t = new Thread(root);
-    t.run();
+    t.start();
     t.join();
 
     List<Tuple> expected = new ArrayList<Tuple>();
