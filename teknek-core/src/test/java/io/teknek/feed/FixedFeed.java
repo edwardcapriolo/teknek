@@ -81,7 +81,7 @@ class FixedFeedPartition extends FeedPartition {
     
   @Override
   public String getOffset() {
-    throw new UnsupportedOperationException("This feed does not support offsets");
+    return current+"";
   }
 }
 

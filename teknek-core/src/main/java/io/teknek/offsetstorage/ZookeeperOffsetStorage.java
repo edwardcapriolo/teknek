@@ -11,6 +11,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
+import io.teknek.datalayer.WorkerDaoException;
 import io.teknek.feed.FeedPartition;
 import io.teknek.plan.Plan;
 
@@ -26,13 +27,14 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
   
   @Override
   public void persistOffset(Offset o) {
+    createZookeeperBase();
     ZooKeeper zk = null;
     String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     try {
-      zk = new ZooKeeper("localhost", 100, this);
+      zk = new ZooKeeper( properties.get("zookeeper.connect"), 100, this);
       Stat stat = zk.exists(s, false);
       if (stat != null) {
-        zk.setData(s, o.serialize(), stat.getVersion() + 1);
+        zk.setData(s, o.serialize(), stat.getVersion());
       } else {
         zk.create(s, o.serialize(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
@@ -53,7 +55,7 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
     String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     ZooKeeper zk = null;
     try {
-      zk = new ZooKeeper("localhost", 100, this);
+      zk = new ZooKeeper(properties.get("zookeeper.connect"), 100, this);
       Stat stat = zk.exists(s, false);
       byte [] bytes = zk.getData(s, false, stat);
       ZookeeperOffset zo = new ZookeeperOffset(bytes);
@@ -64,6 +66,20 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
     }
   }
 
+  public void createZookeeperBase() {
+    try {
+      ZooKeeper zk = new ZooKeeper(properties.get("zookeeper.connect"), 100, this);
+      if (zk.exists(TEKNEK_ROOT, false) == null) {
+        zk.create(TEKNEK_ROOT, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      if (zk.exists(TEKNEK_OFFSET, false) == null) {
+        zk.create(TEKNEK_OFFSET, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      zk.close();
+    } catch (KeeperException  | InterruptedException | IOException e) {
+      throw new RuntimeException(e);
+    } 
+  }
 
   @Override
   public void process(WatchedEvent event) {
