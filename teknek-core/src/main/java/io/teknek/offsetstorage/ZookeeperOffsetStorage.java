@@ -1,10 +1,8 @@
 package io.teknek.offsetstorage;
 
 import java.io.IOException;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -13,7 +11,6 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import io.teknek.daemon.TechniqueDaemon;
 import io.teknek.feed.FeedPartition;
 import io.teknek.plan.Plan;
 
