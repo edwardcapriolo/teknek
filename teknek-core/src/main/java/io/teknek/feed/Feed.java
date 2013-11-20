@@ -52,6 +52,11 @@ public abstract class Feed {
   public Map<String, Object> getProperties() {
     return properties;
   }
+  
+  
+  public String getName() {
+    return name;
+  }
 
   //TODO this method might go better in driver or some other place that does not tangle the classes
   //TODO we need something better then runtime exception here
