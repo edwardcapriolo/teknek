@@ -100,14 +100,10 @@ class SimpleKafkaFeedPartition extends FeedPartition {
   public void close() {
     consumerConnector.shutdown();
   }
+
+  @Override
+  public String getOffset() {
+    throw new UnsupportedOperationException("This feed does not support offsets");
+  }
   
 }
-
-/*
-if (feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER) == null){
-consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 1);
-} else {
-consumers.put(feed.getProperties().get(SimpleKafkaFeed.TOPIC).toString(), 
-        (Integer)(feed.getProperties().get(SimpleKafkaFeed.STREAMS_PER_WORKER)));
-}
-*/

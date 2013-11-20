@@ -40,5 +40,13 @@ public abstract class FeedPartition {
   public String getPartitionId() {
     return partitionId;
   }
+
+  public Feed getFeed() {
+    return feed;
+  }
+  
+  /** returns a string that describes the offset inside a partition 
+   * throw UnsupportedOperationException is ok*/
+  public abstract String getOffset();
   
 }
