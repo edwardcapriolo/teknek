@@ -1,17 +1,19 @@
 package io.teknek.offsetstorage;
 
-import java.util.GregorianCalendar;
+import java.util.Map;
 
 import io.teknek.feed.FeedPartition;
 import io.teknek.plan.Plan;
 
 public abstract class OffsetStorage {
-  protected FeedPartition part;
+  protected FeedPartition feedPartiton;
   protected Plan plan;
+  protected Map<String,String> properties;
   
-  public OffsetStorage(FeedPartition feedPartition, Plan plan){
-    this.part = feedPartition;
+  public OffsetStorage(FeedPartition feedPartition, Plan plan, Map<String,String> properties){
+    this.feedPartiton = feedPartition;
     this.plan = plan;
+    this.properties = properties;
   }
 
   /** write offset to whatever the underlying storage is **/

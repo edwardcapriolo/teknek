@@ -2,6 +2,7 @@ package io.teknek.offsetstorage;
 
 import java.io.IOException;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
@@ -22,14 +23,14 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
 
   public static final String TEKNEK_OFFSET = TEKNEK_ROOT + "/offset";
 
-  public ZookeeperOffsetStorage(FeedPartition feedPartition, Plan plan) {
-    super(feedPartition, plan);
+  public ZookeeperOffsetStorage(FeedPartition feedPartition, Plan plan, Map<String,String> properties) {
+    super(feedPartition, plan, properties);
   }
   
   @Override
   public void persistOffset(Offset o) {
     ZooKeeper zk = null;
-    String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + part.getFeed().getName()+ "-" + part.getPartitionId();
+    String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     try {
       zk = new ZooKeeper("localhost", 100, this);
       Stat stat = zk.exists(s, false);
@@ -46,13 +47,13 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
 
   @Override
   public Offset getCurrentOffset() {
-      ZookeeperOffset zko = new ZookeeperOffset(part.getOffset().getBytes());
+      ZookeeperOffset zko = new ZookeeperOffset(feedPartiton.getOffset().getBytes());
       return zko;
   }
 
   @Override
   public Offset findLatestPersistedOffset() {
-    String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + part.getFeed().getName()+ "-" + part.getPartitionId();
+    String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     ZooKeeper zk = null;
     try {
       zk = new ZooKeeper("localhost", 100, this);
