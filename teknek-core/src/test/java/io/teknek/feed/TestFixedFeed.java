@@ -61,6 +61,20 @@ public class TestFixedFeed {
   }
   
   @Test
+  public void testSetOffset(){
+    FixedFeed pf = new FixedFeed(buildFeedProps());
+    List<FeedPartition> parts = pf.getFeedPartitions();
+    Assert.assertEquals(EXPECTED_PARTITIONS, parts.size());
+    ITuple t = new Tuple();
+    
+    parts.get(0).setOffset("5");
+    parts.get(0).next(t);
+    Assert.assertEquals( t.getField("x"), 5);
+
+  }
+  
+  
+  @Test
   public void testReflection(){
     FeedDesc fd = new FeedDesc();
     fd.setFeedClass(FixedFeed.class.getCanonicalName());

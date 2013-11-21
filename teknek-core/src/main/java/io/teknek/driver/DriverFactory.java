@@ -19,6 +19,7 @@ import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.Operator;
+import io.teknek.offsetstorage.Offset;
 import io.teknek.offsetstorage.OffsetStorage;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OffsetStorageDesc;
@@ -42,10 +43,14 @@ public class DriverFactory {
     }
     OffsetStorage offsetStorage = null;
     OffsetStorageDesc offsetDesc = plan.getOffsetStorageDesc();
-    if (offsetDesc != null){
+    if (offsetDesc != null && feedPartition.supportsOffsetManagement()){
       offsetStorage = buildOffsetStorage(offsetDesc);
+      Offset offset = offsetStorage.findLatestPersistedOffset();
+      if (offset != null){
+        feedPartition.setOffset(new String(offset.serialize()));
+      }
     }
-
+    
     Driver driver = new Driver(feedPartition, oper, offsetStorage);
     DriverNode root = driver.getDriverNode();
     

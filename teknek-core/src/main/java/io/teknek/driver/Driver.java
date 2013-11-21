@@ -74,7 +74,7 @@ public class Driver implements Runnable {
    */
   public void maybeDoOffset(){
     long seen = tuplesSeen.getAndIncrement();
-    if (seen % 10000 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
+    if (seen % 10 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
         Offset offset = offsetStorage.getCurrentOffset();
         offsetStorage.persistOffset(offset);
     }

@@ -58,10 +58,14 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
     try {
       zk = new ZooKeeper(properties.get("zookeeper.connect"), 100, this);
       Stat stat = zk.exists(s, false);
-      byte [] bytes = zk.getData(s, false, stat);
-      ZookeeperOffset zo = new ZookeeperOffset(bytes);
-      zk.close();
-      return zo;   
+      if (stat != null) {
+        byte [] bytes = zk.getData(s, false, stat);
+        ZookeeperOffset zo = new ZookeeperOffset(bytes);
+        zk.close();
+        return zo;
+      } else {
+        return null;
+      }
     } catch (IOException | KeeperException | InterruptedException e1) {
       throw new RuntimeException(e1);
     }
