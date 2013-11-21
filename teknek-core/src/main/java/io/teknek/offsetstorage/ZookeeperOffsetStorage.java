@@ -11,7 +11,6 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import io.teknek.datalayer.WorkerDaoException;
 import io.teknek.feed.FeedPartition;
 import io.teknek.plan.Plan;
 
@@ -21,6 +20,8 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
 
   public static final String TEKNEK_OFFSET = TEKNEK_ROOT + "/offset";
 
+  public static final String ZK_CONNECT = "zookeeper.connect";
+  
   public ZookeeperOffsetStorage(FeedPartition feedPartition, Plan plan, Map<String,String> properties) {
     super(feedPartition, plan, properties);
   }
@@ -43,9 +44,9 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
       throw new RuntimeException(e1);
     }
   }
-
+ 
   @Override
-  public Offset getCurrentOffset() {
+  public Offset getCurrentOffset(){
       ZookeeperOffset zko = new ZookeeperOffset(feedPartiton.getOffset().getBytes());
       return zko;
   }

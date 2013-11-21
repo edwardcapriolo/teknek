@@ -105,5 +105,15 @@ class SimpleKafkaFeedPartition extends FeedPartition {
   public String getOffset() {
     throw new UnsupportedOperationException("This feed does not support offsets");
   }
+
+  @Override
+  public boolean supportsOffsetManagement() {
+    return false;
+  }
+
+  @Override
+  public void setOffset(String offset) {
+    throw new UnsupportedOperationException("This feed does not support offsets");
+  }
   
 }

@@ -16,12 +16,19 @@ limitations under the License.
 package io.teknek.driver;
 
 import io.teknek.collector.CollectorProcessor;
+import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.Operator;
+import io.teknek.offsetstorage.OffsetStorage;
+import io.teknek.plan.FeedDesc;
+import io.teknek.plan.OffsetStorageDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public class DriverFactory {
 
@@ -33,7 +40,13 @@ public class DriverFactory {
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
-    Driver driver = new Driver(feedPartition, oper);
+    OffsetStorage offsetStorage = null;
+    OffsetStorageDesc offsetDesc = plan.getOffsetStorageDesc();
+    if (offsetDesc != null){
+      offsetStorage = buildOffsetStorage(offsetDesc);
+    }
+
+    Driver driver = new Driver(feedPartition, oper, offsetStorage);
     DriverNode root = driver.getDriverNode();
     
     recurseOperatorAndDriverNode(desc, root);
@@ -54,4 +67,25 @@ public class DriverFactory {
       recurseOperatorAndDriverNode(childDesc, childNode);
     }
   }
+  
+  
+  public static OffsetStorage buildOffsetStorage(OffsetStorageDesc offsetDesc){
+    OffsetStorage offsetStorage = null;
+    Class [] paramTypes = new Class [] { Map.class };    
+    Constructor<OffsetStorage> offsetCons = null;
+    try {
+      offsetCons = (Constructor<OffsetStorage>) Class.forName(offsetDesc.getOperatorClass()).getConstructor(
+              paramTypes);
+    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    try {
+      offsetStorage = offsetCons.newInstance(offsetDesc.getParameters());
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+    return offsetStorage;
+  }
+  
 }

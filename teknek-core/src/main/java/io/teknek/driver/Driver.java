@@ -16,24 +16,37 @@ limitations under the License.
 package io.teknek.driver;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
+import io.teknek.offsetstorage.Offset;
+import io.teknek.offsetstorage.OffsetStorage;
 
 /** driver consumes data from a feed partition and inserts it into operators */
 public class Driver implements Runnable {
   private FeedPartition fp;
   private DriverNode driverNode;
   private AtomicBoolean goOn;
+  private AtomicLong tuplesSeen;
+  private OffsetStorage offsetStorage;
 
-  public Driver(FeedPartition fp, Operator operator){
+  /**
+   * 
+   * @param fp feed partition to consume from
+   * @param operator root operator of the driver
+   * @param offsetStorage can be null if user does not wish to have offset storage
+   */
+  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage){
     this.fp = fp;
     CollectorProcessor cp = new CollectorProcessor();
     driverNode = new DriverNode(operator, cp);
+    this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
+    tuplesSeen = new AtomicLong(0);
   }
   
   public void initialize(){
@@ -48,11 +61,25 @@ public class Driver implements Runnable {
       ITuple t = new Tuple();
       while (fp.next(t)){
         driverNode.getOperator().handleTuple(t);
+        maybeDoOffset();
         t = new Tuple();
       }
     }
   }
 
+  /**
+   * We mark the offset every N rows. It would probably be better
+   * to mark in a background thread based on time or make it plugable, but this
+   * gets the point across for now
+   */
+  public void maybeDoOffset(){
+    long seen = tuplesSeen.getAndIncrement();
+    if (seen % 10000 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
+        Offset offset = offsetStorage.getCurrentOffset();
+        offsetStorage.persistOffset(offset);
+    }
+  }
+  
   public DriverNode getDriverNode() {
     return driverNode;
   }

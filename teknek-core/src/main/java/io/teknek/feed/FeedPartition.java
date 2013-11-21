@@ -45,8 +45,14 @@ public abstract class FeedPartition {
     return feed;
   }
   
-  /** returns a string that describes the offset inside a partition 
-   * throw UnsupportedOperationException is ok*/
+  /**
+   * 
+   * @return true if both getOffset and setOffset are supported
+   */
+  public abstract boolean supportsOffsetManagement();
+  
   public abstract String getOffset();
+  
+  public abstract void setOffset(String offset);
   
 }

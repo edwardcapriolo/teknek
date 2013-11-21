@@ -15,10 +15,12 @@ limitations under the License.
 */
 package io.teknek.plan;
 
+import io.teknek.datalayer.WorkerDao;
 import io.teknek.driver.Minus1Operator;
 import io.teknek.driver.TestDriver;
 import io.teknek.driver.Times2Operator;
 import io.teknek.feed.FixedFeed;
+import io.teknek.offsetstorage.ZookeeperOffsetStorage;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
@@ -38,7 +41,8 @@ import org.junit.Test;
 public class TestPlan {
 
   public static Plan getPlan(){
-    Plan p = new Plan().withFeedDesc(
+    Plan p = new Plan()
+    .withFeedDesc(
             new FeedDesc().withFeedClass(FixedFeed.class.getName()).withProperties(
                     MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,
                             10))).withRootOperator(
@@ -46,6 +50,36 @@ public class TestPlan {
                     new Times2Operator())));
     p.setName("myplan");
     return p;
+  }
+  
+  /**
+   * This second plan was added because other tests use the first plan, and may not bring up zk 
+   * in there tests
+   * @return a Plan
+   */
+  public static Plan getPlanWithZookeeperStorage(){
+    Plan p = new Plan()
+    .withOffsetStorageDesc(new OffsetStorageDesc().withOperatorClass(ZookeeperOffsetStorage.class.getName())
+            .withParameters(MapBuilder.makeMap(ZookeeperOffsetStorage.ZK_CONNECT, "localhost:2181")) )
+    .withFeedDesc(
+            new FeedDesc().withFeedClass(FixedFeed.class.getName()).withProperties(
+                    MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,
+                            10))).withRootOperator(
+            new OperatorDesc(new Minus1Operator()).withNextOperator(new OperatorDesc(
+                    new Times2Operator())));
+    p.setName("myplan");
+    return p;
+  }
+  
+  @Test
+  public void alsoPersistAndRestore() throws JsonParseException, JsonMappingException, IOException{
+    Plan p = getPlanWithZookeeperStorage();
+    byte [] b = WorkerDao.serializePlan(p);
+    Plan p1 = WorkerDao.deserializePlan(b);
+    Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
+    Assert.assertEquals(p1.getRootOperator().getOperatorClass(), p.getRootOperator()
+            .getOperatorClass());
+    Assert.assertEquals(p1.getOffsetStorageDesc().getOperatorClass() , p.getOffsetStorageDesc().getOperatorClass());
   }
   
   @Test

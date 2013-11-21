@@ -83,5 +83,15 @@ class FixedFeedPartition extends FeedPartition {
   public String getOffset() {
     return current+"";
   }
+
+  @Override
+  public boolean supportsOffsetManagement() {
+    return true;
+  }
+
+  @Override
+  public void setOffset(String offset) {
+    this.current = Integer.parseInt(offset);
+  }
 }
 
