@@ -48,14 +48,14 @@ public class TestDriver {
   
   @Test
   public void aTest() throws InterruptedException {
-    Driver root = new Driver(getPart(), new Minus1Operator());
+    Driver root = new Driver(getPart(), new Minus1Operator(), null);
     root.initialize();
     DriverNode child = new DriverNode(new Times2Operator(), new CollectorProcessor());
     root.getDriverNode().addChild(child);
     
     Thread t = new Thread(root);
     t.start();
-    t.join();
+    t.join(4000);
 
     List<Tuple> expected = new ArrayList<Tuple>();
     for (int i = 0; i < 9; i++) {

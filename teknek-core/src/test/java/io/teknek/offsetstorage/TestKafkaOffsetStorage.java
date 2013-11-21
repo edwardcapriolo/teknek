@@ -9,6 +9,7 @@ import org.junit.Test;
 import io.teknek.feed.FeedPartition;
 import io.teknek.feed.FixedFeed;
 import io.teknek.feed.TestFixedFeed;
+import io.teknek.feed.UnsupportedOffsetException;
 import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.model.Tuple;
 import io.teknek.plan.TestPlan;
@@ -18,7 +19,7 @@ public class TestKafkaOffsetStorage extends EmbeddedKafkaServer {
 
   
   @Test
-  public void test(){
+  public void test() {
     Map props = MapBuilder.makeMap("zookeeper.connect", this.zookeeperTestServer.getConnectString());
     FixedFeed pf = new FixedFeed(TestFixedFeed.buildFeedProps());
     List<FeedPartition> parts = pf.getFeedPartitions();

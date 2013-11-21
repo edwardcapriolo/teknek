@@ -23,6 +23,8 @@ import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
+import io.teknek.offsetstorage.Offset;
+import io.teknek.offsetstorage.OffsetStorage;
 
 /** driver consumes data from a feed partition and inserts it into operators */
 public class Driver implements Runnable {
@@ -30,12 +32,21 @@ public class Driver implements Runnable {
   private DriverNode driverNode;
   private AtomicBoolean goOn;
   private AtomicLong tuplesSeen;
+  private OffsetStorage offsetStorage;
 
-  public Driver(FeedPartition fp, Operator operator){
+  /**
+   * 
+   * @param fp feed partition to consume from
+   * @param operator root operator of the driver
+   * @param offsetStorage can be null if user does not wish to have offset storage
+   */
+  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage){
     this.fp = fp;
     CollectorProcessor cp = new CollectorProcessor();
     driverNode = new DriverNode(operator, cp);
+    this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
+    tuplesSeen = new AtomicLong(0);
   }
   
   public void initialize(){
@@ -63,8 +74,9 @@ public class Driver implements Runnable {
    */
   public void maybeDoOffset(){
     long seen = tuplesSeen.getAndIncrement();
-    if (seen % 10000 == 0){
-      
+    if (seen % 10000 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
+        Offset offset = offsetStorage.getCurrentOffset();
+        offsetStorage.persistOffset(offset);
     }
   }
   
