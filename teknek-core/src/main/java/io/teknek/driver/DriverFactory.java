@@ -19,6 +19,7 @@ import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.Operator;
+import io.teknek.offsetstorage.Offset;
 import io.teknek.offsetstorage.OffsetStorage;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OffsetStorageDesc;
@@ -42,10 +43,14 @@ public class DriverFactory {
     }
     OffsetStorage offsetStorage = null;
     OffsetStorageDesc offsetDesc = plan.getOffsetStorageDesc();
-    if (offsetDesc != null){
-      offsetStorage = buildOffsetStorage(offsetDesc);
+    if (offsetDesc != null && feedPartition.supportsOffsetManagement()){
+      offsetStorage = buildOffsetStorage(feedPartition, plan, offsetDesc);
+      Offset offset = offsetStorage.findLatestPersistedOffset();
+      if (offset != null){
+        feedPartition.setOffset(new String(offset.serialize()));
+      }
     }
-
+    
     Driver driver = new Driver(feedPartition, oper, offsetStorage);
     DriverNode root = driver.getDriverNode();
     
@@ -69,9 +74,9 @@ public class DriverFactory {
   }
   
   
-  public static OffsetStorage buildOffsetStorage(OffsetStorageDesc offsetDesc){
+  public static OffsetStorage buildOffsetStorage(FeedPartition feedPartition, Plan plan, OffsetStorageDesc offsetDesc){
     OffsetStorage offsetStorage = null;
-    Class [] paramTypes = new Class [] { Map.class };    
+    Class [] paramTypes = new Class [] { FeedPartition.class, Plan.class, Map.class };    
     Constructor<OffsetStorage> offsetCons = null;
     try {
       offsetCons = (Constructor<OffsetStorage>) Class.forName(offsetDesc.getOperatorClass()).getConstructor(
@@ -80,7 +85,7 @@ public class DriverFactory {
       throw new RuntimeException(e);
     }
     try {
-      offsetStorage = offsetCons.newInstance(offsetDesc.getParameters());
+      offsetStorage = offsetCons.newInstance(feedPartition, plan, offsetDesc.getParameters());
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
             | InvocationTargetException e) {
       throw new RuntimeException(e);

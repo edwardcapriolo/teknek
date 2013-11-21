@@ -105,6 +105,5 @@ public class Worker implements Watcher {
   @Override
   public void process(WatchedEvent event) {
     // TODO Auto-generated method stub
-    
   }
 }

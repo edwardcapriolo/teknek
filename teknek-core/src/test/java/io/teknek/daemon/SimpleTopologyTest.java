@@ -32,7 +32,7 @@ import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 import io.teknek.util.MapBuilder;
 
-public class SimpleTopologyTest extends EmbeddedKafkaServer{
+public class SimpleTopologyTest extends EmbeddedKafkaServer {
 
 static TeknekDaemon td = null;
   
