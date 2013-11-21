@@ -65,13 +65,14 @@ public class Worker implements Watcher {
     if (toProcess != null){
       driver = DriverFactory.createDriver(toProcess, plan);
       driver.initialize();
+      WorkerStatus iGotThis = new WorkerStatus(myId.toString(), toProcess.getPartitionId());
+      try {
+        WorkerDao.registerWorkerStatus(zk, plan, iGotThis);
+      } catch (WorkerDaoException e) {
+        throw new RuntimeException(e);
+      }
     }
-    WorkerStatus iGotThis = new WorkerStatus(myId.toString(), toProcess.getPartitionId());
-    try {
-      WorkerDao.registerWorkerStatus(zk, plan, iGotThis);
-    } catch (WorkerDaoException e) {
-      throw new RuntimeException(e);
-    }
+    throw new RuntimeException("Could not start plan "+plan.getName());
   }
 
   public void start(){
