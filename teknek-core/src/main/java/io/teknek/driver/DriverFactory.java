@@ -44,7 +44,7 @@ public class DriverFactory {
     OffsetStorage offsetStorage = null;
     OffsetStorageDesc offsetDesc = plan.getOffsetStorageDesc();
     if (offsetDesc != null && feedPartition.supportsOffsetManagement()){
-      offsetStorage = buildOffsetStorage(offsetDesc);
+      offsetStorage = buildOffsetStorage(feedPartition, plan, offsetDesc);
       Offset offset = offsetStorage.findLatestPersistedOffset();
       if (offset != null){
         feedPartition.setOffset(new String(offset.serialize()));
@@ -74,9 +74,9 @@ public class DriverFactory {
   }
   
   
-  public static OffsetStorage buildOffsetStorage(OffsetStorageDesc offsetDesc){
+  public static OffsetStorage buildOffsetStorage(FeedPartition feedPartition, Plan plan, OffsetStorageDesc offsetDesc){
     OffsetStorage offsetStorage = null;
-    Class [] paramTypes = new Class [] { Map.class };    
+    Class [] paramTypes = new Class [] { FeedPartition.class, Plan.class, Map.class };    
     Constructor<OffsetStorage> offsetCons = null;
     try {
       offsetCons = (Constructor<OffsetStorage>) Class.forName(offsetDesc.getOperatorClass()).getConstructor(
@@ -85,7 +85,7 @@ public class DriverFactory {
       throw new RuntimeException(e);
     }
     try {
-      offsetStorage = offsetCons.newInstance(offsetDesc.getParameters());
+      offsetStorage = offsetCons.newInstance(feedPartition, plan, offsetDesc.getParameters());
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
             | InvocationTargetException e) {
       throw new RuntimeException(e);

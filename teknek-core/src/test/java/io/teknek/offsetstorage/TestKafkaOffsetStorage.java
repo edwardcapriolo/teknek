@@ -15,7 +15,6 @@ import io.teknek.plan.TestPlan;
 import io.teknek.util.MapBuilder;
 
 public class TestKafkaOffsetStorage extends EmbeddedKafkaServer {
-
   
   @Test
   public void test() {
