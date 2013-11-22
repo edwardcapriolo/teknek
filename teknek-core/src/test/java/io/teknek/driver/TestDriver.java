@@ -38,7 +38,7 @@ public class TestDriver {
   public static FeedPartition getPart(){
     Map<String,Object> prop = new HashMap<String,Object>();
     int expectedPartitions = 5;
-    int expectedRows = 1000;
+    int expectedRows = 9;
     prop.put(FixedFeed.NUMBER_OF_PARTITIONS, expectedPartitions);
     prop.put(FixedFeed.NUMBER_OF_ROWS, expectedRows);
     FixedFeed pf = new FixedFeed(prop);
@@ -73,7 +73,7 @@ public class TestDriver {
       ITuple got = finalNode.getCollectorProcessor().getCollector().take();
       Assert.assertTrue("element "+i+" comparing " + expected.get(i) + " " + got, expected.get(i).equals(got));
     }
-    Assert.assertNull(finalNode.getCollectorProcessor().getCollector().peek());
+    Assert.assertNull("Expected no more elements but found "+finalNode.getCollectorProcessor().getCollector().peek() , finalNode.getCollectorProcessor().getCollector().peek());
   }
   
   @Test

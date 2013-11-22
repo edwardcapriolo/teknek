@@ -68,8 +68,8 @@ class FixedFeedPartition extends FeedPartition {
 
   @Override
   public boolean next(ITuple t) {
-    t.setField("x", new Integer(current++));
-    return current < max;
+    t.setField("x", new Integer(current));
+    return current++ < max;
   }
 
   @Override
