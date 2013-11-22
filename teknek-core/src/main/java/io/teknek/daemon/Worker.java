@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooKeeper;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -103,8 +104,19 @@ public class Worker implements Watcher {
     return null;
   }
   
+  /*
+   * We could response to a node change by attempting to modify the driver in the current worker
+   * however it is cleaner to bring this worker down gracefully, and let it restart elsewhere
+   * (non-Javadoc)
+   * @see org.apache.zookeeper.Watcher#process(org.apache.zookeeper.WatchedEvent)
+   */
   @Override
   public void process(WatchedEvent event) {
-    // TODO Auto-generated method stub
+    if (event.getType() == EventType.NodeDataChanged || event.getType() == EventType.NodeDeleted) {
+      driver.setGoOn(false);
+      //wait for graceful termination
+      //close zk
+      //remove this class from parent list
+    }
   }
 }
