@@ -72,8 +72,9 @@ public class Worker implements Watcher {
       } catch (WorkerDaoException e) {
         throw new RuntimeException(e);
       }
+    } else {
+      throw new RuntimeException("Could not start plan "+plan.getName());
     }
-    throw new RuntimeException("Could not start plan "+plan.getName());
   }
 
   public void start(){
