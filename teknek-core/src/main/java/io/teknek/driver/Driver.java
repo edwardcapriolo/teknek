@@ -60,7 +60,9 @@ public class Driver implements Runnable {
     while(goOn.get()){
       ITuple t = new Tuple();
       while (fp.next(t)){
+        try {
         driverNode.getOperator().handleTuple(t);
+        } catch (Exception ex){}
         maybeDoOffset();
         t = new Tuple();
       }
@@ -93,6 +95,17 @@ public class Driver implements Runnable {
     sb.append("Feed Partition "+fp.getPartitionId()+" " );
     sb.append("driver node "+ this.driverNode.toString());
     return sb.toString();
+  }
+  
+  public void prettyPrint(){
+    System.out.println("+++++++");
+    System.out.println("Feed Partition "+fp.getPartitionId()+" " );
+    System.out.println("-------");
+    System.out.println("--"+driverNode.getOperator().getClass().getName());
+    for (DriverNode child: driverNode.getChildren() ){
+      child.prettyPrint(2);
+    }
+    System.out.println("+++++++");
   }
 
   public boolean getGoOn() {

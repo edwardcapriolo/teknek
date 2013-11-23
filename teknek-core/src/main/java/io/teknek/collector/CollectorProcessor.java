@@ -37,8 +37,20 @@ public class CollectorProcessor implements Runnable {
     while(goOn){
       try {
         ITuple tuple = collector.take();
+        if (children.size()==0){
+          System.out.println("no children eating tupple " +tuple);
+        }
         for (Operator o: children){
-          o.handleTuple(tuple);
+          int attemptCount = 0;
+          boolean complete = false;
+          while (attemptCount++ < 4 && complete == false){
+            try {
+              o.handleTuple(tuple);
+              complete = true;
+            } catch (RuntimeException ex){
+              //ex.printStackTrace();
+            }
+          }
         }
       } catch (InterruptedException e) {       
         e.printStackTrace();
@@ -52,6 +64,14 @@ public class CollectorProcessor implements Runnable {
 
   public List<Operator> getChildren() {
     return children;
+  }
+
+  public boolean isGoOn() {
+    return goOn;
+  }
+
+  public void setGoOn(boolean goOn) {
+    this.goOn = goOn;
   }
   
   

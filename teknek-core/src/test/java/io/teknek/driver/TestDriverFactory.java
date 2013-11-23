@@ -15,11 +15,6 @@ limitations under the License.
 */
 package io.teknek.driver;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.teknek.model.Operator;
-import io.teknek.model.Tuple;
 import io.teknek.plan.TestPlan;
 
 import org.junit.Assert;
@@ -53,4 +48,5 @@ public class TestDriverFactory {
     TestDriver.assertExpectedPairs(times2Driver, expected);
     */
   }
+   
 }
