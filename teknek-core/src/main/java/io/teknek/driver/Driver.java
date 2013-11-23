@@ -60,9 +60,14 @@ public class Driver implements Runnable {
     while(goOn.get()){
       ITuple t = new Tuple();
       while (fp.next(t)){
-        try {
-        driverNode.getOperator().handleTuple(t);
-        } catch (Exception ex){}
+        boolean complete = false;
+        int attempts = 0;
+        while (attempts++ < 4 && !complete) {
+          try {
+            driverNode.getOperator().handleTuple(t);
+            complete = true;
+          } catch (Exception ex){}
+        }
         maybeDoOffset();
         t = new Tuple();
       }

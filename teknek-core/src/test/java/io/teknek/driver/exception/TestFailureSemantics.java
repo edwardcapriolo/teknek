@@ -49,14 +49,32 @@ public class TestFailureSemantics {
     driver.prettyPrint();
     DriverNode minus1Node = driver.getDriverNode().getChildren().get(0).getChildren().get(0);
     minus1Node.getCollectorProcessor().setGoOn(false);
-    Assert.assertTrue( minus1Node.getOperator() instanceof Minus1Operator );
     DriverNode times2Driver = driver.getDriverNode().getChildren().get(2);
-    Assert.assertTrue( times2Driver.getOperator() instanceof Times2Operator );
-    
+    times2Driver.getCollectorProcessor().setGoOn(false);
+    DriverNode exceptionDriver = driver.getDriverNode().getChildren().get(1);
+    exceptionDriver.getCollectorProcessor().setGoOn(false);
+
     Thread t = new Thread(driver);
     t.start();
-    t.sleep(5000);
+    Thread.sleep(6000);
     
+    assertMinus1Node(minus1Node);
+    assertTimes2Driver(times2Driver);
+    Assert.assertNull(exceptionDriver.getCollectorProcessor().getCollector().peek());
+    
+  }
+  
+  public void assertTimes2Driver(DriverNode times2driver) throws InterruptedException {
+    List<Tuple> expected = new ArrayList<Tuple>();
+    for (int i = 2  ; i < 9; i=i+2) {
+      Tuple tup = new Tuple();
+      tup.setField("x", i*2);
+      expected.add(tup);
+    }
+    TestDriver.assertExpectedPairs(times2driver, expected);
+  }
+  
+  public void assertMinus1Node(DriverNode minus1Node) throws InterruptedException{
     List<Tuple> expected = new ArrayList<Tuple>();
     for (int i = 1; i < 9; i = i + 2) {
       Tuple tup = new Tuple();
@@ -64,6 +82,5 @@ public class TestFailureSemantics {
       expected.add(tup);
     }
     TestDriver.assertExpectedPairs(minus1Node, expected);
-    
   }
 }

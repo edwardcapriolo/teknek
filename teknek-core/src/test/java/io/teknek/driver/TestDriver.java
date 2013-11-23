@@ -71,7 +71,7 @@ public class TestDriver {
     for (int i = 0; i < expected.size(); i++) {
       Assert.assertNotNull(finalNode.getCollectorProcessor().getCollector().peek());
       ITuple got = finalNode.getCollectorProcessor().getCollector().take();
-      Assert.assertTrue("element "+i+" comparing " + expected.get(i) + " " + got, expected.get(i).equals(got));
+      Assert.assertTrue("element "+i+" comparing expected:" + expected.get(i) + " got:" + got, expected.get(i).equals(got));
     }
     Assert.assertNull("Expected no more elements but found "+finalNode.getCollectorProcessor().getCollector().peek() , finalNode.getCollectorProcessor().getCollector().peek());
   }
