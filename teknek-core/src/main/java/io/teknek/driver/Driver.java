@@ -94,6 +94,17 @@ public class Driver implements Runnable {
     sb.append("driver node "+ this.driverNode.toString());
     return sb.toString();
   }
+  
+  public void prettyPrint(){
+    System.out.println("+++++++");
+    System.out.println("Feed Partition "+fp.getPartitionId()+" " );
+    System.out.println("-------");
+    System.out.println("--"+driverNode.getOperator().getClass().getName());
+    for (DriverNode child: driverNode.getChildren() ){
+      child.prettyPrint(2);
+    }
+    System.out.println("+++++++");
+  }
 
   public boolean getGoOn() {
     return goOn.get();

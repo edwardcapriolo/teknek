@@ -38,7 +38,14 @@ public class CollectorProcessor implements Runnable {
       try {
         ITuple tuple = collector.take();
         for (Operator o: children){
-          o.handleTuple(tuple);
+          int attemptCount = 0;
+          while (attemptCount++ < 4){
+            try {
+              o.handleTuple(tuple);
+            } catch (RuntimeException ex){
+              ex.printStackTrace();
+            }
+          }
         }
       } catch (InterruptedException e) {       
         e.printStackTrace();

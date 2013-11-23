@@ -84,9 +84,20 @@ public class DriverNode {
   
   public String toString(){
     StringBuilder sb = new StringBuilder();
-    sb.append("Operator "+operator.toString()+"\n");
-    sb.append("children "+this.children);
+    sb.append("Operator "+operator.toString());
+    for (DriverNode dn : this.children){
+      System.out.println(dn.toString());
+    }
     return sb.toString();
   }
   
+  public void prettyPrint(int tabs){
+    for (int i =0 ; i< tabs;i++){
+      System.out.print("--");
+    }
+    System.out.println(this.operator.getClass().getName());
+    for ( DriverNode child : this.children){
+      child.prettyPrint(tabs + 1);
+    }
+  }
 }

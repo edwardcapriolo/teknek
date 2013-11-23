@@ -19,6 +19,7 @@ import io.teknek.datalayer.WorkerDao;
 import io.teknek.driver.Minus1Operator;
 import io.teknek.driver.TestDriver;
 import io.teknek.driver.Times2Operator;
+import io.teknek.driver.exception.ExceptionOperator;
 import io.teknek.feed.FixedFeed;
 import io.teknek.offsetstorage.ZookeeperOffsetStorage;
 import io.teknek.plan.FeedDesc;
@@ -69,6 +70,18 @@ public class TestPlan {
                     new Times2Operator())));
     p.setName("myplan");
     return p;
+  }
+  
+  public static Plan getPlanWithException(){
+    Plan plan = new Plan()
+    .withFeedDesc( new FeedDesc()
+      .withFeedClass(FixedFeed.class.getName())
+        .withProperties( MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,10)))
+     .withRootOperator( new OperatorDesc(new Minus1Operator())
+       .withNextOperator(new OperatorDesc(new Times2Operator())
+         .withNextOperator(new OperatorDesc(new ExceptionOperator()))));
+    plan.setName("failedplan");
+    return plan;
   }
   
   @Test
