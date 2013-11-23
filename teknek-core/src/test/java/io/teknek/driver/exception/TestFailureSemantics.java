@@ -47,11 +47,15 @@ public class TestFailureSemantics {
             .getChildren().get(0);
     Assert.assertTrue( minus1Node.getOperator() instanceof Minus1Operator );
     
+    DriverNode times2Driver = driver.getDriverNode().getChildren().get(2);
+    Assert.assertTrue( times2Driver.getOperator() instanceof Times2Operator );
+    
     Thread t = new Thread(driver);
     t.start();
     t.sleep(5000);
     
     System.out.println("output " + minus1Node.getCollectorProcessor().getCollector().peek());
-
+    System.out.println("output " + times2Driver.getCollectorProcessor().getCollector().peek());
+    
   }
 }

@@ -37,6 +37,9 @@ public class CollectorProcessor implements Runnable {
     while(goOn){
       try {
         ITuple tuple = collector.take();
+        if (children.size()==0){
+          System.out.println("no children eating tupple " +tuple);
+        }
         for (Operator o: children){
           int attemptCount = 0;
           boolean complete = false;
