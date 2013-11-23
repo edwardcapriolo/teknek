@@ -39,11 +39,13 @@ public class CollectorProcessor implements Runnable {
         ITuple tuple = collector.take();
         for (Operator o: children){
           int attemptCount = 0;
-          while (attemptCount++ < 4){
+          boolean complete = false;
+          while (attemptCount++ < 4 && complete == false){
             try {
               o.handleTuple(tuple);
+              complete = true;
             } catch (RuntimeException ex){
-              ex.printStackTrace();
+              //ex.printStackTrace();
             }
           }
         }

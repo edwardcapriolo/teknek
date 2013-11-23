@@ -12,6 +12,7 @@ public class ExceptionOperator extends Operator {
 
   @Override
   public void handleTuple(ITuple t) {
+    System.out.println(getClass().getName() + " " + t);
     throw new RuntimeException ("chaos monkey");
   }
 

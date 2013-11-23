@@ -60,7 +60,9 @@ public class Driver implements Runnable {
     while(goOn.get()){
       ITuple t = new Tuple();
       while (fp.next(t)){
+        try {
         driverNode.getOperator().handleTuple(t);
+        } catch (Exception ex){}
         maybeDoOffset();
         t = new Tuple();
       }
