@@ -65,6 +65,14 @@ public class CollectorProcessor implements Runnable {
   public List<Operator> getChildren() {
     return children;
   }
+
+  public boolean isGoOn() {
+    return goOn;
+  }
+
+  public void setGoOn(boolean goOn) {
+    this.goOn = goOn;
+  }
   
   
   
