@@ -40,10 +40,10 @@ public class Driver implements Runnable {
    * @param operator root operator of the driver
    * @param offsetStorage can be null if user does not wish to have offset storage
    */
-  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage){
+  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage, CollectorProcessor collectorProcessor){
     this.fp = fp;
-    CollectorProcessor cp = new CollectorProcessor();
-    driverNode = new DriverNode(operator, cp);
+    //CollectorProcessor cp = new CollectorProcessor();
+    driverNode = new DriverNode(operator, collectorProcessor);
     this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
     tuplesSeen = new AtomicLong(0);

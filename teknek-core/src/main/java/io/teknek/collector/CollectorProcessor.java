@@ -17,43 +17,49 @@ package io.teknek.collector;
 
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
-import io.teknek.model.Tuple;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 
 public class CollectorProcessor implements Runnable {
+  final static Logger logger = Logger.getLogger(CollectorProcessor.class.getName());
   Collector collector;
   List<Operator> children;
   boolean goOn = true;
+  private int tupleRetry;
   
-  public CollectorProcessor(){
+  public CollectorProcessor() {
     children = new ArrayList<Operator>();
     collector = new Collector();
+    tupleRetry = 0;
   }
   
   public void run(){
     while(goOn){
       try {
         ITuple tuple = collector.take();
-        if (children.size()==0){
-          System.out.println("no children eating tupple " +tuple);
+        if (children.size() == 0) {
+          if (logger.isDebugEnabled()){ 
+            logger.debug("No children swallowing " + tuple);
+          }
         }
         for (Operator o: children){
           int attemptCount = 0;
           boolean complete = false;
-          while (attemptCount++ < 4 && complete == false){
+          while (attemptCount++ < tupleRetry+1 && !complete){
             try {
               o.handleTuple(tuple);
               complete = true;
             } catch (RuntimeException ex){
-              //ex.printStackTrace();
+              logger.debug("Exception handling tupple "+ tuple, ex);
             }
           }
         }
-      } catch (InterruptedException e) {       
-        e.printStackTrace();
+      } catch (InterruptedException e) {
+        if (logger.isDebugEnabled()){
+          logger.debug("While fetching tuple", e);
+        }
       }
     }
   }
@@ -73,7 +79,13 @@ public class CollectorProcessor implements Runnable {
   public void setGoOn(boolean goOn) {
     this.goOn = goOn;
   }
-  
-  
+
+  public int getTupleRetry() {
+    return tupleRetry;
+  }
+
+  public void setTupleRetry(int tupleRetry) {
+    this.tupleRetry = tupleRetry;
+  }
   
 }

@@ -50,8 +50,9 @@ public class DriverFactory {
         feedPartition.setOffset(new String(offset.serialize()));
       }
     }
-    
-    Driver driver = new Driver(feedPartition, oper, offsetStorage);
+    CollectorProcessor cp = new CollectorProcessor();
+    cp.setTupleRetry(4);
+    Driver driver = new Driver(feedPartition, oper, offsetStorage, cp);
     DriverNode root = driver.getDriverNode();
     
     recurseOperatorAndDriverNode(desc, root);
@@ -67,7 +68,9 @@ public class DriverFactory {
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         throw new RuntimeException(e);
       }
-      DriverNode childNode = new DriverNode(oper, new CollectorProcessor());
+      CollectorProcessor cp = new CollectorProcessor();
+      cp.setTupleRetry(node.getCollectorProcessor().getTupleRetry());
+      DriverNode childNode = new DriverNode(oper, cp);
       node.addChild(childNode);
       recurseOperatorAndDriverNode(childDesc, childNode);
     }

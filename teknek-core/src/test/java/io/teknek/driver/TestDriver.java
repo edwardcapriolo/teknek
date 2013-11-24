@@ -48,7 +48,7 @@ public class TestDriver {
   
   @Test
   public void aTest() throws InterruptedException {
-    Driver root = new Driver(getPart(), new Minus1Operator(), null);
+    Driver root = new Driver(getPart(), new Minus1Operator(), null, new CollectorProcessor());
     root.initialize();
     DriverNode child = new DriverNode(new Times2Operator(), new CollectorProcessor());
     root.getDriverNode().addChild(child);
