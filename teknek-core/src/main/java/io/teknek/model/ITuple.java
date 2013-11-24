@@ -19,4 +19,6 @@ public interface ITuple {
 
   public void setField(String name, Object value);
   public Object getField(String name);
+  /** this would be a great defender method*/
+  public ITuple withField(String name, Object value);
 }

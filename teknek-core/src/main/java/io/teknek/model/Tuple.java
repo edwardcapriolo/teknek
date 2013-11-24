@@ -61,4 +61,10 @@ public class Tuple implements ITuple {
   public String toString(){
     return this.columns.toString();
   }
+
+  @Override
+  public ITuple withField(String name, Object value) {
+    setField(name, value);
+    return this;
+  }
 }

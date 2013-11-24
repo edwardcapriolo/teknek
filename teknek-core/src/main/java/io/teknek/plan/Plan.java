@@ -8,6 +8,7 @@ public class Plan {
   private OffsetStorageDesc offsetStorageDesc;
   private boolean disabled;
   private int maxWorkers;
+  private int tupleRetry;
  
   public Plan(){
  
@@ -71,6 +72,20 @@ public class Plan {
   
   public Plan withOffsetStorageDesc(OffsetStorageDesc desc){
     setOffsetStorageDesc(desc);
+    return this;
+  }
+  
+
+  public int getTupleRetry() {
+    return tupleRetry;
+  }
+
+  public void setTupleRetry(int tupleRetry) {
+    this.tupleRetry = tupleRetry;
+  }
+  
+  public Plan withTupleRetry(int tupleRetry) {
+    setTupleRetry(tupleRetry);
     return this;
   }
 

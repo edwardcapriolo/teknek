@@ -51,7 +51,7 @@ public class DriverFactory {
       }
     }
     CollectorProcessor cp = new CollectorProcessor();
-    cp.setTupleRetry(4);
+    cp.setTupleRetry(plan.getTupleRetry());
     Driver driver = new Driver(feedPartition, oper, offsetStorage, cp);
     DriverNode root = driver.getDriverNode();
     
