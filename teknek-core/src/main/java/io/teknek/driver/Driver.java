@@ -42,7 +42,6 @@ public class Driver implements Runnable {
    */
   public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage, CollectorProcessor collectorProcessor){
     this.fp = fp;
-    //CollectorProcessor cp = new CollectorProcessor();
     driverNode = new DriverNode(operator, collectorProcessor);
     this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
