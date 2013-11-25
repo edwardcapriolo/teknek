@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
-
 public class OperatorDesc {
 
+  private String spec;
+  private String script;
   private String operatorClass;
 
   private Map<String,Object> parameters;
@@ -75,4 +75,22 @@ public class OperatorDesc {
     children.add(d);
     return this;
   }
+
+  public String getSpec() {
+    return spec;
+  }
+
+  public void setSpec(String spec) {
+    this.spec = spec;
+  }
+
+  public String getScript() {
+    return script;
+  }
+
+  public void setScript(String script) {
+    this.script = script;
+  }
+  
+  
 }

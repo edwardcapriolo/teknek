@@ -15,6 +15,7 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import groovy.lang.GroovyClassLoader;
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
@@ -26,6 +27,7 @@ import io.teknek.plan.OffsetStorageDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -76,6 +78,31 @@ public class DriverFactory {
     }
   }
   
+  public static Operator buildOperator(OperatorDesc operatorDesc){
+    Operator operator = null;
+    if (operatorDesc.getSpec() == null){
+      try {
+        operator = (Operator) Class.forName(operatorDesc.getOperatorClass()).newInstance();
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      GroovyClassLoader gc = new GroovyClassLoader();
+      Class<?> c = gc.parseClass( operatorDesc.getScript()) ;
+      try {
+        operator = (Operator) c.newInstance();
+      } catch (InstantiationException | IllegalAccessException e) {
+        throw new RuntimeException (e);
+      }
+      try {
+        gc.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    return operator;
+  }
   
   public static OffsetStorage buildOffsetStorage(FeedPartition feedPartition, Plan plan, OffsetStorageDesc offsetDesc){
     OffsetStorage offsetStorage = null;

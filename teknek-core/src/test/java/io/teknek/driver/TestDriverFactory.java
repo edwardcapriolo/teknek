@@ -15,6 +15,8 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import io.teknek.model.Operator;
+import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.TestPlan;
 
 import org.junit.Assert;
@@ -49,4 +51,15 @@ public class TestDriverFactory {
     */
   }
    
+  @Test
+  public void operatorTest(){
+    OperatorDesc o = new OperatorDesc();
+    o.setSpec("groovy");
+    o.setOperatorClass("ATry");
+    o.setScript("import io.teknek.driver.Minus1Operator\n"+"public class ATry extends Minus1Operator { \n }");
+    Operator operator = DriverFactory.buildOperator(o);
+    DriverFactory.buildOperator(o);
+    Assert.assertNotNull(operator);
+    Assert.assertEquals ("ATry", operator.getClass().getName());
+  }
 }
