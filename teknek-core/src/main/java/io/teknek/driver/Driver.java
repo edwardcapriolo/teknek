@@ -62,7 +62,7 @@ public class Driver implements Runnable {
       while (fp.next(t)){
         boolean complete = false;
         int attempts = 0;
-        while (attempts++ < 4 && !complete) {
+        while (attempts++ < driverNode.getCollectorProcessor().getTupleRetry() + 1 && !complete) {
           try {
             driverNode.getOperator().handleTuple(t);
             complete = true;
