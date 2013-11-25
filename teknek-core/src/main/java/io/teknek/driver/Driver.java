@@ -120,6 +120,4 @@ public class Driver implements Runnable {
     this.goOn.set(goOn);
   }
   
-  
-  
 }
