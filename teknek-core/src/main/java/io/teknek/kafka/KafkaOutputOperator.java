@@ -24,7 +24,6 @@ public class KafkaOutputOperator extends Operator {
   public void setProperties(Map<String, Object> properties) {
     super.setProperties(properties);
     Properties producerProps = new Properties();
-    //producerProps.put("serializer.class", "kafka.serializer.StringEncoder");
     producerProps.put("zookeeper.connect", (String) properties.get(ZOOKEEPER_CONNECT));
     producerProps.setProperty("batch.size", "1");
     producerProps.setProperty("producer.type", "async");
@@ -36,7 +35,7 @@ public class KafkaOutputOperator extends Operator {
   @Override
   public void handleTuple(ITuple t) {
     producer.send(new KeyedMessage<byte[], byte[]>((String) properties.get(TOPIC),
-            (byte[])t.getField(KEY_FIELD),
+            (byte[]) t.getField(KEY_FIELD),
             (byte[]) t.getField(MESSAGE_FIELD)));   
   }
 
