@@ -96,14 +96,15 @@ public class Driver implements Runnable {
   
   public String toString(){
     StringBuilder sb  = new StringBuilder();
-    sb.append("Feed Partition "+fp.getPartitionId()+" " );
-    sb.append("driver node "+ this.driverNode.toString());
+    sb.append("Feed Partition " + fp.getPartitionId() + " ");
+    sb.append("driver node " + this.driverNode.toString());
     return sb.toString();
   }
   
   public void prettyPrint(){
     System.out.println("+++++++");
-    System.out.println("Feed Partition "+fp.getPartitionId()+" " );
+    System.out.println("Feed Partition " + fp.getFeed().getClass() + " " );
+    System.out.println("Feed Partition " + fp.getPartitionId() + " " );
     System.out.println("-------");
     System.out.println("--"+driverNode.getOperator().getClass().getName());
     for (DriverNode child: driverNode.getChildren() ){
