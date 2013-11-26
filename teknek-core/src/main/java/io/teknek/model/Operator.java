@@ -35,4 +35,8 @@ public abstract class Operator {
   public void setCollector(ICollector i){
     this.collector = i;
   }
+  
+  public ICollector getCollector(){
+    return this.collector;
+  }
 }

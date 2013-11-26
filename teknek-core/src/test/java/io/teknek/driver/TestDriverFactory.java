@@ -1,5 +1,5 @@
 /*
-Copyright 2013 Edward Capriolo, Matt Landolf, Lodwin Cueto
+ Copyright 2013 Edward Capriolo, Matt Landolf, Lodwin Cueto
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import io.teknek.collector.Collector;
+import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
+import io.teknek.model.Tuple;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.TestPlan;
 
@@ -58,8 +61,23 @@ public class TestDriverFactory {
     o.setOperatorClass("ATry");
     o.setScript("import io.teknek.driver.Minus1Operator\n"+"public class ATry extends Minus1Operator { \n }");
     Operator operator = DriverFactory.buildOperator(o);
-    DriverFactory.buildOperator(o);
     Assert.assertNotNull(operator);
     Assert.assertEquals ("ATry", operator.getClass().getName());
+  }
+  
+  @Test
+  public void groovyClosureTest() throws InterruptedException{
+    OperatorDesc o = new OperatorDesc();
+    o.setSpec("groovyclosure");
+    o.setOperatorClass("");
+    o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
+    Operator operator = DriverFactory.buildOperator(o);
+    operator.setCollector(new Collector());
+    Assert.assertNotNull(operator);
+    Assert.assertEquals ("io.teknek.model.GroovyOperator", operator.getClass().getName());
+    ITuple t = new Tuple();
+    t.setField("x", 5);
+    operator.handleTuple(t);
+    Assert.assertEquals(5, ((Collector) operator.getCollector()).take().getField("x"));
   }
 }

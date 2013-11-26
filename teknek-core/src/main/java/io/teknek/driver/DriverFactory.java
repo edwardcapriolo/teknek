@@ -15,10 +15,13 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
 import io.teknek.collector.CollectorProcessor;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
+import io.teknek.model.GroovyOperator;
 import io.teknek.model.Operator;
 import io.teknek.offsetstorage.Offset;
 import io.teknek.offsetstorage.OffsetStorage;
@@ -86,7 +89,7 @@ public class DriverFactory {
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         throw new RuntimeException(e);
       }
-    } else {
+    } else if (operatorDesc.getSpec().equals("groovy")){
       GroovyClassLoader gc = new GroovyClassLoader();
       Class<?> c = gc.parseClass( operatorDesc.getScript()) ;
       try {
@@ -97,9 +100,18 @@ public class DriverFactory {
       try {
         gc.close();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    } else if (operatorDesc.getSpec().equals("groovyclosure")){
+      GroovyShell shell = new GroovyShell();
+      Object result = shell.evaluate(operatorDesc.getScript());
+      if (result instanceof Closure){
+        return new GroovyOperator((Closure) result);
+      } else {
+        throw new RuntimeException("result was wrong type "+ result);
+      }
+    } else {
+      throw new RuntimeException(operatorDesc.getSpec() +" dont know how to handle that");
     }
     return operator;
   }
