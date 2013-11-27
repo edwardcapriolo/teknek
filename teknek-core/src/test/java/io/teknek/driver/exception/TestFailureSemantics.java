@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.teknek.driver.Driver;
@@ -41,6 +42,7 @@ public class TestFailureSemantics {
     return plan;
   }
   
+  @Ignore
   @Test
   public void goodLuck() throws InterruptedException{
     Plan plan = createAPlanForDisaster();

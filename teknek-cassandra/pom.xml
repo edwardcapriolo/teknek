@@ -3,8 +3,8 @@
 tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.teknek</groupId>
-  <artifactId>teknek-core</artifactId>
-  <name>teknek-core</name>
+  <artifactId>teknek-cassandra</artifactId>
+  <name>teknek-cassandra</name>
   <version>0.0.1-SNAPSHOT</version>
   <description></description>
   <packaging>jar</packaging>
@@ -13,6 +13,19 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   </properties>
 
   <dependencies>
+	<dependency>
+                <groupId>io.teknek</groupId>
+                <artifactId>teknek-core</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+	</dependency>
+
+	<dependency>
+      		<groupId>io.teknek</groupId>
+      		<artifactId>teknek-core</artifactId>
+      		<version>0.0.1-SNAPSHOT</version>
+      		<type>test-jar</type>
+      		<scope>test</scope>
+    	</dependency>
 
 	<dependency>
       		<groupId>org.codehaus.groovy</groupId>
@@ -20,11 +33,13 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
       		<version>2.1.9</version>
     	</dependency>
 
+	<!--
 	<dependency>
 		<groupId>com.google.guava</groupId>
 		<artifactId>guava</artifactId>
 		<version>15.0</version>
 	</dependency>
+	-->
             
 	<dependency>
 		<groupId>org.codehaus.jackson</groupId>
@@ -70,19 +85,12 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-    <!--
     <dependency>
       <groupId>me.prettyprint</groupId>
       <artifactId>hector-test</artifactId>
       <version>1.0-2</version>
       <scope>test</scope>
     </dependency>
-    -->
-<dependency>
-	<groupId>org.eclipse.jetty</groupId>
-	<artifactId>jetty-server</artifactId>
-	<version>8.1.0.RC5</version>
-</dependency>
             
             
     <!-- lock recipe taken vs cages
@@ -117,21 +125,19 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     </dependency>
     
 
-	<!--
     <dependency>
       <groupId>me.prettyprint</groupId>
       <artifactId>hector-core</artifactId>
       <version>1.0-2</version>
     </dependency>
-	-->
 
-     <!--
+     
     <dependency>
       <groupId>org.apache.cassandra</groupId>
       <artifactId>cassandra-all</artifactId>
       <version>1.0.6</version>
     </dependency>
-	-->
+	
     <!--
     <dependency>
       <groupId>org.clojars.smallrivers</groupId>
@@ -172,18 +178,6 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <build>
     <pluginManagement>
       <plugins>
-	 <plugin>
-       		<groupId>org.apache.maven.plugins</groupId>
-       		<artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
-       <executions>
-         <execution>
-           <goals>
-             <goal>test-jar</goal>
-           </goals>
-         </execution>
-       </executions>
-     </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
