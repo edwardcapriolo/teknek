@@ -43,13 +43,10 @@ public class CassandraOperator extends Operator {
   public static final String VALUE = "cassandra.operator.value";
   public static final String TIMESTAMP = "cassandra.operator.timestamp";
   
-  
-  
-  HConnectionManager connectionManager;
-  CassandraHostConfigurator cassandraHostConfigurator;
-  String clusterName = "TestCluster";
-  Cluster cluster;
-  Keyspace keyspace;
+  private CassandraHostConfigurator cassandraHostConfigurator;
+  private String clusterName = "TestCluster";
+  private Cluster cluster;
+  private Keyspace keyspace;
   
   @Override
   public void setProperties(Map<String, Object> properties) {

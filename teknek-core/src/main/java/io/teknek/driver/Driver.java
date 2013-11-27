@@ -65,6 +65,7 @@ public class Driver implements Runnable {
     while(goOn.get()){
       ITuple t = new Tuple();
       while (fp.next(t)){
+        tuplesSeen.incrementAndGet();
         boolean complete = false;
         int attempts = 0;
         while (attempts++ < driverNode.getCollectorProcessor().getTupleRetry() + 1 && !complete) {
@@ -80,14 +81,13 @@ public class Driver implements Runnable {
   }
 
   /**
-   * We mark the offset every N rows. It would probably be better
-   * to mark in a background thread based on time or make it plugable, but this
-   * gets the point across for now
+   * To do offset storage we let the topology drain itself out. Then we commit. 
    */
   public void maybeDoOffset(){
-    long seen = tuplesSeen.getAndIncrement();
+    long seen = tuplesSeen.get();
     if (seen % 10 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
-        Offset offset = offsetStorage.getCurrentOffset();
+        drainTopology();
+        Offset offset = offsetStorage.getCurrentOffset(); 
         offsetStorage.persistOffset(offset);
     }
   }
@@ -98,6 +98,23 @@ public class Driver implements Runnable {
 
   public void setDriverNode(DriverNode driverNode) {
     this.driverNode = driverNode;
+  }
+  
+  public void drainTopology(){
+    DriverNode root = this.driverNode;
+    drainTopologyInternal(root);
+  }
+  
+  private void drainTopologyInternal(DriverNode node){
+    while (node.getCollectorProcessor().getCollector().size() > 0){
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+      }
+    }
+    for (DriverNode child: node.getChildren()){
+      drainTopologyInternal(child);
+    }
   }
   
   public String toString(){

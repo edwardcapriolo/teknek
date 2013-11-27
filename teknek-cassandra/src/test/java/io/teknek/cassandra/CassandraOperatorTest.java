@@ -1,7 +1,7 @@
 package io.teknek.cassandra;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Map; 
 
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.junit.Test;

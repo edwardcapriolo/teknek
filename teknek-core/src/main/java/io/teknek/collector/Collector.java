@@ -48,4 +48,8 @@ public class Collector extends ICollector {
     return collected.peek();
   }
   
+  /** returns size of the queue managed by this object */
+  public int size() {
+    return collected.size();
+  }
 }

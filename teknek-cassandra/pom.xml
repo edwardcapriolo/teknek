@@ -17,6 +17,13 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
                 <groupId>io.teknek</groupId>
                 <artifactId>teknek-core</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
+		      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-mapper-asl</artifactId>
+        </exclusion>
+      </exclusions>
+
 	</dependency>
 
 	<dependency>
@@ -40,13 +47,15 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<version>15.0</version>
 	</dependency>
 	-->
-            
+           
+	<!-- 
 	<dependency>
 		<groupId>org.codehaus.jackson</groupId>
 		<artifactId>jackson-mapper-asl</artifactId>
 		<version>1.9.13</version>
 	</dependency>
-            
+        -->    
+	
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>

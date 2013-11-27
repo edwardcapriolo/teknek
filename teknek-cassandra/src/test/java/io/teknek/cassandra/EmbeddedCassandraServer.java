@@ -17,7 +17,7 @@ import me.prettyprint.hector.testutils.EmbeddedServerHelper;
 public class EmbeddedCassandraServer extends EmbeddedKafkaServer {
 
   static EmbeddedServerHelper embedded;
-  static Cluster cluster;
+  static Cluster cluster; 
   
   public static final String KEYSPACE = "testing";
   public static final String COLUMNFAMILY = "tesfcf";
