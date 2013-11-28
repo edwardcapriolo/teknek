@@ -9,9 +9,9 @@ public class Plan {
   private boolean disabled;
   private int maxWorkers;
   private int tupleRetry;
+  private int offsetCommitInterval;
  
   public Plan(){
- 
   }
   
   public FeedDesc getFeedDesc() {
@@ -88,7 +88,19 @@ public class Plan {
     setTupleRetry(tupleRetry);
     return this;
   }
+  
+  public int getOffsetCommitInterval() {
+    return offsetCommitInterval;
+  }
 
+  public void setOffsetCommitInterval(int offsetCommitInterval) {
+    this.offsetCommitInterval = offsetCommitInterval;
+  }
+
+  public Plan withOffsetCommitInterval(int offsetCommitInterval) {
+    this.offsetCommitInterval = offsetCommitInterval;
+    return this;
+  }
   @Override
   public int hashCode() {
     final int prime = 31;

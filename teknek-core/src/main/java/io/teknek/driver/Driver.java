@@ -33,6 +33,7 @@ public class Driver implements Runnable {
   private AtomicBoolean goOn;
   private AtomicLong tuplesSeen;
   private OffsetStorage offsetStorage;
+  private int offsetCommitInterval;
 
   /**
    * 
@@ -40,12 +41,13 @@ public class Driver implements Runnable {
    * @param operator root operator of the driver
    * @param offsetStorage can be null if user does not wish to have offset storage
    */
-  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage, CollectorProcessor collectorProcessor){
+  public Driver(FeedPartition fp, Operator operator, OffsetStorage offsetStorage, CollectorProcessor collectorProcessor, int offsetCommitInterval ){
     this.fp = fp;
     driverNode = new DriverNode(operator, collectorProcessor);
     this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
     tuplesSeen = new AtomicLong(0);
+    this.offsetCommitInterval = offsetCommitInterval;
   }
   
   public void initialize(){
@@ -85,7 +87,7 @@ public class Driver implements Runnable {
    */
   public void maybeDoOffset(){
     long seen = tuplesSeen.get();
-    if (seen % 10 == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
+    if (seen % offsetCommitInterval == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
         drainTopology();
         Offset offset = offsetStorage.getCurrentOffset(); 
         offsetStorage.persistOffset(offset);
