@@ -50,7 +50,7 @@ public class CassandraOperator extends Operator {
   
   @Override
   public void setProperties(Map<String, Object> properties) {
-    setProperties(properties);   
+    super.setProperties(properties);   
     cassandraHostConfigurator = new CassandraHostConfigurator(((String) properties.get(HOST_LIST)));
     cluster = HFactory.getOrCreateCluster(clusterName, cassandraHostConfigurator);
     keyspace = HFactory.createKeyspace((String) properties.get(KEYSPACE), cluster);   
@@ -59,8 +59,8 @@ public class CassandraOperator extends Operator {
   @Override
   public void handleTuple(ITuple tuple) {
     Mutator<ByteBuffer> m = HFactory.createMutator(keyspace, ByteBufferSerializer.get());
-    HColumn col = HFactory.createColumn((ByteBuffer) properties.get(COLUMN), (ByteBuffer) properties.get(VALUE), System.nanoTime(), ByteBufferSerializer.get(), ByteBufferSerializer.get());
-    m.addInsertion((ByteBuffer) properties.get(COLUMN), (String) properties.get(COLUMN_FAMILY), col);
+    HColumn col = HFactory.createColumn((ByteBuffer) tuple.getField(COLUMN), (ByteBuffer) tuple.getField(VALUE), System.nanoTime(), ByteBufferSerializer.get(), ByteBufferSerializer.get());
+    m.addInsertion((ByteBuffer) tuple.getField(ROW_KEY), (String) properties.get(COLUMN_FAMILY), col);
     MutationResult result = m.execute();
   }
 
