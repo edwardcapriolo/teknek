@@ -100,6 +100,7 @@ public class TestPlan {
     Plan p = getPlan();
     ObjectMapper om = new ObjectMapper();
     String asString = om.writeValueAsString(p);
+    System.out.println(asString);
     Plan p1 = om.readValue(asString, Plan.class);
     Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
     Assert.assertEquals(p1.getRootOperator().getOperatorClass(), p.getRootOperator()
