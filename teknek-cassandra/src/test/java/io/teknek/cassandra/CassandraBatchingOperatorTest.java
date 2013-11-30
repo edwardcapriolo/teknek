@@ -21,7 +21,7 @@ import org.apache.cassandra.utils.ByteBufferUtil;
 import org.junit.Test;
 
 public class CassandraBatchingOperatorTest extends EmbeddedCassandraServer {
-
+  
   @SuppressWarnings("unchecked")
   @Test
   public void testOperator() throws CharacterCodingException{

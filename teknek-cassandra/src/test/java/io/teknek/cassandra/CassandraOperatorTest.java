@@ -2,8 +2,6 @@ package io.teknek.cassandra;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.util.HashMap;
-import java.util.Map; 
 
 import junit.framework.Assert;
 
@@ -23,7 +21,7 @@ import io.teknek.model.Tuple;
 import io.teknek.util.MapBuilder;
 
 public class CassandraOperatorTest extends EmbeddedCassandraServer {
-
+ 
   @SuppressWarnings("unchecked")
   @Test
   public void testOperator() throws CharacterCodingException{
