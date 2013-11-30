@@ -1,5 +1,7 @@
 package io.teknek.kafka;
 
+import io.teknek.zookeeper.EmbeddedZooKeeperServer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,11 +17,40 @@ import org.junit.BeforeClass;
 
 import com.netflix.curator.test.TestingServer;
 
-public class EmbeddedKafkaServer {
+public class EmbeddedKafkaServer extends EmbeddedZooKeeperServer {
 
   public static KafkaServer server;  
-  public static TestingServer zookeeperTestServer ;
 
+  /**
+   * This class is named setupB because we wanted it to run after
+   * setupA. This method seems to order setup properly. Your mileage may vary.
+   * @throws Exception
+   */
+  @BeforeClass
+  public static void setupB() throws Exception{
+    String kdir = "/tmp/ks1logdir";
+    if (server != null){
+      return;
+    }    
+    File ks1logdir = new File(kdir);
+    if (ks1logdir.exists()){
+      delete(ks1logdir);
+    }
+    ks1logdir.mkdir();
+    Properties brokerProps= new Properties();
+    brokerProps.put("enable.zookeeper","true");
+    brokerProps.put( "broker.id", "1");
+    putZkConnect(brokerProps, "localhost:"+zookeeperTestServer.getPort());
+    brokerProps.put("port","9092");
+    brokerProps.setProperty("num.partitions", "10");
+    brokerProps.setProperty("log.dir", kdir);
+    KafkaConfig config= new KafkaConfig(brokerProps);
+    if (server == null) {
+      server = new kafka.server.KafkaServer(config, new TimeImpl());
+      server.startup();
+    }  
+  }
+  
   public static void createTopic(String name, int replica, int partitions ) {
     String[] arguments = new String[8];
     arguments[0] = "--zookeeper";
@@ -38,35 +69,7 @@ public class EmbeddedKafkaServer {
       e.printStackTrace();
     }
   }
-  
-  @BeforeClass
-  public static void beforeClass() throws Exception{
-    String kdir = "/tmp/ks1logdir";
-    if (zookeeperTestServer != null){
-      return;
-    }
-    zookeeperTestServer = new TestingServer();
     
-    File ks1logdir = new File(kdir);
-    if (ks1logdir.exists()){
-      delete(ks1logdir);
-    }
-    ks1logdir.mkdir();
-    Properties brokerProps= new Properties();
-    brokerProps.put("enable.zookeeper","true");
-    brokerProps.put( "broker.id", "1");
-    putZkConnect(brokerProps, "localhost:"+zookeeperTestServer.getPort());
-    brokerProps.put("port","9092");
-    brokerProps.setProperty("num.partitions", "10");
-    brokerProps.setProperty("log.dir", kdir);
-    KafkaConfig config= new KafkaConfig(brokerProps);
-    if (server == null) {
-      server = new kafka.server.KafkaServer(config, new TimeImpl());
-      server.startup();
-    }
-    
-  }
-  
   protected static ProducerConfig createProducerConfig(){
     Properties producerProps = new Properties();
     producerProps.put("serializer.class", "kafka.serializer.StringEncoder");
