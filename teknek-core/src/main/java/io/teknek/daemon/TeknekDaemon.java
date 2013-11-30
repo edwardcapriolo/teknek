@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,25 +45,26 @@ public class TeknekDaemon implements Watcher{
   final static Logger logger = Logger.getLogger(TeknekDaemon.class.getName());
   private int maxWorkers = 4;
   private UUID myId;
-  private Map<String,String> properties;
+  private Properties properties;
   private ZooKeeper zk;
   private long rescanMillis = 5000;
   private Map<Plan, List<Worker>> workerThreads;
   private boolean goOn = true;
   
-  public TeknekDaemon(Map<String,String> properties){
+  public TeknekDaemon(Properties properties){
+    
     myId = UUID.randomUUID();
     this.properties = properties;
     workerThreads = new HashMap<Plan,List<Worker>>();
     if (properties.containsKey(MAX_WORKERS)){
-      maxWorkers = Integer.parseInt(properties.get(MAX_WORKERS));
+      maxWorkers = Integer.parseInt(properties.getProperty(MAX_WORKERS));
     }
   }
   
   public void init() {
     logger.debug("my UUID" + myId);
     try {
-      zk = new ZooKeeper(properties.get(ZK_SERVER_LIST).toString(), 100, this);
+      zk = new ZooKeeper(properties.getProperty(ZK_SERVER_LIST), 100, this);
     } catch (IOException e1) {
       throw new RuntimeException(e1);
     }
@@ -83,6 +85,8 @@ public class TeknekDaemon implements Watcher{
               for (String child: children){
                 considerStarting(child);
               }
+            } else {
+              logger.debug("Will not attemt to start worker. Already at max workers "+ workerThreads.size());
             }
             Thread.sleep(rescanMillis);
           } catch (Exception ex){
@@ -167,7 +171,7 @@ public class TeknekDaemon implements Watcher{
     this.goOn = false;
   }
 
-  public Map<String, String> getProperties() {
+  public Properties getProperties() {
     return properties;
   }
   

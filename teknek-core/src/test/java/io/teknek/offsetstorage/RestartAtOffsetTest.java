@@ -2,6 +2,7 @@ package io.teknek.offsetstorage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,7 +24,7 @@ public class RestartAtOffsetTest extends EmbeddedKafkaServer {
   
   @BeforeClass
   public static void setup(){
-    Map<String,String> props = new HashMap<String,String>();
+    Properties props = new Properties();
     props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
     td = new TeknekDaemon(props);
     td.init();

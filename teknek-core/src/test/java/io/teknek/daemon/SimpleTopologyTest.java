@@ -17,6 +17,7 @@ package io.teknek.daemon;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.zookeeper.ZooKeeper;
 import org.junit.AfterClass;
@@ -38,7 +39,7 @@ static TeknekDaemon td = null;
   
   @BeforeClass
   public static void setup(){
-    Map<String,String> props = new HashMap<String,String>();
+    Properties props = new Properties();
     props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
     td = new TeknekDaemon(props);
     td.init();
