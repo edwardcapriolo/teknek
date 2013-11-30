@@ -21,11 +21,11 @@ import io.teknek.driver.TestDriver;
 import io.teknek.driver.Times2Operator;
 import io.teknek.driver.exception.ExceptionOperator;
 import io.teknek.feed.FixedFeed;
-import io.teknek.offsetstorage.ZookeeperOffsetStorage;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
 import java.io.IOException;
 

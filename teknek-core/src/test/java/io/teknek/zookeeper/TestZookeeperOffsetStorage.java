@@ -1,4 +1,4 @@
-package io.teknek.offsetstorage;
+package io.teknek.zookeeper;
 
 import java.util.List;
 import java.util.Map;
@@ -9,16 +9,17 @@ import org.junit.Test;
 import io.teknek.feed.FeedPartition;
 import io.teknek.feed.FixedFeed;
 import io.teknek.feed.TestFixedFeed;
-import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.model.Tuple;
 import io.teknek.plan.TestPlan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.ZookeeperOffset;
+import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
-public class TestKafkaOffsetStorage extends EmbeddedKafkaServer {
-  
+public class TestZookeeperOffsetStorage extends EmbeddedZooKeeperServer {
+   
   @Test
   public void test() {
-    Map props = MapBuilder.makeMap("zookeeper.connect", this.zookeeperTestServer.getConnectString());
+    Map props = MapBuilder.makeMap(ZookeeperOffsetStorage.ZK_CONNECT, zookeeperTestServer.getConnectString());
     FixedFeed pf = new FixedFeed(TestFixedFeed.buildFeedProps());
     List<FeedPartition> parts = pf.getFeedPartitions();
     

@@ -1,29 +1,32 @@
-package io.teknek.offsetstorage;
+package io.teknek.zookeeper;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.teknek.daemon.BeLoudOperator;
 import io.teknek.daemon.TeknekDaemon;
 import io.teknek.feed.FixedFeed;
-import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OffsetStorageDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.ZookeeperOffset;
+import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
-public class RestartAtOffsetTest extends EmbeddedKafkaServer {
+public class RestartAtOffsetTest extends EmbeddedZooKeeperServer {
 
-  static TeknekDaemon td = null;
+  TeknekDaemon td = null;
   
-  @BeforeClass
-  public static void setup(){
+  @Before
+  public void setupD(){
     Properties props = new Properties();
     props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
     td = new TeknekDaemon(props);
@@ -64,8 +67,8 @@ public class RestartAtOffsetTest extends EmbeddedKafkaServer {
     }
   }
   
-  @AfterClass
-  public static void shutdown(){
+  @After
+  public void shutdown(){
     td.stop();
   }
 }

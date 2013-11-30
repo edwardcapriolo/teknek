@@ -1,18 +1,15 @@
 package io.teknek.daemon;
 
-import io.teknek.kafka.EmbeddedKafkaServer;
+import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
 
 //TODO we should make a main for this 
-public class StandAloneTeknekServer extends EmbeddedKafkaServer {
+public class StandAloneTeknekServer extends EmbeddedZooKeeperServer {
 
   
   static TeknekDaemon td = null;
