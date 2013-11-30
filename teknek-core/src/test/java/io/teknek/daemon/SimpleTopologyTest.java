@@ -15,25 +15,20 @@ limitations under the License.
 */
 package io.teknek.daemon;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
-import org.apache.zookeeper.ZooKeeper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.teknek.driver.Minus1Operator;
-import io.teknek.driver.Times2Operator;
 import io.teknek.feed.FixedFeed;
-import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
-public class SimpleTopologyTest extends EmbeddedKafkaServer {
+public class SimpleTopologyTest extends EmbeddedZooKeeperServer {
 
 static TeknekDaemon td = null;
   
