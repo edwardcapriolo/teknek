@@ -43,7 +43,7 @@ Cassandra - Cassandra is a nosql data store. This package includes operators to 
 Kafka - Kafka is a distributed message queue. Teknek can use kafka's partitioning ability to easily achive group-by semantics. Kafka support includes Feed and output operator.
 
 
-Notes on the domain specifc language (PIL plan integration language?)
+Notes on the domain specifc language (PIL Plan Integration Language?)
 -----
 
 A simple topology read from kafka, send data to operator 
