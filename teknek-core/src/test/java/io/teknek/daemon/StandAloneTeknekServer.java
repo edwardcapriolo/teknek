@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 //TODO we should make a main for this 
@@ -24,8 +25,8 @@ public class StandAloneTeknekServer extends EmbeddedKafkaServer {
     System.out.println("started zk on " +zookeeperTestServer.getConnectString());
   }
   
-  //@Ignore
-  @Test
+  @Ignore
+  //@Test
   public void hangAround(){
     try {
       Thread.sleep(Long.MAX_VALUE);
