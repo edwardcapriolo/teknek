@@ -9,7 +9,6 @@ import org.junit.Test;
 import io.teknek.feed.FeedPartition;
 import io.teknek.feed.FixedFeed;
 import io.teknek.feed.TestFixedFeed;
-import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.model.Tuple;
 import io.teknek.plan.TestPlan;
 import io.teknek.util.MapBuilder;

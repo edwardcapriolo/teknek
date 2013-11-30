@@ -16,10 +16,8 @@ limitations under the License.
 package io.teknek.daemon;
 
 import io.teknek.daemon.TeknekDaemon;
-import io.teknek.kafka.EmbeddedKafkaServer;
+import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.AfterClass;
@@ -27,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
-public class TestTeknekDaemon extends EmbeddedKafkaServer {
+public class TestTeknekDaemon extends EmbeddedZooKeeperServer {
 
   static TeknekDaemon td = null;
   

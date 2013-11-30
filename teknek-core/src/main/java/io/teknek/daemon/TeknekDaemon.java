@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
@@ -63,12 +61,24 @@ public class TeknekDaemon implements Watcher{
   
   public void init() {
     logger.debug("my UUID" + myId);
+    System.out.println("connecting to "+properties.getProperty(ZK_SERVER_LIST));
     try {
       zk = new ZooKeeper(properties.getProperty(ZK_SERVER_LIST), 100, this);
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        /*
+         * Session establishment is asynchronous. This constructor will initiate connection to the server and return immediately - potentially (usually) before the session is fully established. The watcher argument specifies the watcher that will be notified of any changes in state. This notification can come at any point before or after the constructor call has returned. 
+         */
+        e.printStackTrace();
+      }
     } catch (IOException e1) {
+      System.out.println("failed connected");
       throw new RuntimeException(e1);
     }
+    System.out.println("connected");
     try {
+
       WorkerDao.createZookeeperBase(zk);
       WorkerDao.createEphemeralNodeForDaemon(zk, this);
     } catch (WorkerDaoException e) {

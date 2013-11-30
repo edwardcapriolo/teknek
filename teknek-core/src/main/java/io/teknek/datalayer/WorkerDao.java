@@ -76,6 +76,7 @@ public class WorkerDao {
         zk.create(PLANS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
     } catch (KeeperException  | InterruptedException e) {
+      e.printStackTrace();
       throw new WorkerDaoException(e);
     } 
   }
