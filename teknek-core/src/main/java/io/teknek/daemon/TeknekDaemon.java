@@ -40,6 +40,7 @@ import com.google.common.annotations.VisibleForTesting;
 public class TeknekDaemon implements Watcher{
 
   public static final String ZK_SERVER_LIST = "teknek.zk.servers";
+  public static final String MAX_WORKERS = "teknek.max.workers";
   final static Logger logger = Logger.getLogger(TeknekDaemon.class.getName());
   private int maxWorkers = 4;
   private UUID myId;
@@ -53,6 +54,9 @@ public class TeknekDaemon implements Watcher{
     myId = UUID.randomUUID();
     this.properties = properties;
     workerThreads = new HashMap<Plan,List<Worker>>();
+    if (properties.containsKey(MAX_WORKERS)){
+      maxWorkers = Integer.parseInt(properties.get(MAX_WORKERS));
+    }
   }
   
   public void init() {
