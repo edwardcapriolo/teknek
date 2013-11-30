@@ -16,7 +16,7 @@ import io.teknek.offsetstorage.Offset;
 import io.teknek.offsetstorage.OffsetStorage;
 import io.teknek.plan.Plan;
 
-public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
+public class ZookeeperOffsetStorage extends OffsetStorage {
   
   public static final String TEKNEK_ROOT = "/teknek";
 
@@ -34,8 +34,8 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
     ZooKeeper zk = null;
     String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     try {
-      zk = new ZooKeeper( properties.get("zookeeper.connect"), 100, this);
-      Stat stat = zk.exists(s, false);
+      zk = new ZooKeeper(properties.get(ZK_CONNECT), 100, new DummyWatcher());
+      Stat stat = zk.exists(s, true);
       if (stat != null) {
         zk.setData(s, o.serialize(), stat.getVersion());
       } else {
@@ -58,10 +58,11 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
     String s = TEKNEK_OFFSET + "/" + plan.getName() + "-" + feedPartiton.getFeed().getName()+ "-" + feedPartiton.getPartitionId();
     ZooKeeper zk = null;
     try {
-      zk = new ZooKeeper(properties.get("zookeeper.connect"), 100, this);
-      Stat stat = zk.exists(s, false);
+      zk = new ZooKeeper(properties.get(ZK_CONNECT), 100, new DummyWatcher());
+      Stat stat = zk.exists(s, true);
+      
       if (stat != null) {
-        byte [] bytes = zk.getData(s, false, stat);
+        byte [] bytes = zk.getData(s, true, stat);
         ZookeeperOffset zo = new ZookeeperOffset(bytes);
         zk.close();
         return zo;
@@ -75,22 +76,17 @@ public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
 
   public void createZookeeperBase() {
     try {
-      ZooKeeper zk = new ZooKeeper(properties.get("zookeeper.connect"), 100, this);
-      if (zk.exists(TEKNEK_ROOT, false) == null) {
+      ZooKeeper zk = new ZooKeeper(properties.get(ZK_CONNECT), 100, new DummyWatcher());
+      if (zk.exists(TEKNEK_ROOT, true) == null) {
         zk.create(TEKNEK_ROOT, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
-      if (zk.exists(TEKNEK_OFFSET, false) == null) {
+      if (zk.exists(TEKNEK_OFFSET, true) == null) {
         zk.create(TEKNEK_OFFSET, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
       zk.close();
     } catch (KeeperException  | InterruptedException | IOException e) {
       throw new RuntimeException(e);
     } 
-  }
-
-  @Override
-  public void process(WatchedEvent event) {
-
   }
 
 }

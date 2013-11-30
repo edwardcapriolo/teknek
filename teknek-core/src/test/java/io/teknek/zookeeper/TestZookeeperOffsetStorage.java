@@ -16,11 +16,11 @@ import io.teknek.util.MapBuilder;
 import io.teknek.zookeeper.ZookeeperOffset;
 import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
-public class TestZookeeperOffsetStorage extends EmbeddedKafkaServer {
-  
+public class TestZookeeperOffsetStorage extends EmbeddedZooKeeperServer {
+   
   @Test
   public void test() {
-    Map props = MapBuilder.makeMap("zookeeper.connect", this.zookeeperTestServer.getConnectString());
+    Map props = MapBuilder.makeMap(ZookeeperOffsetStorage.ZK_CONNECT, zookeeperTestServer.getConnectString());
     FixedFeed pf = new FixedFeed(TestFixedFeed.buildFeedProps());
     List<FeedPartition> parts = pf.getFeedPartitions();
     
