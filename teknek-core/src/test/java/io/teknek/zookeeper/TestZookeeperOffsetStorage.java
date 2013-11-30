@@ -1,4 +1,4 @@
-package io.teknek.offsetstorage;
+package io.teknek.zookeeper;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,8 @@ import io.teknek.kafka.EmbeddedKafkaServer;
 import io.teknek.model.Tuple;
 import io.teknek.plan.TestPlan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.ZookeeperOffset;
+import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
 public class TestZookeeperOffsetStorage extends EmbeddedKafkaServer {
   

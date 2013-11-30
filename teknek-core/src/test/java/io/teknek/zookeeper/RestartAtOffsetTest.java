@@ -1,4 +1,4 @@
-package io.teknek.offsetstorage;
+package io.teknek.zookeeper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +17,8 @@ import io.teknek.plan.OffsetStorageDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 import io.teknek.util.MapBuilder;
+import io.teknek.zookeeper.ZookeeperOffset;
+import io.teknek.zookeeper.ZookeeperOffsetStorage;
 
 public class RestartAtOffsetTest extends EmbeddedKafkaServer {
 

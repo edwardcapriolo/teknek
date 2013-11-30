@@ -1,4 +1,4 @@
-package io.teknek.offsetstorage;
+package io.teknek.zookeeper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,6 +12,8 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
 import io.teknek.feed.FeedPartition;
+import io.teknek.offsetstorage.Offset;
+import io.teknek.offsetstorage.OffsetStorage;
 import io.teknek.plan.Plan;
 
 public class ZookeeperOffsetStorage extends OffsetStorage implements Watcher {
