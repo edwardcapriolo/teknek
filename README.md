@@ -28,13 +28,22 @@ Components
 ----
 Zookeeper - Zookeeper is a distributed coordination service. Teknek uses zookeeper to store Plan's as well as the state of worker nodes
 
-Kafka - Kafka is a distributed message queue. Teknek uses zookeeper to shuffle data between process nodes. It can use Kafka as a source of data.
-
 Teknek-core(worker) - This component runs on a cluster of machine executing the work described by the plan
 
 Teknek-web - This component provides the front end to configure and manage Teknek. From the interface you can create and modify plans and debug the output and input from feeds and operators.
 
-Notes on query language
+Teknek integrations
+----
+
+Teknek is desigigned so that it can integrated with software currently in your software stack. To do this its core is designed to be agnostic and plugable. For example, a Feed could be constructed over the Kafka message queue system, after processing the results can be written to a NoSQL database like Cassandra. However data can just as easily be read from a MySQL database and written to HBase by swapping components in the plan.
+
+Teknek provides several out-of-the-box implementations of Feeds an Operators to help users get up and running quickly. 
+
+Cassandra - Cassandra is a nosql data store. This package includes operators to write data and increment counters.
+Kafka - Kafka is a distributed message queue. Teknek can use kafka's partitioning ability to easily achive group-by semantics. Kafka support includes Feed and output operator.
+
+
+Notes on the domain specifc language (PIL plan integration language?)
 -----
 
 A simple topology read from kafka, send data to operator 
