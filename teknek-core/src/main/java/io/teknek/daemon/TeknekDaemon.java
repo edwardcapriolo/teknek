@@ -83,8 +83,8 @@ public class TeknekDaemon implements Watcher{
               for (String child: children){
                 considerStarting(child);
               }
-              Thread.sleep(rescanMillis);
             }
+            Thread.sleep(rescanMillis);
           } catch (Exception ex){
             logger.error("Exception during scan "+ex);
             ex.printStackTrace();
