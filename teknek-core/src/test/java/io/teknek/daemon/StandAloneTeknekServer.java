@@ -1,0 +1,41 @@
+package io.teknek.daemon;
+
+import io.teknek.kafka.EmbeddedKafkaServer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+//TODO we should make a main for this 
+public class StandAloneTeknekServer extends EmbeddedKafkaServer {
+
+  
+  static TeknekDaemon td = null;
+  
+  @BeforeClass
+  public static void setup(){
+    Map<String,String> props = new HashMap<String,String>();
+    props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
+    td = new TeknekDaemon(props);
+    td.init();
+    System.out.println("started zk on " +zookeeperTestServer.getConnectString());
+  }
+  
+  //@Ignore
+  @Test
+  public void hangAround(){
+    try {
+      Thread.sleep(Long.MAX_VALUE);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @AfterClass
+  public static void shutdown(){
+    td.stop();
+  }
+}
