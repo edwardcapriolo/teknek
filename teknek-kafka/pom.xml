@@ -80,13 +80,6 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		</dependency>
 
 		<dependency>
-			<groupId>me.prettyprint</groupId>
-			<artifactId>hector-test</artifactId>
-			<version>1.0-2</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -106,20 +99,6 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 					<artifactId>jmxri</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-
-		<dependency>
-			<groupId>me.prettyprint</groupId>
-			<artifactId>hector-core</artifactId>
-			<version>1.0-2</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.apache.cassandra</groupId>
-			<artifactId>cassandra-all</artifactId>
-			<version>1.0.6</version>
 		</dependency>
 
 		<dependency>
