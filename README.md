@@ -18,7 +18,7 @@ Terminology
 
 Feed - An abstraction for an input source. A feed produces tuples. A feed can be a message queue, new rows in a relational database, or anything else you may want to process.
 
-Tuple - a map that contains 0 or more key value pairs
+Tuple - a map that contains 0 or more key value pairs, could be thought of a row.
 
 Operator - An abstraction that takes a tuple as input and optionally produces a tuple as output.
 
@@ -26,11 +26,22 @@ Plan - Connects a feed to a series of operators . Data moves from the feed while
 
 Components
 ----
-Zookeeper - Zookeeper is a distributed coordination service. Teknek uses zookeeper to store Plan's as well as the state of worker nodes
+Zookeeper - Zookeeper is a distributed coordination service. Teknek uses zookeeper to store Plan's as well as the state of worker nodes.
 
 Teknek-core(worker) - This component runs on a cluster of machine executing the work described by the plan
 
 Teknek-web - This component provides the front end to configure and manage Teknek. From the interface you can create and modify plans and debug the output and input from feeds and operators.
+
+Build Instructions
+----
+Currently the project is organized as several separate maven projects with dependencies. While using a maven multiple-module project may not be out of the question, for now it seems better to serparate core functionality from plugable integrations. By keeping the classpath thin we can potentially avoid
+complicated classloader issues down the road.
+
+Run these commands:
+
+    git clone <this github>
+    sh build.sh
+
 
 Teknek integrations
 ----
@@ -39,9 +50,8 @@ Teknek is desigigned so that it can integrated with software currently in your s
 
 Teknek provides several out-of-the-box implementations of Feeds an Operators to help users get up and running quickly. 
 
-Cassandra - Cassandra is a nosql data store. This package includes operators to write data and increment counters.
-Kafka - Kafka is a distributed message queue. Teknek can use kafka's partitioning ability to easily achive group-by semantics. Kafka support includes Feed and output operator.
-
+teknek-cassandra - Cassandra is a nosql data store. This package includes operators to write data and increment counters.
+teknek-kafka - Kafka is a distributed message queue. Teknek can use kafka's partitioning ability to easily achive group-by semantics. Kafka support includes Feed and output operator.
 
 Notes on the domain specifc language (PIL Plan Integration Language?)
 -----
