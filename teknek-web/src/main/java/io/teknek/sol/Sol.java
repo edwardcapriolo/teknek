@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import io.teknek.datalayer.WorkerDao;
 import io.teknek.plan.FeedDesc;
+import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
 public class Sol {
@@ -15,13 +17,16 @@ public class Sol {
   public static final String rootPrompt = "teknek> ";
   public static final String planPrompt = "plan> ";
   public static final String feedPrompt = "feed> ";
+  public static final String operatorPrompt = "operator> "; 
   
   String currentNode;
   private Plan thePlan;
+  private Map<String,OperatorDesc> operators;
   
   public Sol(){
     thePlan = new Plan();
     currentNode = rootPrompt;
+    operators = new HashMap<String,OperatorDesc>();
   }
   
   public SolReturn send(String command){
@@ -41,7 +46,6 @@ public class Sol {
     }
     if (currentNode.equalsIgnoreCase(planPrompt)){
       if ("CREATE".equalsIgnoreCase(parts[0])){
-
         if (parts[1].equalsIgnoreCase("feed")){
           //CREATE FEED myFeed using teknek.kafka.feed
           String name = parts[2];
@@ -52,7 +56,47 @@ public class Sol {
           thePlan.setFeedDesc(feed);
           currentNode = feedPrompt;
           return new SolReturn(feedPrompt,"");
-        }    
+        }
+        if (parts[1].equalsIgnoreCase("operator")){
+          //CREATE OPERATOR plus2 AS teknek.samples.Plus2;
+          String name = parts[2];
+          String className = parts[4];
+          OperatorDesc desc = new OperatorDesc();
+          desc.setOperatorClass(className);
+          operators.put(name, desc);
+          currentNode = operatorPrompt;
+          return new SolReturn(operatorPrompt,"");
+        }
+      }
+      if ("SET".equalsIgnoreCase(parts[0])){
+        //myPlan> SET ROOT plus2;
+        String opName = parts[2];
+        if (!operators.containsKey(opName)){
+          return new SolReturn(currentNode, opName + " is not the name of an operator");
+        }
+        thePlan.setRootOperator(operators.get(opName));
+        return new SolReturn(currentNode, "");
+        
+      }
+      if ("FOR".equalsIgnoreCase(parts[0])){
+        //myPlan> FOR plus2 ADD CHILD times5;
+        String opName = parts[1];
+        String child = parts[4];
+        if (!operators.containsKey(opName)){
+          return new SolReturn(currentNode, opName + " is not the name of an operator");
+        }
+        if (!operators.containsKey(child)){
+          return new SolReturn(currentNode, child + " is not the name of an operator");
+        }
+        this.operators.get(opName).getChildren().add(operators.get(child));
+        return new SolReturn(currentNode, "" );
+      }
+      
+    }
+    if (currentNode.equalsIgnoreCase(operatorPrompt)){
+      if (parts[0].equalsIgnoreCase("exit")){
+        currentNode = planPrompt;
+        return new SolReturn(planPrompt,"");
       }
     }
     if (currentNode.equalsIgnoreCase(feedPrompt)){
@@ -60,6 +104,7 @@ public class Sol {
         currentNode = planPrompt;
         return new SolReturn(planPrompt,"");
       }
+      //TODO unset here
       if (parts[0].equalsIgnoreCase("SET")){
         //SET PROPERTY topic AS 'firehoze';
         String name = parts[2];
