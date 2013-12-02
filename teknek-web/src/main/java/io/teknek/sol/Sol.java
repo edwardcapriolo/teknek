@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.zookeeper.ZooKeeper;
+
 import io.teknek.datalayer.WorkerDao;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
@@ -22,6 +24,7 @@ public class Sol {
   String currentNode;
   private Plan thePlan;
   private Map<String,OperatorDesc> operators;
+  private ZooKeeper zookeeper;
   
   public Sol(){
     thePlan = new Plan();
@@ -138,33 +141,14 @@ public class Sol {
       System.out.print(ret.getPrompt());
     }
   }
-  
-}
 
+  public ZooKeeper getZookeeper() {
+    return zookeeper;
+  }
 
-class SolReturn {
-  private String prompt;
-  private String message;
-  
-  public SolReturn(){
-    
-  }
-  public SolReturn(String pr, String mess){
-    prompt=pr;
-    message = mess;
+  public void setZookeeper(ZooKeeper zookeeper) {
+    this.zookeeper = zookeeper;
   }
   
-  public String getPrompt() {
-    return prompt;
-  }
-  public void setPrompt(String prompt) {
-    this.prompt = prompt;
-  }
-  public String getMessage() {
-    return message;
-  }
-  public void setMessage(String message) {
-    this.message = message;
-  }
   
 }
