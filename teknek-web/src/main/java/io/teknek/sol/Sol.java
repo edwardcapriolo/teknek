@@ -21,12 +21,15 @@ public class Sol {
   public static final String rootPrompt = "teknek> ";
   public static final String planPrompt = "plan> ";
   public static final String feedPrompt = "feed> ";
-  public static final String operatorPrompt = "operator> "; 
+  public static final String operatorPrompt = "operator> ";
+  public static final String inlinePrompt = "inline> "; 
   
   String currentNode;
   private Plan thePlan;
   private Map<String,OperatorDesc> operators;
   private ZooKeeper zookeeper;
+  private OperatorDesc currentOperator;
+  private StringBuilder inline;
   
   public Sol(){
     thePlan = new Plan();
@@ -37,7 +40,7 @@ public class Sol {
   public SolReturn send(String command){
     String [] parts = command.split("\\s+");
     if (command.equalsIgnoreCase("SHOW")){
-      return new SolReturn(currentNode, new String( WorkerDao.serializePlan(thePlan)));
+      return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
     }
     if ("save".equalsIgnoreCase(parts[0])){
       try {
@@ -86,9 +89,13 @@ public class Sol {
           desc.setOperatorClass(className);
           operators.put(name, desc);
           currentNode = operatorPrompt;
-          return new SolReturn(operatorPrompt,"");
+          currentOperator = desc; //when we exit reset this to null
+          return new SolReturn(operatorPrompt, "");
         }
       }
+      
+      
+      
       if ("SET".equalsIgnoreCase(parts[0])){
         //myPlan> SET ROOT plus2;
         String opName = parts[2];
@@ -114,6 +121,40 @@ public class Sol {
       }
       
     }
+    
+    if (currentNode.equalsIgnoreCase(operatorPrompt)){
+      if (parts[0].equalsIgnoreCase("set")){
+        //set operatorspec as groovyclosure
+        String type = parts[3];
+        if (type.equalsIgnoreCase("groovyclosure")){
+          currentOperator.setSpec(parts[3]);
+          return new SolReturn(operatorPrompt, "");
+        } else if (type.equalsIgnoreCase("groovyclass")){
+          currentOperator.setSpec(parts[3]);
+          return new SolReturn(operatorPrompt, "");
+        }
+      }
+      
+      if (parts[0].equalsIgnoreCase("inline")){
+        currentNode = inlinePrompt;
+        inline = new StringBuilder();
+        return new SolReturn(inlinePrompt, "Define script below. End script with -----");
+      }
+    }
+    
+    if (currentNode.equalsIgnoreCase(inlinePrompt)){
+      if (parts[0].equals("-----")){
+        //attempt to compile buffer //maybe
+        currentOperator.setScript(this.inline.toString());
+        this.inline = null;
+        currentNode = operatorPrompt;
+        return new SolReturn(operatorPrompt, "");
+      } else {
+        inline.append(command+"\n");
+        return new SolReturn(inlinePrompt, "");
+      }
+    }
+    
     if (currentNode.equalsIgnoreCase(operatorPrompt)){
       if (parts[0].equalsIgnoreCase("exit")){
         currentNode = planPrompt;
