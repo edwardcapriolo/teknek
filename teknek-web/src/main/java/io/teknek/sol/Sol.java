@@ -11,6 +11,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import io.teknek.datalayer.WorkerDao;
+import io.teknek.datalayer.WorkerDaoException;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
@@ -38,10 +39,26 @@ public class Sol {
     if (command.equalsIgnoreCase("SHOW")){
       return new SolReturn(currentNode, new String( WorkerDao.serializePlan(thePlan)));
     }
+    if ("save".equalsIgnoreCase(parts[0])){
+      try {
+        WorkerDao.createOrUpdatePlan(thePlan, zookeeper);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, "problem persisting "+e.getMessage());
+      }
+      return new SolReturn(currentNode, "");
+    }
+    if ("open".equalsIgnoreCase(parts[0])){
+      String plan = parts[1];
+      try {
+        thePlan = WorkerDao.findPlanByName(zookeeper, plan);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, "problem reading "+e.getMessage());
+      }
+      return new SolReturn(currentNode, "");
+    }
+    
     if (currentNode.equalsIgnoreCase(rootPrompt)){
-      if(!command.startsWith("CREATE")){
-        return new SolReturn(rootPrompt, "Only valid commands are CREATE");
-      } else {
+      if("create".equalsIgnoreCase(parts[0])){
         currentNode = planPrompt;
         String name = command.substring(command.indexOf(' ')+1);
         thePlan.setName(name);

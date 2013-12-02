@@ -3,6 +3,7 @@
 <h2>Hello Teknek!</h2>
 <a href="operator-lab/index.jsp">Operator Lab</a>
 <a href="plan-manager/index.jsp">Plan Manager</a>
+<a href="sol/index.jsp">SOL shell</a>
 <%
   if (request.getParameter("zkconnect") != null) {
     session.setAttribute("zkconnect", request.getParameter("zkconnect"));
