@@ -4,8 +4,8 @@
     %>
 <%! Map<Integer,Sol> sols = new HashMap<Integer,Sol>(); %>
 <% 
-System.out.println(request.getParameter("consoleId")); 
-System.out.println(request.getParameter("command")); 
+//System.out.println(request.getParameter("consoleId")); 
+//System.out.println(request.getParameter("command")); 
 
 int consoleId = Integer.parseInt(request.getParameter("consoleId"));
 String command = request.getParameter("command");

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.zookeeper.ZooKeeper;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import io.teknek.datalayer.WorkerDao;
 import io.teknek.plan.FeedDesc;

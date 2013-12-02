@@ -3,18 +3,18 @@ int x=0;
 %>
 <html>
   <head>
-    <title>WebConsole with YUI</title>
+    <title>TekNek Streaming Operator Language!</title>
     <link rel="stylesheet" type="text/css" href="webconsole.css" />
   </head>
   <body>
 
-    <form action="exec.php" method="get" id="console-form">
+    <form action="exec.jsp" method="get" id="console-form">
       <div
         class="console"
         id="result">
-        Welcome to the WebConsole!
+        Welcome TekNek SOL 
         <br />
-        :-&gt;
+        teknek&gt;
       </div>
       <input type=hidden name="consoleId" value="<%=x++%>">
       <input
@@ -33,7 +33,7 @@ int x=0;
 
     var WebConsole = {};
 
-    WebConsole.printResult = function(result_string)
+    WebConsole.printResult = function(result_string, result_prompt)
     {
       var result_div = document.getElementById('result');
       var result_array = result_string.split('\n');
@@ -52,7 +52,8 @@ int x=0;
         result_div.appendChild(document.createElement('br'));
 
       }
-      result_div.appendChild(document.createTextNode(':-> '));
+      //result_div.appendChild(document.createTextNode(':-> '));
+      result_div.appendChild(document.createTextNode(result_prompt));
 
       result_div.scrollTop = result_div.scrollHeight;
       document.getElementById('command').value = '';
@@ -76,9 +77,9 @@ int x=0;
                 'exec.jsp',
                 {
                   success: function(xhr){
-                	  //{"prompt":"teknek> ","message":"Only valid commands are CREATE"}
+                	//{"prompt":"teknek> ","message":"Only valid commands are CREATE"}
                 	obj = JSON.parse(xhr.responseText);
-                	WebConsole.printResult(obj.message);
+                	WebConsole.printResult(obj.message, obj.prompt);
                     //WebConsole.printResult(xhr.responseText)
 		      		//WebConsole.printResult("yea man it worked");
                   }
