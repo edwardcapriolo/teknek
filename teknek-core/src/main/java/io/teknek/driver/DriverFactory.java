@@ -139,4 +139,29 @@ public class DriverFactory {
     return offsetStorage;
   }
   
+  /**
+   * Build a feed using reflection
+   * @param feedDesc
+   * @return
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public static Feed buildFeed(FeedDesc feedDesc){
+    Feed feed = null;
+    Class [] paramTypes = new Class [] { Map.class };    
+    Constructor<Feed> feedCons = null;
+    try {
+      feedCons = (Constructor<Feed>) Class.forName(feedDesc.getFeedClass()).getConstructor(
+              paramTypes);
+    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    try {
+      feed = feedCons.newInstance(feedDesc.getProperties());
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+    return feed;
+  }
+  
 }

@@ -24,8 +24,8 @@ public class StandAloneTeknekServer extends EmbeddedZooKeeperServer {
     System.out.println("started zk on " +zookeeperTestServer.getConnectString());
   }
   
-  //@Ignore
-  @Test
+  @Ignore
+  //@Test
   public void hangAround(){
     try {
       Thread.sleep(Long.MAX_VALUE);

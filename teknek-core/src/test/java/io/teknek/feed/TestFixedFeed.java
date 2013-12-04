@@ -15,6 +15,7 @@ limitations under the License.
 */
 package io.teknek.feed;
 
+import io.teknek.driver.DriverFactory;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
 import io.teknek.model.Tuple;
@@ -79,7 +80,7 @@ public class TestFixedFeed {
     FeedDesc fd = new FeedDesc();
     fd.setFeedClass(FixedFeed.class.getCanonicalName());
     fd.setProperties(buildFeedProps());
-    Feed feed = Feed.buildFeed(fd);
+    Feed feed = DriverFactory.buildFeed(fd);
     Assert.assertEquals(TestFixedFeed.EXPECTED_PARTITIONS, feed.getFeedPartitions().size());
   }
 }

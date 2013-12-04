@@ -60,7 +60,7 @@ public class Worker implements Watcher {
     } catch (IOException e1) {
       throw new RuntimeException(e1);
     }
-    Feed feed = Feed.buildFeed(plan.getFeedDesc());
+    Feed feed = DriverFactory.buildFeed(plan.getFeedDesc());
     List<WorkerStatus> workerStatus = WorkerDao.findAllWorkerStatusForPlan(zk, plan, otherWorkers);
     FeedPartition toProcess = findPartitionToProcess(workerStatus, feed.getFeedPartitions());
     if (toProcess != null){

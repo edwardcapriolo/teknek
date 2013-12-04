@@ -23,12 +23,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * represents some data source. A feed breaks down to one or more partition
- *
+ * An abstraction over a data source. A feed must have one or more partitions. Partitions allow the
+ * feed to be processed in parallel.
+ * 
+ * Based on the properties supplied at the construction of the feed, it is imperative that the feed
+ * repeatedly generate the same number of partitions with the same identifiers. This is required
+ * because the framework needs to be able to coordinate processing the partitions of the feed.
+ * 
  */
 public abstract class Feed {
 
+  /**
+   * A per instance identifier of a feed
+   */
   private String name;
+  /**
+   * The properties of the feed
+   */
   protected Map<String,Object> properties;
   
   public Feed(Map<String,Object> properties){
@@ -36,8 +47,9 @@ public abstract class Feed {
   }
   
   /**
-   * Method is called by the framework, based on the class and optionally the properties it produces one or more 
-   * partitions. The list of partitions returned must be deterministic
+   * Method is called by the framework, based on the class and optionally the properties it produces
+   * one or more partitions. The list of partitions returned must be deterministic.
+   * 
    * @return a list of partitions for the feed based on properties
    */
   public abstract List<FeedPartition> getFeedPartitions();
@@ -58,31 +70,5 @@ public abstract class Feed {
     return name;
   }
 
-  //TODO this method might go better in driver or some other place that does not tangle the classes
-  //TODO we need something better then runtime exception here
-  /**
-   * Build a feed using reflection
-   * @param feedDesc
-   * @return
-   */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static Feed buildFeed(FeedDesc feedDesc){
-    Feed feed = null;
-    Class [] paramTypes = new Class [] { Map.class };    
-    Constructor<Feed> feedCons = null;
-    try {
-      feedCons = (Constructor<Feed>) Class.forName(feedDesc.getFeedClass()).getConstructor(
-              paramTypes);
-    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-    try {
-      feed = feedCons.newInstance(feedDesc.getProperties());
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-            | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
-    return feed;
-  }
 }
 
