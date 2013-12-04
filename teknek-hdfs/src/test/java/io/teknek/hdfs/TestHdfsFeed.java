@@ -24,47 +24,84 @@ public class TestHdfsFeed {
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
   
+  private void writebFile() throws IOException{
+    File a = folder.newFile("b.txt");
+    BufferedWriter out = new BufferedWriter(new FileWriter(a));
+    out.write("a\n");
+    out.write("b\n");
+    out.close();
+  }
+  
+  private void writeCFile() throws IOException {
+    File b = folder.newFile("c.txt");
+    BufferedWriter out = new BufferedWriter(new FileWriter(b));
+    out.write("d\n");
+    out.write("e\n");
+    out.close();
+  }
+  
   @Test
-  public void tryWithOneFile() throws IOException{
-    
-    {
-      File a = folder.newFile("b.txt");
-      BufferedWriter out = new BufferedWriter(new FileWriter(a));
-      out.write("a\n");
-      out.write("b\n");
-      out.close();
-    }
-    
-    {
-      File b = folder.newFile("c.txt");
-      BufferedWriter out = new BufferedWriter(new FileWriter(b));
-      out.write("d\n");
-      out.write("e\n");
-      out.close();
-    }
-    
+  public void tryWithTwoFilesOnePartition() throws IOException{
+      
+    writebFile();
+    writeCFile();
     HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS,1,HdfsFeed.FEED_DIR, folder.getRoot().getPath()));
     
-
     List<FeedPartition> parts = f.getFeedPartitions();
     ITuple it = new Tuple();
     Assert.assertEquals(true, parts.get(0).next(it));
     Assert.assertEquals("a", it.getField("line"));
-    System.out.println(it);
     
     Assert.assertEquals(true, parts.get(0).next(it));
     Assert.assertEquals("b", it.getField("line"));
-    System.out.println(it);
     
     Assert.assertEquals(true, parts.get(0).next(it));
     Assert.assertEquals("d", it.getField("line"));
-    System.out.println(it);
     
     Assert.assertEquals(true, parts.get(0).next(it));
     Assert.assertEquals("e", it.getField("line"));
-    System.out.println(it);
     
   }
+
+  @Test
+  public void tryWithTwoFilesTwoPartition() throws IOException{
+      
+    writebFile();
+    writeCFile();
+    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS,2,HdfsFeed.FEED_DIR, folder.getRoot().getPath()));
+    
+    List<FeedPartition> parts = f.getFeedPartitions();
+    ITuple it = new Tuple();
+    Assert.assertEquals(true, parts.get(0).next(it));
+    Assert.assertEquals("a", it.getField("line"));
+    
+    Assert.assertEquals(true, parts.get(0).next(it));
+    Assert.assertEquals("b", it.getField("line"));
+    
+    
+    Assert.assertEquals(true, parts.get(1).next(it));
+    Assert.assertEquals("d", it.getField("line"));
+    
+    Assert.assertEquals(true, parts.get(1).next(it));
+    Assert.assertEquals("e", it.getField("line"));
+    
+    
+  }
+  
+  
+  @Test
+  public void tryWithOneFilesOnePartition() throws IOException{
+    writebFile();
+    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 1, HdfsFeed.FEED_DIR,
+            folder.getRoot().getPath()));
+    List<FeedPartition> parts = f.getFeedPartitions();
+    ITuple it = new Tuple();
+    Assert.assertEquals(true, parts.get(0).next(it));
+    Assert.assertEquals("a", it.getField("line"));
+    Assert.assertEquals(true, parts.get(0).next(it));
+    Assert.assertEquals("b", it.getField("line"));
+  }
+  
 
   @Test
   public void testApplyToConf(){
@@ -72,9 +109,9 @@ public class TestHdfsFeed {
       MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 2,
               HdfsFeed.FEED_DIR, folder.getRoot().getPath(),
               HdfsFeed.applyToConf+"."+"setthis", "that"
-              ));
+      )
+    );
     Assert.assertEquals("that", ((HdfsFeedPartition) f.getFeedPartitions().get(0)).getConfiguration().get("setthis") );
-    
   }
   
   
