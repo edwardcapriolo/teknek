@@ -19,6 +19,7 @@ import io.teknek.model.ITuple;
 
 public class HdfsFeed extends Feed {
 
+  public static final String OUTPUT_TUPLE_NAME = "line";
   public static final String applyToConf = "apply.to.conf"; 
   public static final String FEED_DIR= "hdfsfeed.base.dir";
   public static final String NUMBER_PARTITIONS = "hdfsfeed.partitions";
@@ -112,7 +113,7 @@ class HdfsFeedPartition extends FeedPartition {
       try {
         String line = null;
         while ((line = br.readLine()) != null) {
-          arg0.setField("line", line);
+          arg0.setField(HdfsFeed.OUTPUT_TUPLE_NAME, line);
           return true;
         }
         br.close();

@@ -17,21 +17,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-
 public class TestHdfsFeed {
-
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
-  
-  private void writebFile() throws IOException{
+
+  private void writebFile() throws IOException {
     File a = folder.newFile("b.txt");
     BufferedWriter out = new BufferedWriter(new FileWriter(a));
     out.write("a\n");
     out.write("b\n");
     out.close();
   }
-  
+
   private void writeCFile() throws IOException {
     File b = folder.newFile("c.txt");
     BufferedWriter out = new BufferedWriter(new FileWriter(b));
@@ -39,80 +37,64 @@ public class TestHdfsFeed {
     out.write("e\n");
     out.close();
   }
-  
+
   @Test
-  public void tryWithTwoFilesOnePartition() throws IOException{
-      
+  public void tryWithTwoFilesOnePartition() throws IOException {
     writebFile();
     writeCFile();
-    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS,1,HdfsFeed.FEED_DIR, folder.getRoot().getPath()));
-    
+    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 1, HdfsFeed.FEED_DIR,
+            folder.getRoot().getPath()));
     List<FeedPartition> parts = f.getFeedPartitions();
     ITuple it = new Tuple();
     Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("a", it.getField("line"));
-    
-    Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("b", it.getField("line"));
-    
-    Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("d", it.getField("line"));
-    
-    Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("e", it.getField("line"));
-    
+    Assert.assertEquals("a", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
+    parts.get(0).next(it);
+    Assert.assertEquals("b", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
+    parts.get(0).next(it);
+    Assert.assertEquals("d", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
+    parts.get(0).next(it);
+    Assert.assertEquals("e", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
   }
 
   @Test
-  public void tryWithTwoFilesTwoPartition() throws IOException{
-      
+  public void tryWithTwoFilesTwoPartition() throws IOException {
     writebFile();
     writeCFile();
-    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS,2,HdfsFeed.FEED_DIR, folder.getRoot().getPath()));
-    
+    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 2, HdfsFeed.FEED_DIR,
+            folder.getRoot().getPath()));
     List<FeedPartition> parts = f.getFeedPartitions();
     ITuple it = new Tuple();
     Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("a", it.getField("line"));
-    
+    Assert.assertEquals("a", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
     Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("b", it.getField("line"));
-    
-    
+    Assert.assertEquals("b", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
     Assert.assertEquals(true, parts.get(1).next(it));
-    Assert.assertEquals("d", it.getField("line"));
-    
+    Assert.assertEquals("d", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
     Assert.assertEquals(true, parts.get(1).next(it));
-    Assert.assertEquals("e", it.getField("line"));
-    
-    
+    Assert.assertEquals("e", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
   }
-  
-  
+
   @Test
-  public void tryWithOneFilesOnePartition() throws IOException{
+  public void tryWithOneFilesOnePartition() throws IOException {
     writebFile();
     HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 1, HdfsFeed.FEED_DIR,
             folder.getRoot().getPath()));
     List<FeedPartition> parts = f.getFeedPartitions();
     ITuple it = new Tuple();
     Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("a", it.getField("line"));
+    Assert.assertEquals("a", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
     Assert.assertEquals(true, parts.get(0).next(it));
-    Assert.assertEquals("b", it.getField("line"));
+    Assert.assertEquals("b", it.getField(HdfsFeed.OUTPUT_TUPLE_NAME));
   }
-  
 
   @Test
-  public void testApplyToConf(){
-    HdfsFeed f = new HdfsFeed(
-      MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 2,
-              HdfsFeed.FEED_DIR, folder.getRoot().getPath(),
-              HdfsFeed.applyToConf+"."+"setthis", "that"
-      )
-    );
-    Assert.assertEquals("that", ((HdfsFeedPartition) f.getFeedPartitions().get(0)).getConfiguration().get("setthis") );
+  public void testApplyToConf() {
+    String varName = "setthis";
+    String varValue = "that";
+    HdfsFeed f = new HdfsFeed(MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 2, HdfsFeed.FEED_DIR,
+            folder.getRoot().getPath(), HdfsFeed.applyToConf + "." + varName, varValue));
+    Assert.assertEquals(varValue, ((HdfsFeedPartition) f.getFeedPartitions().get(0))
+            .getConfiguration().get(varName));
   }
-  
-  
+
 }
