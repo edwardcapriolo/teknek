@@ -65,5 +65,17 @@ public class TestHdfsFeed {
     System.out.println(it);
     
   }
+
+  @Test
+  public void testApplyToConf(){
+    HdfsFeed f = new HdfsFeed(
+      MapBuilder.makeMap(HdfsFeed.NUMBER_PARTITIONS, 2,
+              HdfsFeed.FEED_DIR, folder.getRoot().getPath(),
+              HdfsFeed.applyToConf+"."+"setthis", "that"
+              ));
+    Assert.assertEquals("that", ((HdfsFeedPartition) f.getFeedPartitions().get(0)).getConfiguration().get("setthis") );
+    
+  }
+  
   
 }

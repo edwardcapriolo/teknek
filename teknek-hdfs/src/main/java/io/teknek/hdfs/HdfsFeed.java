@@ -1,9 +1,7 @@
 package io.teknek.hdfs;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +19,7 @@ import io.teknek.model.ITuple;
 
 public class HdfsFeed extends Feed {
 
+  public static final String applyToConf = "apply.to.conf"; 
   public static final String FEED_DIR= "hdfsfeed.base.dir";
   public static final String NUMBER_PARTITIONS = "hdfsfeed.partitions";
   private String baseDir;
@@ -66,19 +65,19 @@ public class HdfsFeed extends Feed {
 
 class HdfsFeedPartition extends FeedPartition {
 
-  public static final String applyToConf = "apply.to.conf."; 
   private Path workingOn;
   private BufferedReader br = null;
-  private Configuration c;
+  private Configuration configuration;
   
   public HdfsFeedPartition(Feed feed, String partitionId) {
     super(feed, partitionId);
-    c = new Configuration();
+    configuration = new Configuration();
     for ( Map.Entry<String, Object> entry: feed.getProperties().entrySet() ) {
-      if (entry.getKey().startsWith(applyToConf)){
-        String conf = entry.getKey().substring(entry.getKey().indexOf(applyToConf)+1);
-        c.set(conf, entry.getValue().toString());
+      if (entry.getKey().startsWith(HdfsFeed.applyToConf)){
+        String conf = entry.getKey().substring((HdfsFeed.applyToConf + ".").length());
+        configuration.set(conf, entry.getValue().toString());
       }
+      
     }
   }
 
@@ -104,7 +103,7 @@ class HdfsFeedPartition extends FeedPartition {
         workingOn = getNextFile();
         FileSystem fs = null;
         try {
-          fs = FileSystem.get(c);
+          fs = FileSystem.get(configuration);
           br = new BufferedReader(new InputStreamReader(fs.open(workingOn)));
         } catch (IOException e) {
           e.printStackTrace();
@@ -129,7 +128,7 @@ class HdfsFeedPartition extends FeedPartition {
     Path p = new Path(h.getBaseDir());
     Path toProcess = null;
     try {
-      FileSystem fs = FileSystem.get(c);
+      FileSystem fs = FileSystem.get(configuration);
       FileStatus [] status = fs.listStatus(p);
 
       while (toProcess == null){
@@ -172,6 +171,10 @@ class HdfsFeedPartition extends FeedPartition {
   @Override
   public void setOffset(String arg0) {
     workingOn = new Path(arg0);
+  }
+
+  public Configuration getConfiguration() {
+    return configuration;
   }
   
 }
