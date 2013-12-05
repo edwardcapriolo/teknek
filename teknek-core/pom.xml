@@ -33,6 +33,7 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<version>1.9.13</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
@@ -50,6 +51,7 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<artifactId>scala-library</artifactId>
 			<version>2.9.3</version>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>com.101tec</groupId>
@@ -108,11 +110,13 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<version>3.4.3</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.9.2</artifactId>
 			<version>0.8.0-beta1</version>
 		</dependency>
+		-->
 
 	</dependencies>
 	<build>
