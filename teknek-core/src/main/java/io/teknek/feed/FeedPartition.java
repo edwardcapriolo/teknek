@@ -19,7 +19,11 @@ import io.teknek.model.ITuple;
 
 public abstract class FeedPartition {
 
+  /**
+   * Reference to the parent of this partition
+   */
   protected Feed feed;
+  
   /**
    * This field uniquely identifies a partition of a feed. In could be critical
    * in cases where you wish client to re-bind to prospective feeds. 
@@ -32,8 +36,15 @@ public abstract class FeedPartition {
   }
   
   public abstract void initialize();
-  
-  public abstract boolean next(ITuple t);
+  /**
+   * Read the next value from the feed into the tupleRef passed in.
+   * Typically class always returns true and blocks on next read until new
+   * data appears unless the user wishes to construct a feed that ends
+   * 
+   * @param tupleRef
+   * @return true if the partition contains more tuples or might contain more tuples in the future 
+   */
+  public abstract boolean next(ITuple tupleRef);
   
   public abstract void close();
 
@@ -51,8 +62,18 @@ public abstract class FeedPartition {
    */
   public abstract boolean supportsOffsetManagement();
   
+  /**
+   * A string that represents the current offset of the feed. The format 
+   * is not a general one, each FeedPartition persists strings only meant
+   * to be read back by the same class
+   * @return a string which represents the current offset
+   */
   public abstract String getOffset();
   
+  /**
+   * Called only once to advance the feed to a specific starting point.
+   * @param offset
+   */
   public abstract void setOffset(String offset);
   
 }
