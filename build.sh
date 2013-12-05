@@ -6,6 +6,10 @@ cd teknek-cassandra
 mvn clean install
 mvn eclipse:eclipse
 cd ..
+cd teknek-hdfs
+mvn clean install
+mvn eclipse:eclipse
+cd ..
 cd teknek-kafka
 mvn clean install
 mvn eclipse:eclipse
