@@ -17,6 +17,7 @@ package io.teknek.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
  
 public class Tuple implements ITuple {
   private Map<String, Object> columns;
@@ -66,5 +67,20 @@ public class Tuple implements ITuple {
   public ITuple withField(String name, Object value) {
     setField(name, value);
     return this;
+  }
+
+  @Override
+  public boolean hasField(String name) {
+    return columns.containsKey(name);
+  }
+
+  @Override
+  public void clearFields() {
+    columns.clear();
+  }
+
+  @Override
+  public Set<String> listFields() {
+    return columns.keySet();
   }
 }
