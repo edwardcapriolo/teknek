@@ -15,10 +15,6 @@ limitations under the License.
 */
 package io.teknek.feed;
 
-import io.teknek.plan.FeedDesc;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -70,5 +66,13 @@ public abstract class Feed {
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Feed withName(String name) {
+    this.setName(name);
+    return this;
+  }
 }
 
