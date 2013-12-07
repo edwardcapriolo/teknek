@@ -21,11 +21,11 @@ import io.teknek.plan.Plan;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
@@ -46,14 +46,14 @@ public class TeknekDaemon implements Watcher{
   private Properties properties;
   private ZooKeeper zk;
   private long rescanMillis = 5000;
-  private Map<Plan, List<Worker>> workerThreads;
+  ConcurrentHashMap<Plan, List<Worker>> workerThreads;
   private boolean goOn = true;
   
   public TeknekDaemon(Properties properties){
     
     myId = UUID.randomUUID();
     this.properties = properties;
-    workerThreads = new HashMap<Plan,List<Worker>>();
+    workerThreads = new ConcurrentHashMap<Plan,List<Worker>>();
     if (properties.containsKey(MAX_WORKERS)){
       maxWorkers = Integer.parseInt(properties.getProperty(MAX_WORKERS));
     }
@@ -156,8 +156,8 @@ public class TeknekDaemon implements Watcher{
   
   private void addWorkerToList(Plan plan, Worker worker) {
     List<Worker> list = workerThreads.get(plan);
-    if (list == null){
-      list = new ArrayList<Worker>();
+    if (list == null) {
+      list = Collections.synchronizedList(new ArrayList<Worker>());
     }
     list.add(worker);
     workerThreads.put(plan, list);

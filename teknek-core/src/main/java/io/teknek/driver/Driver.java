@@ -74,7 +74,7 @@ public class Driver implements Runnable {
           try {
             driverNode.getOperator().handleTuple(t);
             complete = true;
-          } catch (Exception ex){}
+          } catch (RuntimeException ex){}
         }
         maybeDoOffset();
         t = new Tuple();

@@ -24,9 +24,11 @@ import io.teknek.feed.FeedPartition;
 import io.teknek.plan.Plan;
 
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
@@ -36,6 +38,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 
 public class Worker implements Watcher {
+  
+  final static Logger logger = Logger.getLogger(Worker.class.getName());
   private Plan plan;
   private List<String> otherWorkers;
   private TeknekDaemon parent;
@@ -79,9 +83,27 @@ public class Worker implements Watcher {
 
   public void start(){
     driverThread = new Thread(driver);
+    driverThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(Thread t, Throwable e) {
+        logger.warn("Thread died removing worker from list " + t, e );
+        shutdown();
+      }
+    });
     driverThread.run();
   }
-  
+  /**
+   * Remove ourselves from parents worker threads and close our zk connection
+   */
+  private void shutdown(){
+    parent.workerThreads.get(plan).remove(this);
+    if (zk != null) {
+      try {
+        zk.close();
+      } catch (InterruptedException e1) {
+      }
+    }
+  }
   /**
    * TODO: in here it "should" be impossible fro a null return
    * @param workerStatus
