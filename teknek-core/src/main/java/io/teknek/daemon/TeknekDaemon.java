@@ -155,6 +155,7 @@ public class TeknekDaemon implements Watcher{
   }
   
   private void addWorkerToList(Plan plan, Worker worker) {
+    logger.debug("adding worker " + worker + " to plan "+plan);
     List<Worker> list = workerThreads.get(plan);
     if (list == null) {
       list = Collections.synchronizedList(new ArrayList<Worker>());
@@ -183,6 +184,14 @@ public class TeknekDaemon implements Watcher{
 
   public Properties getProperties() {
     return properties;
+  }
+
+  public long getRescanMillis() {
+    return rescanMillis;
+  }
+
+  public void setRescanMillis(long rescanMillis) {
+    this.rescanMillis = rescanMillis;
   }
   
 }

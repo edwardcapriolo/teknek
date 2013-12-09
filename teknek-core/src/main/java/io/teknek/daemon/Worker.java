@@ -73,6 +73,7 @@ public class Worker implements Watcher {
       WorkerStatus iGotThis = new WorkerStatus(myId.toString(), toProcess.getPartitionId());
       try {
         WorkerDao.registerWorkerStatus(zk, plan, iGotThis);
+        
       } catch (WorkerDaoException e) {
         throw new RuntimeException(e);
       }
@@ -90,7 +91,7 @@ public class Worker implements Watcher {
         shutdown();
       }
     });
-    driverThread.run();
+    driverThread.start();
   }
   /**
    * Remove ourselves from parents worker threads and close our zk connection
@@ -135,8 +136,10 @@ public class Worker implements Watcher {
    */
   @Override
   public void process(WatchedEvent event) {
+    logger.debug("recived event "+ event);
     if (event.getType() == EventType.NodeDataChanged || event.getType() == EventType.NodeDeleted) {
       driver.setGoOn(false);
+      shutdown();
       //wait for graceful termination
       //close zk
       //remove this class from parent list
