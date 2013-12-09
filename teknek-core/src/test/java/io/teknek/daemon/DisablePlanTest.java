@@ -45,9 +45,23 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    Assert.assertNotNull( td.workerThreads );
-    Assert.assertNotNull( td.workerThreads.get(p) );
-    Assert.assertEquals( 1, td.workerThreads.get(p).size() );
+    Assert.assertNotNull(td.workerThreads);
+    Assert.assertNotNull(td.workerThreads.get(p));
+    Assert.assertEquals(1, td.workerThreads.get(p).size());
+
+    p.setDisabled(true);
+    td.applyPlan(p);
+    
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    Assert.assertNotNull(td.workerThreads.get(p));
+    Assert.assertEquals(0, td.workerThreads.get(p).size());
+    
   }
 
   @AfterClass
