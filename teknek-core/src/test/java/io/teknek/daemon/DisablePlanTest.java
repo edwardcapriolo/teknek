@@ -36,7 +36,6 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
                     MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,
                             10))).withRootOperator(new OperatorDesc(new TenSecondOperator()));
     p.setName("shutup");
-    p.setMaxWorkers(1);
     p.setMaxWorkers(3);
     td.applyPlan(p);
 
