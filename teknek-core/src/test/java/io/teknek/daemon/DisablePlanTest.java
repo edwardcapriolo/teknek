@@ -12,6 +12,7 @@ import io.teknek.feed.FixedFeed;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
+import io.teknek.test.WaitForCondition;
 import io.teknek.util.MapBuilder;
 import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
@@ -30,7 +31,7 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
 
   @Test
   public void hangAround() {
-    Plan p = new Plan().withFeedDesc(
+    final Plan p = new Plan().withFeedDesc(
             new FeedDesc().withFeedClass(FixedFeed.class.getName()).withProperties(
                     MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,
                             10))).withRootOperator(new OperatorDesc(new TenSecondOperator()));
@@ -48,12 +49,21 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
     Assert.assertNotNull(td.workerThreads);
     Assert.assertNotNull(td.workerThreads.get(p));
     Assert.assertEquals(1, td.workerThreads.get(p).size());
-
+    
+    /*
+    new WaitForCondition() {
+      public boolean condition() {
+        return td.workerThreads.get(p) != null;
+      }
+    }.waitFor(3000);
+    Assert.assertEquals(1, td.workerThreads.get(p).size());
+    */
+    
     p.setDisabled(true);
     td.applyPlan(p);
     
     try {
-      Thread.sleep(3000);
+      Thread.sleep(5000);
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
