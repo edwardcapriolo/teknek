@@ -87,7 +87,7 @@ public class TeknekDaemon implements Watcher{
         while (goOn){
           try {
             if (workerThreads.size() < maxWorkers) {
-              List<String> children = WorkerDao.finalAllPlanNames(zk);
+              List<String> children = WorkerDao.finalAllPlanNames(zk);  
               logger.debug("Children found in zk" + children);
               for (String child: children){
                 considerStarting(child);
