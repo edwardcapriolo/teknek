@@ -73,12 +73,9 @@ public class TeknekDaemon implements Watcher{
         e.printStackTrace();
       }
     } catch (IOException e1) {
-      System.out.println("failed connected");
       throw new RuntimeException(e1);
     }
-    System.out.println("connected");
     try {
-
       WorkerDao.createZookeeperBase(zk);
       WorkerDao.createEphemeralNodeForDaemon(zk, this);
     } catch (WorkerDaoException e) {
@@ -91,7 +88,6 @@ public class TeknekDaemon implements Watcher{
           try {
             if (workerThreads.size() < maxWorkers) {
               List<String> children = WorkerDao.finalAllPlanNames(zk);
-              
               logger.debug("Children found in zk" + children);
               for (String child: children){
                 considerStarting(child);
