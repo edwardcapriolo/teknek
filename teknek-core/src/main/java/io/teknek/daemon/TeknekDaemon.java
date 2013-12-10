@@ -91,6 +91,7 @@ public class TeknekDaemon implements Watcher{
           try {
             if (workerThreads.size() < maxWorkers) {
               List<String> children = WorkerDao.finalAllPlanNames(zk);
+              
               logger.debug("Children found in zk" + children);
               for (String child: children){
                 considerStarting(child);
@@ -98,10 +99,16 @@ public class TeknekDaemon implements Watcher{
             } else {
               logger.debug("Will not attemt to start worker. Already at max workers "+ workerThreads.size());
             }
-            Thread.sleep(rescanMillis);
+           
           } catch (Exception ex){
             logger.error("Exception during scan "+ex);
             ex.printStackTrace();
+          }
+          try {
+            Thread.sleep(rescanMillis);
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
           }
         }
       }
@@ -128,6 +135,7 @@ public class TeknekDaemon implements Watcher{
       logger.error("did not find plan");
       return;
     }
+    logger.debug("trying to acqure lock on " + WorkerDao.PLANS_ZK + "/"+ plan.getName());
     WriteLock l = new WriteLock(zk, WorkerDao.PLANS_ZK + "/"+ plan.getName(), null);
     try {
       boolean gotLock = l.lock();
