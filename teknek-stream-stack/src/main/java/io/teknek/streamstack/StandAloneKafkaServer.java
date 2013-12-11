@@ -17,7 +17,7 @@ public class StandAloneKafkaServer {
   
   public static final String EMBED_KAFKA = "starter.embeddedkafka";
   public static final String EMBED_KAFKA_LOG = "starter.embeddedkafka.log";
-  public static final String EMBED_KAFKA_LOG_DIR = "./kflog";
+  public static final String EMBED_KAFKA_LOG_DIR = "./target/kflog";
   
  
   public static KafkaServer server;
@@ -58,7 +58,7 @@ public class StandAloneKafkaServer {
 }
 
 
-
+/** This is a copy if we get the deps correct we should not need this*/
 class TimeImpl implements Time { 
 
   public TimeImpl(){
