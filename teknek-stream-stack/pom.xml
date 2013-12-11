@@ -31,20 +31,13 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<groupId>io.teknek</groupId>
 			<artifactId>teknek-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<type>test-jar</type>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
                         <groupId>io.teknek</groupId>
                         <artifactId>teknek-kafka</artifactId>
                         <version>0.0.1-SNAPSHOT</version>
-                        <type>test-jar</type>
-                        <scope>test</scope>
                 </dependency>
-		
-
-
 
 		<dependency>
 			<groupId>log4j</groupId>
