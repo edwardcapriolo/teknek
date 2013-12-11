@@ -33,7 +33,7 @@ public class StandAloneZooKeeperServer {
   public static void main (String [] args){
     Properties props = new Properties();
     InputStream inputStream = StandAloneZooKeeperServer.class.getClassLoader()
-            .getResourceAsStream("teknek.properties"); 
+            .getResourceAsStream("streamstack.properties"); 
     try {
       if (inputStream != null){
         props.load(inputStream);
