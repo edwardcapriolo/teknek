@@ -31,17 +31,7 @@ public class StandAloneZooKeeperServer {
   }
   
   public static void main (String [] args){
-    Properties props = new Properties();
-    InputStream inputStream = StandAloneZooKeeperServer.class.getClassLoader()
-            .getResourceAsStream("streamstack.properties"); 
-    try {
-      if (inputStream != null){
-        props.load(inputStream);
-      }
-    } catch (IOException e) {
-      LOGGER.debug("loading props file "+ e);
-    }
-    
+    Properties props = PropertiesLoader.getProps();
     if (props.getProperty(EMBED_ZK) != null) {
       StandAloneZooKeeperServer s = new StandAloneZooKeeperServer(props);
       s.start();
