@@ -1,6 +1,5 @@
 package io.teknek.kafka;
 
-import io.teknek.datalayer.KafkaUtil;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.Tuple;
 
@@ -9,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-import kafka.javaapi.producer.Producer;
-import kafka.producer.KeyedMessage;
+
 import org.junit.Test;
 
 public class TestSimpleKafkaFeed extends EmbeddedKafkaServer {
@@ -60,6 +58,7 @@ public class TestSimpleKafkaFeed extends EmbeddedKafkaServer {
   public void aTest(){
     sendData();
     receiveData();
+    
     /*
     KafkaUtil.createTopic(TOPIC, 1, 1, zookeeperTestServer.getConnectString());
     Producer<String, String> producer = new Producer<String, String>(super.createProducerConfig());
