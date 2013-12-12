@@ -50,7 +50,9 @@ public class StandAloneKafkaServer {
     brokerProps.put("zookeeper.connect", "localhost:2181");
     brokerProps.put("broker.id", "999");
     brokerProps.put("port","9092");
+    brokerProps.put("log.dir", logDir);
     KafkaConfig config = new KafkaConfig(brokerProps);
+    
     server = new kafka.server.KafkaServer(config, new TimeImpl());
     server.startup();
     
