@@ -53,7 +53,7 @@ public class CassandraBatchingOperatorTest extends EmbeddedCassandraServer {
   }
   
   
-  public void assertResults() throws CharacterCodingException, ConnectionException{
+  public void assertResults() throws CharacterCodingException, ConnectionException {
     ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily
             .newColumnFamily(COLUMNFAMILY, ByteBufferSerializer.get(),
                     ByteBufferSerializer.get());

@@ -18,3 +18,7 @@ cd teknek-web
 mvn clean install
 mvn eclipse:eclipse
 cd ..
+cd teknek-stream-stack
+mvn clean install assembly:single
+mvn eclipse:eclipse
+cd ..
