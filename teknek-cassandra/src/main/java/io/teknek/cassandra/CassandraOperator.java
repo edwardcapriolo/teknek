@@ -3,17 +3,11 @@ package io.teknek.cassandra;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import me.prettyprint.cassandra.serializers.ByteBufferSerializer;
-import me.prettyprint.cassandra.service.CassandraHostConfigurator;
-import me.prettyprint.hector.api.Cluster;
-import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.beans.HColumn;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.mutation.MutationResult;
-import me.prettyprint.hector.api.mutation.Mutator;
+import com.netflix.astyanax.Keyspace;
+
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
- 
+  
 public class CassandraOperator extends Operator {
 
   public static final String KEYSPACE = "cassandra.operator.keyspace";
@@ -24,25 +18,28 @@ public class CassandraOperator extends Operator {
   public static final String VALUE = "cassandra.operator.value";
   public static final String TIMESTAMP = "cassandra.operator.timestamp";
   
-  protected CassandraHostConfigurator cassandraHostConfigurator;
+  //protected CassandraHostConfigurator cassandraHostConfigurator;
   protected String clusterName = "TestCluster";
-  protected Cluster cluster;
+  //protected Cluster cluster;
   protected Keyspace keyspace;
   
   @Override
   public void setProperties(Map<String, Object> properties) {
-    super.setProperties(properties);   
+    super.setProperties(properties);
+    /*
     cassandraHostConfigurator = new CassandraHostConfigurator(((String) properties.get(HOST_LIST)));
     cluster = HFactory.getOrCreateCluster(clusterName, cassandraHostConfigurator);
-    keyspace = HFactory.createKeyspace((String) properties.get(KEYSPACE), cluster);   
+    keyspace = HFactory.createKeyspace((String) properties.get(KEYSPACE), cluster);*/   
   }
   
   @Override
   public void handleTuple(ITuple tuple) {
+    /*
     Mutator<ByteBuffer> m = HFactory.createMutator(keyspace, ByteBufferSerializer.get());
     HColumn col = HFactory.createColumn((ByteBuffer) tuple.getField(COLUMN), (ByteBuffer) tuple.getField(VALUE), System.nanoTime(), ByteBufferSerializer.get(), ByteBufferSerializer.get());
     m.addInsertion((ByteBuffer) tuple.getField(ROW_KEY), (String) properties.get(COLUMN_FAMILY), col);
     MutationResult result = m.execute();
+    */
   }
 
 }

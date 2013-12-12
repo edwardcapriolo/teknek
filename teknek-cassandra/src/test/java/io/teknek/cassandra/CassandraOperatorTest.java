@@ -5,15 +5,14 @@ import java.nio.charset.CharacterCodingException;
 
 import junit.framework.Assert;
 
-import me.prettyprint.cassandra.serializers.ByteBufferSerializer;
-import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.beans.HColumn;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.query.ColumnQuery;
-import me.prettyprint.hector.api.query.QueryResult;
-
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.junit.Test;
+
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+import com.netflix.astyanax.model.Column;
+import com.netflix.astyanax.model.ColumnFamily;
+import com.netflix.astyanax.serializers.ByteBufferSerializer;
+import com.netflix.astyanax.serializers.ByteSerializer;
 
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
@@ -21,10 +20,10 @@ import io.teknek.model.Tuple;
 import io.teknek.util.MapBuilder;
 
 public class CassandraOperatorTest extends EmbeddedCassandraServer {
- 
+  
   @SuppressWarnings("unchecked")
   @Test
-  public void testOperator() throws CharacterCodingException{
+  public void testOperator() throws CharacterCodingException, ConnectionException{
     Operator o = new CassandraOperator();
     o.setProperties(MapBuilder.makeMap(CassandraOperator.KEYSPACE, EmbeddedCassandraServer.KEYSPACE,
             CassandraOperator.COLUMN_FAMILY, EmbeddedCassandraServer.COLUMNFAMILY,
@@ -41,6 +40,16 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
     .withField(CassandraOperator.VALUE, ByteBufferUtil.bytes("smith"));
     o.handleTuple(k);
     
+    ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily
+            .newColumnFamily(COLUMNFAMILY, ByteBufferSerializer.get(),
+                    ByteBufferSerializer.get());
+    Column<ByteBuffer> result = keyspace.prepareQuery(cf)
+            .getKey(ByteBufferUtil.bytes("user1"))
+            .getColumn(ByteBufferUtil.bytes("firstname"))
+            .execute().getResult();
+    Assert.assertEquals("bob", result.getStringValue());
+
+    /*
     Keyspace keyspace = HFactory.createKeyspace((String) KEYSPACE, cluster);   
     ColumnQuery<ByteBuffer,ByteBuffer,ByteBuffer> query = HFactory.createColumnQuery(keyspace, ByteBufferSerializer.get(), ByteBufferSerializer.get(), ByteBufferSerializer.get());
     query.setKey(ByteBufferUtil.bytes("user1"));
@@ -48,6 +57,7 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
     query.setColumnFamily(COLUMNFAMILY);
     QueryResult<HColumn<ByteBuffer, ByteBuffer>> x = query.execute();
     Assert.assertEquals("bob", ByteBufferUtil.string(x.get().getValue()));
+    */
   }
   
 }

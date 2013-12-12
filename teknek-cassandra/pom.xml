@@ -49,19 +49,41 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<scope>test</scope>
 		</dependency>
             
-	
+
+		<dependency>
+			<groupId>com.netflix.astyanax</groupId>
+			<artifactId>astyanax-cassandra</artifactId>
+			<version>1.56.44</version>
+		</dependency>
+
+                <dependency>
+        <groupId>com.netflix.astyanax</groupId>
+        <artifactId>astyanax-thrift</artifactId>
+        <version>1.56.44</version>
+	                        <exclusions>
+                                <exclusion>
+                                        <groupId>org.apache.thrift</groupId> <!-- Exclude Project-D from Project-B -->
+                                        <artifactId>libthrift</artifactId>
+                                </exclusion>
+                        </exclusions>
+
+</dependency>
+
+            
+		<!--
 		<dependency>
 			<groupId>org.hectorclient</groupId>
 			<artifactId>hector-core</artifactId>
 			<version>1.1-4</version>
 		</dependency>
-            
+
 		<dependency>
                         <groupId>org.hectorclient</groupId>
                         <artifactId>hector-test</artifactId>
                         <version>1.1-4</version>
 			<scope>test</scope>
                 </dependency>
+		-->
 
 		<dependency>
 			<groupId>log4j</groupId>
@@ -88,7 +110,7 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 		<dependency>
 			<groupId>org.apache.cassandra</groupId>
 			<artifactId>cassandra-all</artifactId>
-			<version>2.0.3</version>
+			<version>1.2.12</version>
 		</dependency>
 
 	</dependencies>
