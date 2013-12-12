@@ -23,7 +23,6 @@ public class CassandraBatchingOperator extends CassandraOperator {
   public static final String BATCH_SIZE = "cassandra.operator.batchsize";
   protected int batchSize = 1;
   private int count = 0;
-  Keyspace keyspace;
   MutationBatch m ;
   
   @Override
@@ -36,8 +35,7 @@ public class CassandraBatchingOperator extends CassandraOperator {
         .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
     )
     .withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl("MyConnectionPool")
-      //TODO HARDCODE
-        .setPort(9157)
+        .setPort((int)properties.get(PORT))
         .setMaxConnsPerHost(1)
         .setSeeds((String) properties.get(HOST_LIST))
     )

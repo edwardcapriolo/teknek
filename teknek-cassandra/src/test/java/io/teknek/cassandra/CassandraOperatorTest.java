@@ -27,7 +27,8 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
     Operator o = new CassandraOperator();
     o.setProperties(MapBuilder.makeMap(CassandraOperator.KEYSPACE, EmbeddedCassandraServer.KEYSPACE,
             CassandraOperator.COLUMN_FAMILY, EmbeddedCassandraServer.COLUMNFAMILY,
-            CassandraOperator.HOST_LIST, "localhost:9157"));
+            CassandraOperator.HOST_LIST, "localhost:9157",
+            CassandraOperator.PORT, 9157));
     ITuple t = new Tuple()
       .withField(CassandraOperator.ROW_KEY, ByteBufferUtil.bytes("user1"))
       .withField(CassandraOperator.COLUMN, ByteBufferUtil.bytes("firstname"))
@@ -40,7 +41,7 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
     .withField(CassandraOperator.VALUE, ByteBufferUtil.bytes("smith"));
     o.handleTuple(k);
     
-    /*
+    
     ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily
             .newColumnFamily(COLUMNFAMILY, ByteBufferSerializer.get(),
                     ByteBufferSerializer.get());
@@ -49,7 +50,7 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
             .getColumn(ByteBufferUtil.bytes("firstname"))
             .execute().getResult();
     Assert.assertEquals("bob", result.getStringValue());
-    */
+    
 
     /*
     Keyspace keyspace = HFactory.createKeyspace((String) KEYSPACE, cluster);   

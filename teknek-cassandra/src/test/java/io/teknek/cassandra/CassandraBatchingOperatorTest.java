@@ -29,7 +29,8 @@ public class CassandraBatchingOperatorTest extends EmbeddedCassandraServer {
     o.setProperties(MapBuilder.makeMap(CassandraOperator.KEYSPACE, EmbeddedCassandraServer.KEYSPACE,
             CassandraOperator.COLUMN_FAMILY, EmbeddedCassandraServer.COLUMNFAMILY,
             CassandraOperator.HOST_LIST, "localhost:9157", 
-            CassandraBatchingOperator.BATCH_SIZE, 2));
+            CassandraBatchingOperator.BATCH_SIZE, 2,
+            CassandraOperator.PORT, 9157));
     ITuple t = new Tuple()
       .withField(CassandraOperator.ROW_KEY, ByteBufferUtil.bytes("user1"))
       .withField(CassandraOperator.COLUMN, ByteBufferUtil.bytes("firstname"))
