@@ -22,7 +22,7 @@ import org.junit.Test;
 
 public class CassandraBatchingOperatorTest extends EmbeddedCassandraServer {
   
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked") 
   @Test
   public void testOperator() throws CharacterCodingException{
     Operator o = new CassandraBatchingOperator();
