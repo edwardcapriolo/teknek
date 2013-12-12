@@ -40,6 +40,7 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
     .withField(CassandraOperator.VALUE, ByteBufferUtil.bytes("smith"));
     o.handleTuple(k);
     
+    /*
     ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily
             .newColumnFamily(COLUMNFAMILY, ByteBufferSerializer.get(),
                     ByteBufferSerializer.get());
@@ -48,6 +49,7 @@ public class CassandraOperatorTest extends EmbeddedCassandraServer {
             .getColumn(ByteBufferUtil.bytes("firstname"))
             .execute().getResult();
     Assert.assertEquals("bob", result.getStringValue());
+    */
 
     /*
     Keyspace keyspace = HFactory.createKeyspace((String) KEYSPACE, cluster);   

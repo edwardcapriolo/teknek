@@ -62,27 +62,16 @@ public class CassandraBatchingOperatorTest extends EmbeddedCassandraServer {
             .execute().getResult();
     Assert.assertEquals("bob", result.getStringValue());
   }
-  
-  public void assertNotThere() throws CharacterCodingException, ConnectionException{
+
+  public void assertNotThere() throws CharacterCodingException, ConnectionException {
     try {
-    ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily
-            .newColumnFamily(COLUMNFAMILY, ByteBufferSerializer.get(),
-                    ByteBufferSerializer.get());
-    Column<ByteBuffer> result = keyspace.prepareQuery(cf)
-            .getKey(ByteBufferUtil.bytes("user1"))
-            .getColumn(ByteBufferUtil.bytes("middlename"))
-            .execute().getResult();
+      ColumnFamily<ByteBuffer, ByteBuffer> cf = ColumnFamily.newColumnFamily(COLUMNFAMILY,
+              ByteBufferSerializer.get(), ByteBufferSerializer.get());
+      keyspace.prepareQuery(cf).getKey(ByteBufferUtil.bytes("user1"))
+              .getColumn(ByteBufferUtil.bytes("middlename")).execute().getResult();
       Assert.fail("Should have not found");
-    } catch (NotFoundException ex){}
-    
-    /*
-    Keyspace keyspace = HFactory.createKeyspace((String) KEYSPACE, cluster);   
-    ColumnQuery<ByteBuffer,ByteBuffer,ByteBuffer> query = HFactory.createColumnQuery(keyspace, ByteBufferSerializer.get(), ByteBufferSerializer.get(), ByteBufferSerializer.get());
-    query.setKey(ByteBufferUtil.bytes("user1"));
-    query.setName(ByteBufferUtil.bytes("middlename"));
-    query.setColumnFamily(COLUMNFAMILY);
-    QueryResult<HColumn<ByteBuffer, ByteBuffer>> x = query.execute();
-    Assert.assertNull(x.get());*/    
+    } catch (NotFoundException ex) {
+    }
   }
-  
+
 }

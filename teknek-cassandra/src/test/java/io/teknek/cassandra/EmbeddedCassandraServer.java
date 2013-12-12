@@ -39,7 +39,8 @@ public class EmbeddedCassandraServer {
           InterruptedException, ConfigurationException {
     if (started == null) {
       started = new Object();
-      EmbeddedCassandraServerHelper.startEmbeddedCassandra("/cassandra.yaml");
+      EmbeddedCassandraServerHelper e = new EmbeddedCassandraServerHelper();
+      e.startEmbeddedCassandra("/cassandra.yaml");
       /*
        * CassandraHostConfigurator cassandraHostConfigurator = new
        * CassandraHostConfigurator("localhost:9157"); cluster = HFactory.getOrCreateCluster("unit",
@@ -76,8 +77,8 @@ public class EmbeddedCassandraServer {
                         ByteSerializer.get());
         keyspace.createColumnFamily(CF_STANDARD1, null);
         
-      } catch (ConnectionException e) {
-        e.printStackTrace();
+      } catch (ConnectionException ex) {
+        ex.printStackTrace();
       }
 
     }
