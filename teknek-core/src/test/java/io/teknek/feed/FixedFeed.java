@@ -39,6 +39,7 @@ public class FixedFeed extends Feed {
     numberOfRows = (Integer) super.properties.get(NUMBER_OF_ROWS);
   }
 
+  
 
   public List<FeedPartition> getFeedPartitions() {
     List<FeedPartition> res = new ArrayList<FeedPartition>();

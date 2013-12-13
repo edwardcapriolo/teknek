@@ -57,6 +57,10 @@ public abstract class Feed {
   public abstract Map<String,String> getSuggestedBindParams();
   
   
+  public void setProperties(Map<String, Object> properties) {
+    this.properties = properties;
+  }
+
   public Map<String, Object> getProperties() {
     return properties;
   }

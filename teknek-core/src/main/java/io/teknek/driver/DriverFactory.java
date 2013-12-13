@@ -77,7 +77,7 @@ public class DriverFactory {
   
   public static Operator buildOperator(OperatorDesc operatorDesc){
     Operator operator = null;
-    if (operatorDesc.getSpec() == null){
+    if (operatorDesc.getSpec() == null || "java".equalsIgnoreCase(operatorDesc.getSpec())){
       try {
         operator = (Operator) Class.forName(operatorDesc.getTheClass()).newInstance();
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
@@ -131,20 +131,31 @@ public class DriverFactory {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Feed buildFeed(FeedDesc feedDesc){
     Feed feed = null;
-    Class [] paramTypes = new Class [] { Map.class };    
-    Constructor<Feed> feedCons = null;
-    try {
-      feedCons = (Constructor<Feed>) Class.forName(feedDesc.getTheClass()).getConstructor(
-              paramTypes);
-    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
+    Class [] paramTypes = new Class [] { Map.class }; 
+    if (feedDesc.getSpec() == null || "java".equalsIgnoreCase(feedDesc.getSpec())){
+      try {
+        Constructor<Feed> feedCons = (Constructor<Feed>) Class.forName(feedDesc.getTheClass()).getConstructor(
+                paramTypes);
+        feed = feedCons.newInstance(feedDesc.getProperties());
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException
+              | NoSuchMethodException | SecurityException | IllegalArgumentException
+              | InvocationTargetException e) {
+        throw new RuntimeException(e);
+      }
+    } else if (feedDesc.getSpec().equals("groovy")) {
+      try (GroovyClassLoader gc = new GroovyClassLoader()) {
+        Class<?> c = gc.parseClass(feedDesc.getScript());
+        Constructor<Feed> feedCons = (Constructor<Feed>) c.getConstructor(paramTypes);
+        feed = (Feed) feedCons.newInstance(feedDesc.getProperties());
+
+      } catch (InstantiationException | IllegalAccessException | IOException
+              | NoSuchMethodException | SecurityException | IllegalArgumentException
+              | InvocationTargetException e) {
+        throw new RuntimeException(e);
+      }
     }
-    try {
-      feed = feedCons.newInstance(feedDesc.getProperties());
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-            | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
+    feed.setName(feedDesc.getName());
+    feed.setProperties(feedDesc.getProperties());
     return feed;
   }
   

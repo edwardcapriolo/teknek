@@ -78,6 +78,7 @@ public class TestFixedFeed {
     FeedDesc fd = new FeedDesc();
     fd.setTheClass(FixedFeed.class.getCanonicalName());
     fd.setProperties(buildFeedProps());
+    fd.setName("afeed");
     Feed feed = DriverFactory.buildFeed(fd);
     Assert.assertEquals(TestFixedFeed.EXPECTED_PARTITIONS, feed.getFeedPartitions().size());
   }

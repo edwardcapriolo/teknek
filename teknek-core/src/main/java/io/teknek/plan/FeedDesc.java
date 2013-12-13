@@ -22,6 +22,7 @@ public class FeedDesc extends DynamicInstantiatable {
 
   @SuppressWarnings("rawtypes")
   private Map properties;
+  private String name;
   
   public FeedDesc(){
     
@@ -44,5 +45,17 @@ public class FeedDesc extends DynamicInstantiatable {
     this.properties = properties;
     return this;
   }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
   
+  public FeedDesc withName(String name){
+    setName(name);
+    return this;
+  }
 }
