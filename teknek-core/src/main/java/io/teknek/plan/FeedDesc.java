@@ -17,24 +17,14 @@ package io.teknek.plan;
 
 import java.util.Map;
 
-public class FeedDesc {
+public class FeedDesc extends DynamicInstantiatable {
   
-  private String spec;
-  private String script;
-  private String feedClass;
+
   @SuppressWarnings("rawtypes")
   private Map properties;
   
   public FeedDesc(){
     
-  }
-
-  public String getFeedClass() {
-    return feedClass;
-  }
-
-  public void setFeedClass(String feedClass) {
-    this.feedClass = feedClass;
   }
 
   public Map getProperties() {
@@ -46,7 +36,7 @@ public class FeedDesc {
   }
   
   public FeedDesc withFeedClass(String feedClass) {
-    this.feedClass = feedClass;
+    this.theClass = feedClass;
     return this;
   }
   
@@ -54,22 +44,5 @@ public class FeedDesc {
     this.properties = properties;
     return this;
   }
-  
-  public String getSpec() {
-    return spec;
-  }
-
-  public void setSpec(String spec) {
-    this.spec = spec;
-  }
-
-  public String getScript() {
-    return script;
-  }
-
-  public void setScript(String script) {
-    this.script = script;
-  }
-
   
 }

@@ -9,10 +9,21 @@ package io.teknek.plan;
  * @author edward
  *
  */
-public class DynamicInstantiatable {
+public abstract class DynamicInstantiatable {
 
+  /**
+   * the spec this field is used to chose the evaluation engine for the dynamic code. 
+   */
   protected String spec;
+  
+  /**
+   * If a script is specified it is typically inline code in the form of a string 
+   */
   protected String script;
+  
+  /**
+   * Typically the fully qualified name of a a java class
+   */
   protected String theClass;
   
   public String getSpec() {

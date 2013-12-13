@@ -28,7 +28,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class TestFixedFeed {
 
   private static final int EXPECTED_PARTITIONS = 5;
@@ -74,11 +73,10 @@ public class TestFixedFeed {
 
   }
   
-  
   @Test
   public void testReflection(){
     FeedDesc fd = new FeedDesc();
-    fd.setFeedClass(FixedFeed.class.getCanonicalName());
+    fd.setTheClass(FixedFeed.class.getCanonicalName());
     fd.setProperties(buildFeedProps());
     Feed feed = DriverFactory.buildFeed(fd);
     Assert.assertEquals(TestFixedFeed.EXPECTED_PARTITIONS, feed.getFeedPartitions().size());

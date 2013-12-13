@@ -140,7 +140,7 @@ public class DriverFactory {
     Class [] paramTypes = new Class [] { Map.class };    
     Constructor<Feed> feedCons = null;
     try {
-      feedCons = (Constructor<Feed>) Class.forName(feedDesc.getFeedClass()).getConstructor(
+      feedCons = (Constructor<Feed>) Class.forName(feedDesc.getTheClass()).getConstructor(
               paramTypes);
     } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
       throw new RuntimeException(e);

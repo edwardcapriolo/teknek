@@ -87,7 +87,7 @@ public class TestPlan {
     Plan p = getPlanWithZookeeperStorage();
     byte [] b = WorkerDao.serializePlan(p);
     Plan p1 = WorkerDao.deserializePlan(b);
-    Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
+    Assert.assertEquals(p1.getFeedDesc().getTheClass(), p.getFeedDesc().getTheClass());
     Assert.assertEquals(p1.getRootOperator().getTheClass(), p.getRootOperator()
             .getTheClass());
     Assert.assertEquals(p1.getOffsetStorageDesc().getOperatorClass() , p.getOffsetStorageDesc().getOperatorClass());
@@ -100,7 +100,7 @@ public class TestPlan {
     String asString = om.writeValueAsString(p);
     System.out.println(asString);
     Plan p1 = om.readValue(asString, Plan.class);
-    Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
+    Assert.assertEquals(p1.getFeedDesc().getTheClass(), p.getFeedDesc().getTheClass());
     Assert.assertEquals(p1.getRootOperator().getTheClass(), p.getRootOperator()
             .getTheClass());
   }
