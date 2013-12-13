@@ -1,5 +1,14 @@
 package io.teknek.plan;
 
+/**
+ * A class which encapsulates the attributes to dynamically load another class. Based on the spec 
+ * the script and theClass properties may be optional. 
+ * 
+ * When the spec is null or java a java class assumed to be in the classpath of teknek daemon is used
+ * 
+ * @author edward
+ *
+ */
 public class DynamicInstantiatable {
 
   protected String spec;
