@@ -84,17 +84,11 @@ public class DriverFactory {
         throw new RuntimeException(e);
       }
     } else if (operatorDesc.getSpec().equals("groovy")){
-      GroovyClassLoader gc = new GroovyClassLoader();
-      Class<?> c = gc.parseClass( operatorDesc.getScript()) ;
-      try {
+      try (GroovyClassLoader gc = new GroovyClassLoader()){
+        Class<?> c = gc.parseClass( operatorDesc.getScript()) ;
         operator = (Operator) c.newInstance();
-      } catch (InstantiationException | IllegalAccessException e) {
+      } catch (InstantiationException | IllegalAccessException | IOException e) {
         throw new RuntimeException (e);
-      }
-      try {
-        gc.close();
-      } catch (IOException e) {
-        e.printStackTrace();
       }
     } else if (operatorDesc.getSpec().equals("groovyclosure")){
       GroovyShell shell = new GroovyShell();
