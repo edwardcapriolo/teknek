@@ -58,7 +58,7 @@ public class TestDriverFactory {
   public void operatorTest(){
     OperatorDesc o = new OperatorDesc();
     o.setSpec("groovy");
-    o.setOperatorClass("ATry");
+    o.setTheClass("ATry");
     o.setScript("import io.teknek.driver.Minus1Operator\n"+"public class ATry extends Minus1Operator { \n }");
     Operator operator = DriverFactory.buildOperator(o);
     Assert.assertNotNull(operator);
@@ -69,7 +69,7 @@ public class TestDriverFactory {
   public void groovyClosureTest() throws InterruptedException{
     OperatorDesc o = new OperatorDesc();
     o.setSpec("groovyclosure");
-    o.setOperatorClass("");
+    o.setTheClass("");
     o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
     Operator operator = DriverFactory.buildOperator(o);
     operator.setCollector(new Collector());

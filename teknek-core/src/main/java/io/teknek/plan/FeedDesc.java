@@ -18,6 +18,9 @@ package io.teknek.plan;
 import java.util.Map;
 
 public class FeedDesc {
+  
+  private String spec;
+  private String script;
   private String feedClass;
   @SuppressWarnings("rawtypes")
   private Map properties;
@@ -50,6 +53,22 @@ public class FeedDesc {
   public FeedDesc withProperties(Map properties) {
     this.properties = properties;
     return this;
+  }
+  
+  public String getSpec() {
+    return spec;
+  }
+
+  public void setSpec(String spec) {
+    this.spec = spec;
+  }
+
+  public String getScript() {
+    return script;
+  }
+
+  public void setScript(String script) {
+    this.script = script;
   }
 
   

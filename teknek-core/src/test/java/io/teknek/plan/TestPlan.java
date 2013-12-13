@@ -37,8 +37,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
-
-
 public class TestPlan {
 
   public static Plan getPlan(){
@@ -90,8 +88,8 @@ public class TestPlan {
     byte [] b = WorkerDao.serializePlan(p);
     Plan p1 = WorkerDao.deserializePlan(b);
     Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
-    Assert.assertEquals(p1.getRootOperator().getOperatorClass(), p.getRootOperator()
-            .getOperatorClass());
+    Assert.assertEquals(p1.getRootOperator().getTheClass(), p.getRootOperator()
+            .getTheClass());
     Assert.assertEquals(p1.getOffsetStorageDesc().getOperatorClass() , p.getOffsetStorageDesc().getOperatorClass());
   }
   
@@ -103,7 +101,7 @@ public class TestPlan {
     System.out.println(asString);
     Plan p1 = om.readValue(asString, Plan.class);
     Assert.assertEquals(p1.getFeedDesc().getFeedClass(), p.getFeedDesc().getFeedClass());
-    Assert.assertEquals(p1.getRootOperator().getOperatorClass(), p.getRootOperator()
-            .getOperatorClass());
+    Assert.assertEquals(p1.getRootOperator().getTheClass(), p.getRootOperator()
+            .getTheClass());
   }
 }

@@ -40,12 +40,7 @@ public class DriverFactory {
 
   public static Driver createDriver(FeedPartition feedPartition, Plan plan){
     OperatorDesc desc = plan.getRootOperator();
-    Operator oper = null;
-    try {
-      oper = (Operator) Class.forName(desc.getOperatorClass()).newInstance();
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
+    Operator oper = buildOperator(desc);
     OffsetStorage offsetStorage = null;
     OffsetStorageDesc offsetDesc = plan.getOffsetStorageDesc();
     if (offsetDesc != null && feedPartition.supportsOffsetManagement()){
@@ -71,12 +66,7 @@ public class DriverFactory {
   private static void recurseOperatorAndDriverNode(OperatorDesc desc, DriverNode node){
     List<OperatorDesc> children = desc.getChildren();
     for (OperatorDesc childDesc: children){
-      Operator oper = null;
-      try {
-        oper = (Operator) Class.forName(childDesc.getOperatorClass()).newInstance();
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-        throw new RuntimeException(e);
-      }
+      Operator oper = buildOperator(childDesc);
       CollectorProcessor cp = new CollectorProcessor();
       cp.setTupleRetry(node.getCollectorProcessor().getTupleRetry());
       DriverNode childNode = new DriverNode(oper, cp);
@@ -89,7 +79,7 @@ public class DriverFactory {
     Operator operator = null;
     if (operatorDesc.getSpec() == null){
       try {
-        operator = (Operator) Class.forName(operatorDesc.getOperatorClass()).newInstance();
+        operator = (Operator) Class.forName(operatorDesc.getTheClass()).newInstance();
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         throw new RuntimeException(e);
       }

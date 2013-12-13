@@ -21,11 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OperatorDesc {
+public class OperatorDesc extends DynamicInstantiatable {
 
-  private String spec;
-  private String script;
-  private String operatorClass;
 
   private Map<String,Object> parameters;
   
@@ -37,15 +34,9 @@ public class OperatorDesc {
   
   public OperatorDesc(Operator o){
     this();
-    this.operatorClass = o.getClass().getName();
+    this.theClass = o.getClass().getName();
   }
   
-  public String getOperatorClass() {
-    return operatorClass;
-  }
-  public void setOperatorClass(String operatorClass) {
-    this.operatorClass = operatorClass;
-  }
   public Map<String,Object> getParameters() {
     return parameters;
   }
@@ -54,7 +45,7 @@ public class OperatorDesc {
   }
   
   public OperatorDesc withOperatorClass(String operatorClass) {
-    this.operatorClass = operatorClass;
+    this.theClass = operatorClass;
     return this;
   }
   
@@ -76,21 +67,6 @@ public class OperatorDesc {
     return this;
   }
 
-  public String getSpec() {
-    return spec;
-  }
 
-  public void setSpec(String spec) {
-    this.spec = spec;
-  }
-
-  public String getScript() {
-    return script;
-  }
-
-  public void setScript(String script) {
-    this.script = script;
-  }
-  
   
 }
