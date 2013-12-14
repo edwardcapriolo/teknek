@@ -33,6 +33,10 @@ import io.teknek.plan.Plan;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +87,27 @@ public class DriverFactory {
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         throw new RuntimeException(e);
       }
+    } else if (operatorDesc.getSpec().equalsIgnoreCase("url")) { 
+      //script is a comma separated list of urls
+      String [] split = operatorDesc.getScript().split(",");
+      List<URL> urls = new ArrayList<URL>();
+      for (String s: split){
+        URL u = null;
+        try {
+          u = new URL(s);
+        } catch (MalformedURLException e) { }
+        if (u != null){
+          urls.add(u);
+        }
+      }
+      try (URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[0]))) {
+        Class<?> c = loader.loadClass(operatorDesc.getTheClass());
+        operator = (Operator) c.newInstance();
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+              | IOException e) {
+        e.printStackTrace();
+      }
+      
     } else if (operatorDesc.getSpec().equals("groovy")){
       try (GroovyClassLoader gc = new GroovyClassLoader()){
         Class<?> c = gc.parseClass( operatorDesc.getScript()) ;

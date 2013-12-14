@@ -15,6 +15,9 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
 import io.teknek.collector.Collector;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
@@ -79,5 +82,17 @@ public class TestDriverFactory {
     t.setField("x", 5);
     operator.handleTuple(t);
     Assert.assertEquals(5, ((Collector) operator.getCollector()).take().getField("x"));
+  }
+  
+  @Test
+  public void testUrlLoader() throws MalformedURLException {
+    OperatorDesc o = new OperatorDesc();
+    o.setTheClass("io.teknek.model.CopyOfIdentityOperator");
+    o.setSpec("url");
+    File f = new File("src/test/resources/id.jar");
+    Assert.assertTrue(f.exists());
+    o.setScript(f.toURL().toString());
+    Operator oo = DriverFactory.buildOperator(o);
+    Assert.assertEquals("io.teknek.plan.OperatorDesc", o.getClass().getName());
   }
 }
