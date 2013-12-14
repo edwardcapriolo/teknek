@@ -76,7 +76,7 @@ public class Sol {
           String className = parts[4];
           FeedDesc feed = new FeedDesc();
           feed.setProperties(new TreeMap());
-          feed.setFeedClass(className);
+          feed.setTheClass(className);
           thePlan.setFeedDesc(feed);
           currentNode = feedPrompt;
           return new SolReturn(feedPrompt,"");
@@ -86,7 +86,7 @@ public class Sol {
           String name = parts[2];
           String className = parts[4];
           OperatorDesc desc = new OperatorDesc();
-          desc.setOperatorClass(className);
+          desc.setTheClass(className);
           operators.put(name, desc);
           currentNode = operatorPrompt;
           currentOperator = desc; //when we exit reset this to null
