@@ -51,7 +51,7 @@ input.add( new Tuple().withField("name", "lincoln").withField("age", 19));
 			  if (request.getParameter("script") != null){
 			    OperatorDesc o = new OperatorDesc();
 			    o.setSpec(request.getParameter("spec"));
-			    o.setOperatorClass(request.getParameter("class"));
+			    o.setTheClass(request.getParameter("class"));
 			    //o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
 			    o.setScript(request.getParameter("script"));
 			    operator = DriverFactory.buildOperator(o);

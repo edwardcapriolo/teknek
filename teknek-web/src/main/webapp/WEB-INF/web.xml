@@ -4,4 +4,15 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+  	<servlet-name>Serve</servlet-name>
+  	<display-name>Serve</display-name>
+  	<description></description>
+  	<servlet-class>io.teknek.sol.Serve</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Serve</servlet-name>
+  	<url-pattern>/Serve/*</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

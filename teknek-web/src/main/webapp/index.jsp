@@ -1,18 +1,28 @@
 <html>
 <body>
 <h2>Hello Teknek!</h2>
-<a href="operator-lab/index.jsp">Operator Lab</a>
-<a href="plan-manager/index.jsp">Plan Manager</a>
-<a href="sol/index.jsp">SOL shell</a>
+
+Configure plans from the <a href="sol/index.jsp">SOL shell</a> <br>
 <%
   if (request.getParameter("zkconnect") != null) {
     session.setAttribute("zkconnect", request.getParameter("zkconnect"));
   }
 %>
-<form>
-	ZookeeperHost: <input type="text" name="zkconnect" 
-	value="<% if (session.getAttribute("zkconnect")!=null){ out.print( session.getAttribute("zkconnect")); } %>"><br>
-	<input type=submit name="send">
-</form>
+<br>
+<table border="1">
+<tr>
+	<form>
+		<td>ZookeeperHost</td> 
+		<td><input type="text" name="zkconnect" 
+		value="<% if (session.getAttribute("zkconnect")!=null){ out.print( session.getAttribute("zkconnect")); } %>"></td>
+		<td><input type=submit name="send"></td>
+	</form>
+</tr>
+</table>
+<p>
+experimental:<br>
+<a href="operator-lab/index.jsp">Operator Lab</a><br>
+<a href="plan-manager/index.jsp">Plan Manager</a><br>
+</p>p>
 </body>
 </html>
