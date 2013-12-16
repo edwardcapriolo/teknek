@@ -57,13 +57,17 @@ public class TestDriverFactory {
     */
   }
    
-  @Test
-  public void operatorTest(){
+  public static OperatorDesc buildGroovyOperatorDesc(){
     OperatorDesc o = new OperatorDesc();
     o.setSpec("groovy");
     o.setTheClass("ATry");
     o.setScript("import io.teknek.driver.Minus1Operator\n"+"public class ATry extends Minus1Operator { \n }");
-    Operator operator = DriverFactory.buildOperator(o);
+    return o;
+  }
+  
+  @Test
+  public void operatorTest(){
+    Operator operator = DriverFactory.buildOperator(buildGroovyOperatorDesc());
     Assert.assertNotNull(operator);
     Assert.assertEquals ("ATry", operator.getClass().getName());
   }

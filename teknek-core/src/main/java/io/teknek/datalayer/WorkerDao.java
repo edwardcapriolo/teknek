@@ -17,6 +17,7 @@ package io.teknek.datalayer;
 
 import io.teknek.daemon.TeknekDaemon;
 import io.teknek.daemon.WorkerStatus;
+import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
 import java.io.ByteArrayOutputStream;
@@ -56,6 +57,10 @@ public class WorkerDao {
    * plans of stuff for workers to do live here
    */
   public static final String PLANS_ZK = BASE_ZK + "/plans";
+  /**
+   * saved stuff
+   */
+  public static final String SAVED_ZK = BASE_ZK + "/saved";
   
   /**
    * Creates all the required base directories in ZK for the application to run 
@@ -74,6 +79,9 @@ public class WorkerDao {
       }
       if (zk.exists(PLANS_ZK, true) == null) {
         zk.create(PLANS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      if (zk.exists(SAVED_ZK, false) == null) {
+        zk.create(SAVED_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
     } catch (KeeperException  | InterruptedException e) {
       e.printStackTrace();
@@ -186,4 +194,45 @@ public class WorkerDao {
       throw new WorkerDaoException(e);
     }
   }
+  
+  public static OperatorDesc loadSavedOperatorDesc(ZooKeeper zk, String group, String name) throws WorkerDaoException{
+    String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "operatorDesc";
+    try {
+      Stat stat = zk.exists(readPath, false);
+      if (stat != null){
+        byte [] data = zk.getData(readPath, false, stat);
+        return deserializeOperatorDesc(data);
+      } else {
+        throw new WorkerDaoException("not found in zk");
+      }
+    } catch (KeeperException | InterruptedException | IOException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
+  
+  public static void saveOperatorDesc(ZooKeeper zk, OperatorDesc desc, String group, String name)
+          throws WorkerDaoException {
+    String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "operatorDesc";
+    try {
+      String s = zk.create(readPath, serializeOperatorDesc(desc), Ids.OPEN_ACL_UNSAFE,
+              CreateMode.PERSISTENT);
+    } catch (KeeperException | InterruptedException | IOException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
+  
+  public static OperatorDesc deserializeOperatorDesc(byte [] b) throws JsonParseException, JsonMappingException, IOException{
+    ObjectMapper om = new ObjectMapper();
+    OperatorDesc p1 = om.readValue(b, OperatorDesc.class);
+    return p1;
+  }
+  
+  public static byte [] serializeOperatorDesc(OperatorDesc desc) throws JsonParseException, JsonMappingException, IOException{
+    ObjectMapper om = new ObjectMapper();
+    byte [] b = om.writeValueAsBytes(desc);
+    return b;
+  }
+  
+  
+  
 }

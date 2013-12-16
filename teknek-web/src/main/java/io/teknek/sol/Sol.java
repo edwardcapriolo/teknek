@@ -94,6 +94,14 @@ public class Sol {
         }
       }
       
+      if ("LOAD".equalsIgnoreCase(parts[0])){
+        ///teknek/saved/group-name-type
+        //load io.teknek MyOperator operator
+        String group = parts[1];
+        String name = parts[2];
+        String type = parts[3];
+        
+      }
       
       
       if ("SET".equalsIgnoreCase(parts[0])){
@@ -123,6 +131,7 @@ public class Sol {
     }
     
     if (currentNode.equalsIgnoreCase(operatorPrompt)){
+ 
       if (parts[0].equalsIgnoreCase("set")){
         //set operatorspec as groovyclosure
         String type = parts[3];
