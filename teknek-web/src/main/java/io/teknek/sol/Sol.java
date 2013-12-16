@@ -38,181 +38,212 @@ public class Sol {
   }
   
   public SolReturn send(String command){
-    String [] parts = command.split("\\s+");
-    if (command.equalsIgnoreCase("SHOW")){
-      return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
-    }
-    if ("save".equalsIgnoreCase(parts[0])){
-      try {
-        WorkerDao.createOrUpdatePlan(thePlan, zookeeper);
-      } catch (WorkerDaoException e) {
-        return new SolReturn(currentNode, "problem persisting "+e.getMessage());
+    try {
+      String [] parts = command.split("\\s+");
+      /* We want to keep this first because the data is free form 
+       * and could be misinterpreted as something else
+       */
+      if (currentNode.equalsIgnoreCase(inlinePrompt)){
+        processInline(parts, command);
       }
-      return new SolReturn(currentNode, "");
-    }
-    if ("open".equalsIgnoreCase(parts[0])){
-      String plan = parts[1];
-      try {
-        thePlan = WorkerDao.findPlanByName(zookeeper, plan);
-      } catch (WorkerDaoException e) {
-        return new SolReturn(currentNode, "problem reading "+e.getMessage());
+      /* next comes global commands that can be called at any level */
+      if (command.equalsIgnoreCase("SHOW")){
+        return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
       }
-      return new SolReturn(currentNode, "");
-    }
-    
-    if (currentNode.equalsIgnoreCase(rootPrompt)){
-      if("create".equalsIgnoreCase(parts[0])){
-        currentNode = planPrompt;
-        String name = command.substring(command.indexOf(' ')+1);
-        thePlan.setName(name);
-        return new SolReturn(planPrompt,"");
-      }
-    }
-    if (currentNode.equalsIgnoreCase(planPrompt)){
-      if ("CREATE".equalsIgnoreCase(parts[0])){
-        if (parts[1].equalsIgnoreCase("feed")){
-          //CREATE FEED myFeed using teknek.kafka.feed
-          String name = parts[2];
-          String className = parts[4];
-          FeedDesc feed = new FeedDesc();
-          feed.setProperties(new TreeMap());
-          feed.setTheClass(className);
-          thePlan.setFeedDesc(feed);
-          currentNode = feedPrompt;
-          return new SolReturn(feedPrompt,"");
-        }
-        if (parts[1].equalsIgnoreCase("operator")){
-          //CREATE OPERATOR plus2 AS teknek.samples.Plus2;
-          String name = parts[2];
-          String className = parts[4];
-          OperatorDesc desc = new OperatorDesc();
-          desc.setTheClass(className);
-          operators.put(name, desc);
-          currentNode = operatorPrompt;
-          currentOperator = desc; //when we exit reset this to null
-          return new SolReturn(operatorPrompt, "");
-        }
-      }
-      
-      if ("LOAD".equalsIgnoreCase(parts[0])){
-        //load io.teknek MyOperator operator as plus2
-        String group = parts[1];
-        String name = parts[2];
-        //String type = parts[3];
-        String register = parts[5];
-        OperatorDesc desc = null;
+      if ("save".equalsIgnoreCase(parts[0])){
         try {
-          desc = WorkerDao.loadSavedOperatorDesc(zookeeper, group, name);
+          WorkerDao.createOrUpdatePlan(thePlan, zookeeper);
         } catch (WorkerDaoException e) {
-          return new SolReturn(currentNode, e.getMessage());
+          return new SolReturn(currentNode, "problem persisting "+e.getMessage());
         }
-        operators.put(register, desc);
+        return new SolReturn(currentNode, "");
+      }
+      if ("open".equalsIgnoreCase(parts[0])){
+        String plan = parts[1];
+        try {
+          thePlan = WorkerDao.findPlanByName(zookeeper, plan);
+        } catch (WorkerDaoException e) {
+          return new SolReturn(currentNode, "problem reading "+e.getMessage());
+        }
+        return new SolReturn(currentNode, "");
+      }
+      if (currentNode.equalsIgnoreCase(rootPrompt)){
+        return processRoot(parts, command);
+      }
+      if (currentNode.equalsIgnoreCase(planPrompt)){
+        return processPlan(parts);
+      }
+      if (currentNode.equalsIgnoreCase(operatorPrompt)){
+        return processOperator(parts);
+      }
+      if (currentNode.equalsIgnoreCase(feedPrompt)){
+        return processFeed(parts);
+      }
+    } catch (RuntimeException ex) {
+      return new SolReturn(currentNode,"Parsing command failed "+ex.getMessage());
+    }
+    return new SolReturn(currentNode,"I am lost! currentNode "+currentNode +" command "+command);
+  }
+  
+  private SolReturn processRoot(String [] parts, String command){
+    if("create".equalsIgnoreCase(parts[0])){
+      currentNode = planPrompt;
+      String name = command.substring(command.indexOf(' ')+1);
+      thePlan.setName(name);
+      return new SolReturn(planPrompt,"");
+    }
+    return new SolReturn(planPrompt, "Command not found");
+  }
+  
+  
+  /** These methods are only available from the plan prompt */
+  private SolReturn processPlan(String [] parts){
+    if ("CREATE".equalsIgnoreCase(parts[0])){
+      if (parts[1].equalsIgnoreCase("feed")){
+        //CREATE FEED myFeed using teknek.kafka.feed
+        String name = parts[2];
+        String className = parts[4];
+        FeedDesc feed = new FeedDesc();
+        feed.setProperties(new TreeMap());
+        feed.setTheClass(className);
+        thePlan.setFeedDesc(feed);
+        currentNode = feedPrompt;
+        return new SolReturn(feedPrompt,"");
+      }
+      if (parts[1].equalsIgnoreCase("operator")){
+        //CREATE OPERATOR plus2 AS teknek.samples.Plus2;
+        String name = parts[2];
+        String className = parts[4];
+        OperatorDesc desc = new OperatorDesc();
+        desc.setTheClass(className);
+        operators.put(name, desc);
         currentNode = operatorPrompt;
         currentOperator = desc; //when we exit reset this to null
         return new SolReturn(operatorPrompt, "");
       }
-      
-      
-      if ("SET".equalsIgnoreCase(parts[0])){
-        //myPlan> SET ROOT plus2;
-        String opName = parts[2];
-        if (!operators.containsKey(opName)){
-          return new SolReturn(currentNode, opName + " is not the name of an operator");
-        }
-        thePlan.setRootOperator(operators.get(opName));
-        return new SolReturn(currentNode, "");
-        
-      }
-      if ("FOR".equalsIgnoreCase(parts[0])){
-        //myPlan> FOR plus2 ADD CHILD times5;
-        String opName = parts[1];
-        String child = parts[4];
-        if (!operators.containsKey(opName)){
-          return new SolReturn(currentNode, opName + " is not the name of an operator");
-        }
-        if (!operators.containsKey(child)){
-          return new SolReturn(currentNode, child + " is not the name of an operator");
-        }
-        this.operators.get(opName).getChildren().add(operators.get(child));
-        return new SolReturn(currentNode, "" );
-      }
-      
     }
     
-    if (currentNode.equalsIgnoreCase(operatorPrompt)){
-      if (parts[0].equalsIgnoreCase("set")){
-        //set operatorspec as groovyclosure
-        String type = parts[3];
-        if (type.equalsIgnoreCase("groovyclosure")){
-          currentOperator.setSpec(parts[3]);
-          return new SolReturn(operatorPrompt, "");
-        } else if (type.equalsIgnoreCase("groovyclass")){
-          currentOperator.setSpec(parts[3]);
-          return new SolReturn(operatorPrompt, "");
-        }
+    if ("LOAD".equalsIgnoreCase(parts[0])){
+      //load io.teknek MyOperator operator as plus2
+      String group = parts[1];
+      String name = parts[2];
+      //String type = parts[3];
+      String register = parts[5];
+      OperatorDesc desc = null;
+      try {
+        desc = WorkerDao.loadSavedOperatorDesc(zookeeper, group, name);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, e.getMessage());
       }
-      if (parts[0].equalsIgnoreCase("inline")){
-        currentNode = inlinePrompt;
-        inline = new StringBuilder();
-        return new SolReturn(inlinePrompt, "Define script below. End script with -----");
+      operators.put(register, desc);
+      currentNode = operatorPrompt;
+      currentOperator = desc; //when we exit reset this to null
+      return new SolReturn(operatorPrompt, "");
+    }
+    
+    if ("SET".equalsIgnoreCase(parts[0])){
+      //myPlan> SET ROOT plus2;
+      String opName = parts[2];
+      if (!operators.containsKey(opName)){
+        return new SolReturn(currentNode, opName + " is not the name of an operator");
       }
-      if (parts[0].equalsIgnoreCase("save_operator")){
-        //save bundlename name
-        String bundle = parts[1];
-        String name = parts[2];
-        try {
-          WorkerDao.saveOperatorDesc(zookeeper, currentOperator, bundle, name);
-        } catch (WorkerDaoException e) {
-          return new SolReturn(operatorPrompt, e.getMessage());
-        }
+      thePlan.setRootOperator(operators.get(opName));
+      return new SolReturn(currentNode, "");
+      
+    }
+    if ("FOR".equalsIgnoreCase(parts[0])){
+      //myPlan> FOR plus2 ADD CHILD times5;
+      String opName = parts[1];
+      String child = parts[4];
+      if (!operators.containsKey(opName)){
+        return new SolReturn(currentNode, opName + " is not the name of an operator");
+      }
+      if (!operators.containsKey(child)){
+        return new SolReturn(currentNode, child + " is not the name of an operator");
+      }
+      this.operators.get(opName).getChildren().add(operators.get(child));
+      return new SolReturn(currentNode, "" );
+    }
+    
+    return new SolReturn(currentNode, "No match found" );
+  }
+  
+  /**
+   * Processing for the operator prompt
+   * @param parts
+   * @return
+   */
+  private SolReturn processOperator(String [] parts){
+    if (parts[0].equalsIgnoreCase("set")){
+      //set operatorspec as groovyclosure
+      String type = parts[3];
+      if (type.equalsIgnoreCase("groovyclosure")){
+        currentOperator.setSpec(parts[3]);
+        return new SolReturn(operatorPrompt, "");
+      } else if (type.equalsIgnoreCase("groovyclass")){
+        currentOperator.setSpec(parts[3]);
         return new SolReturn(operatorPrompt, "");
       }
     }
-    
-    if (currentNode.equalsIgnoreCase(inlinePrompt)){
-      if (parts[0].equals("-----")){
-        //attempt to compile buffer //maybe
-        currentOperator.setScript(this.inline.toString());
-        this.inline = null;
-        currentNode = operatorPrompt;
-        return new SolReturn(operatorPrompt, "");
-      } else {
-        inline.append(command+"\n");
-        return new SolReturn(inlinePrompt, "");
-      }
+    if (parts[0].equalsIgnoreCase("inline")){
+      currentNode = inlinePrompt;
+      inline = new StringBuilder();
+      return new SolReturn(inlinePrompt, "Define script below. End script with -----");
     }
-    
-    if (currentNode.equalsIgnoreCase(operatorPrompt)){
-      if (parts[0].equalsIgnoreCase("exit")){
-        currentNode = planPrompt;
-        return new SolReturn(planPrompt,"");
+    if (parts[0].equalsIgnoreCase("save_operator")){
+      //save bundlename name
+      String bundle = parts[1];
+      String name = parts[2];
+      try {
+        WorkerDao.saveOperatorDesc(zookeeper, currentOperator, bundle, name);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(operatorPrompt, e.getMessage());
       }
+      return new SolReturn(operatorPrompt, "");
     }
-    if (currentNode.equalsIgnoreCase(feedPrompt)){
-      if ("EXIT".equalsIgnoreCase(parts[0])){
-        currentNode = planPrompt;
-        return new SolReturn(planPrompt,"");
-      }
-      //TODO unset here
-      if (parts[0].equalsIgnoreCase("SET")){
-        //SET PROPERTY topic AS 'firehoze';
-        String name = parts[2];
-        String val = parts[4];
-        try { 
-          if (val.startsWith("'")) {
-            thePlan.getFeedDesc().getProperties().put(name, val.replace("'", ""));
-            return new SolReturn(feedPrompt, "");
-          } else {
-            thePlan.getFeedDesc().getProperties().put(name, Double.parseDouble(val.replace("'", "")));
-            return new SolReturn(feedPrompt, "");
-          }
-        } catch (Exception ex){
-          return new SolReturn(feedPrompt, "problem settting property "+ex.getMessage());
+    if (parts[0].equalsIgnoreCase("exit")){
+      currentNode = planPrompt;
+      return new SolReturn(planPrompt,"");
+    }
+    return new SolReturn(operatorPrompt, "Command not found");
+  }
+  
+  private SolReturn processInline(String [] parts, String command){
+    if (parts[0].equals("-----")){
+      //attempt to compile buffer //maybe
+      currentOperator.setScript(this.inline.toString());
+      this.inline = null;
+      currentNode = operatorPrompt;
+      return new SolReturn(operatorPrompt, "");
+    } else {
+      inline.append(command+"\n");
+      return new SolReturn(inlinePrompt, "");
+    }
+  }
+  
+  private SolReturn processFeed(String [] parts){
+    if ("EXIT".equalsIgnoreCase(parts[0])){
+      currentNode = planPrompt;
+      return new SolReturn(planPrompt,"");
+    }
+    //TODO unset here
+    if (parts[0].equalsIgnoreCase("SET")){
+      //SET PROPERTY topic AS 'firehoze';
+      String name = parts[2];
+      String val = parts[4];
+      try { 
+        if (val.startsWith("'")) {
+          thePlan.getFeedDesc().getProperties().put(name, val.replace("'", ""));
+          return new SolReturn(feedPrompt, "");
+        } else {
+          thePlan.getFeedDesc().getProperties().put(name, Double.parseDouble(val.replace("'", "")));
+          return new SolReturn(feedPrompt, "");
         }
+      } catch (Exception ex){
+        return new SolReturn(feedPrompt, "problem settting property "+ex.getMessage());
       }
     }
-    //throw new RuntimeException("I am lost! currentNode "+currentNode +" command"+command);
-    return new SolReturn(currentNode,"I am lost! currentNode "+currentNode +" command "+command);
+    return new SolReturn(feedPrompt, "command not found");
   }
   
   public static void main(String[] args) throws IOException {
