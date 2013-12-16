@@ -213,6 +213,7 @@ public class WorkerDao {
   public static void saveOperatorDesc(ZooKeeper zk, OperatorDesc desc, String group, String name)
           throws WorkerDaoException {
     String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "operatorDesc";
+    createZookeeperBase(zk);
     try {
       String s = zk.create(readPath, serializeOperatorDesc(desc), Ids.OPEN_ACL_UNSAFE,
               CreateMode.PERSISTENT);

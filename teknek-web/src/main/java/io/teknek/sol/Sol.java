@@ -95,12 +95,21 @@ public class Sol {
       }
       
       if ("LOAD".equalsIgnoreCase(parts[0])){
-        ///teknek/saved/group-name-type
-        //load io.teknek MyOperator operator
+        //load io.teknek MyOperator operator as plus2
         String group = parts[1];
         String name = parts[2];
-        String type = parts[3];
-        
+        //String type = parts[3];
+        String register = parts[5];
+        OperatorDesc desc = null;
+        try {
+          desc = WorkerDao.loadSavedOperatorDesc(zookeeper, group, name);
+        } catch (WorkerDaoException e) {
+          return new SolReturn(currentNode, e.getMessage());
+        }
+        operators.put(register, desc);
+        currentNode = operatorPrompt;
+        currentOperator = desc; //when we exit reset this to null
+        return new SolReturn(operatorPrompt, "");
       }
       
       
@@ -131,7 +140,6 @@ public class Sol {
     }
     
     if (currentNode.equalsIgnoreCase(operatorPrompt)){
- 
       if (parts[0].equalsIgnoreCase("set")){
         //set operatorspec as groovyclosure
         String type = parts[3];
@@ -143,11 +151,21 @@ public class Sol {
           return new SolReturn(operatorPrompt, "");
         }
       }
-      
       if (parts[0].equalsIgnoreCase("inline")){
         currentNode = inlinePrompt;
         inline = new StringBuilder();
         return new SolReturn(inlinePrompt, "Define script below. End script with -----");
+      }
+      if (parts[0].equalsIgnoreCase("save_operator")){
+        //save bundlename name
+        String bundle = parts[1];
+        String name = parts[2];
+        try {
+          WorkerDao.saveOperatorDesc(zookeeper, currentOperator, bundle, name);
+        } catch (WorkerDaoException e) {
+          return new SolReturn(operatorPrompt, e.getMessage());
+        }
+        return new SolReturn(operatorPrompt, "");
       }
     }
     
