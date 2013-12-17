@@ -90,13 +90,14 @@ public class TestDriverFactory {
   
   @Test
   public void testUrlLoader() throws MalformedURLException {
+    String cname = "io.teknek.model.CopyOfIdentityOperator";
     OperatorDesc o = new OperatorDesc();
-    o.setTheClass("io.teknek.model.CopyOfIdentityOperator");
+    o.setTheClass(cname);
     o.setSpec("url");
     File f = new File("src/test/resources/id.jar");
     Assert.assertTrue(f.exists());
     o.setScript(f.toURL().toString());
     Operator oo = DriverFactory.buildOperator(o);
-    Assert.assertEquals("io.teknek.plan.OperatorDesc", o.getClass().getName());
+    Assert.assertEquals(cname, oo.getClass().getName());
   }
 }
