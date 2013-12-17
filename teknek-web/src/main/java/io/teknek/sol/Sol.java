@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,18 +38,20 @@ public class Sol {
     operators = new HashMap<String,OperatorDesc>();
   }
   
+  
   public SolReturn send(String command){
     try {
       String [] parts = command.split("\\s+");
       /* We want to keep this first because the data is free form 
        * and could be misinterpreted as something else
        */
-      if (currentNode.equalsIgnoreCase(inlinePrompt)){
+      if ( currentNode.equalsIgnoreCase(inlinePrompt)){
         processInline(parts, command);
       }
       /* next comes global commands that can be called at any level */
-      if (command.equalsIgnoreCase("SHOW")){
-        return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
+      if ("SHOW".equalsIgnoreCase(parts[0])){
+        //return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
+        return processShow(parts);
       }
       if ("save".equalsIgnoreCase(parts[0])){
         try {
@@ -80,9 +83,30 @@ public class Sol {
         return processFeed(parts);
       }
     } catch (RuntimeException ex) {
+      ex.printStackTrace();
       return new SolReturn(currentNode,"Parsing command failed "+ex.getMessage());
     }
     return new SolReturn(currentNode,"I am lost! currentNode "+currentNode +" command "+command);
+  }
+  
+  private SolReturn processShow(String [] parts){
+    if (parts.length ==3 && parts[1].equalsIgnoreCase("CURRENT") && parts[2].equalsIgnoreCase("PLAN")){
+      return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
+    }
+    if (parts.length == 2 && parts[1].equalsIgnoreCase("PLANS")){
+      StringBuilder sb = new StringBuilder();
+      List<String> plans = null; 
+      try {
+        plans = WorkerDao.finalAllPlanNames(zookeeper);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, e.getMessage());
+      }
+      for (String plan : plans){
+        sb.append(plan+"\n");
+      }
+      return new SolReturn(currentNode, sb.toString());
+    }
+    return new SolReturn(planPrompt, "Command not found");
   }
   
   private SolReturn processRoot(String [] parts, String command){
@@ -153,7 +177,9 @@ public class Sol {
     }
     if ("FOR".equalsIgnoreCase(parts[0])){
       //myPlan> FOR plus2 ADD CHILD times5;
+      //myPlan> FOR plus2 REMOVE CHILD times5;
       String opName = parts[1];
+      String op = parts[2];
       String child = parts[4];
       if (!operators.containsKey(opName)){
         return new SolReturn(currentNode, opName + " is not the name of an operator");
@@ -161,7 +187,13 @@ public class Sol {
       if (!operators.containsKey(child)){
         return new SolReturn(currentNode, child + " is not the name of an operator");
       }
-      this.operators.get(opName).getChildren().add(operators.get(child));
+      if (op.equalsIgnoreCase("ADD")){
+        operators.get(opName).getChildren().add(operators.get(child));
+      } else if (op.equalsIgnoreCase("REMOVE")){
+        operators.get(opName).getChildren().remove(operators.get(child));
+      } else {
+        return new SolReturn(currentNode, "op must be ADD or REMOVE. You specified  "+op );
+      }
       return new SolReturn(currentNode, "" );
     }
     

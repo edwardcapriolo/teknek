@@ -17,6 +17,7 @@ package io.teknek.datalayer;
 
 import io.teknek.daemon.TeknekDaemon;
 import io.teknek.daemon.WorkerStatus;
+import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
@@ -195,6 +196,21 @@ public class WorkerDao {
     }
   }
   
+  public static FeedDesc loadSavedFeedDesc(ZooKeeper zk, String group, String name) throws WorkerDaoException {
+    String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "feedDesc";
+    try {
+      Stat stat = zk.exists(readPath, false);
+      if (stat != null){
+        byte [] data = zk.getData(readPath, false, stat);
+        return deserializeFeedDesc(data);
+      } else {
+        throw new WorkerDaoException("not found in zk");
+      }
+    } catch (KeeperException | InterruptedException | IOException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
+  
   public static OperatorDesc loadSavedOperatorDesc(ZooKeeper zk, String group, String name) throws WorkerDaoException{
     String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "operatorDesc";
     try {
@@ -221,11 +237,35 @@ public class WorkerDao {
       throw new WorkerDaoException(e);
     }
   }
+
+  public static void saveFeedDesc(ZooKeeper zk, FeedDesc desc, String group, String name)
+          throws WorkerDaoException {
+    String readPath = SAVED_ZK + "/" + group + "-" + name + "-" + "feedDesc";
+    createZookeeperBase(zk);
+    try {
+      String s = zk.create(readPath, serializeFeedDesc(desc), Ids.OPEN_ACL_UNSAFE,
+              CreateMode.PERSISTENT);
+    } catch (KeeperException | InterruptedException | IOException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
   
   public static OperatorDesc deserializeOperatorDesc(byte [] b) throws JsonParseException, JsonMappingException, IOException{
     ObjectMapper om = new ObjectMapper();
     OperatorDesc p1 = om.readValue(b, OperatorDesc.class);
     return p1;
+  }
+  
+  public static FeedDesc deserializeFeedDesc(byte [] b) throws JsonParseException, JsonMappingException, IOException{
+    ObjectMapper om = new ObjectMapper();
+    FeedDesc p1 = om.readValue(b, FeedDesc.class);
+    return p1;
+  }
+  
+  public static byte [] serializeFeedDesc(FeedDesc desc) throws JsonParseException, JsonMappingException, IOException{
+    ObjectMapper om = new ObjectMapper();
+    byte [] b = om.writeValueAsBytes(desc);
+    return b;
   }
   
   public static byte [] serializeOperatorDesc(OperatorDesc desc) throws JsonParseException, JsonMappingException, IOException{
