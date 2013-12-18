@@ -18,14 +18,10 @@ package io.teknek.feed;
 import io.teknek.feed.Feed;
 import io.teknek.feed.FeedPartition;
 import io.teknek.model.ITuple;
-import io.teknek.model.Tuple;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 public class FixedFeed extends Feed {
   public static final String NUMBER_OF_PARTITIONS = "number.of.partitions";
@@ -38,8 +34,6 @@ public class FixedFeed extends Feed {
     numberOfPartitions = (Integer) super.properties.get(NUMBER_OF_PARTITIONS);
     numberOfRows = (Integer) super.properties.get(NUMBER_OF_ROWS);
   }
-
-  
 
   public List<FeedPartition> getFeedPartitions() {
     List<FeedPartition> res = new ArrayList<FeedPartition>();

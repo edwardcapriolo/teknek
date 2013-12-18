@@ -13,11 +13,14 @@ import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
 public class SolShellWithEmbeddedZK extends EmbeddedZooKeeperServer {
 
-  @Test
+  //@Test
   /* copied the Sol main this is a bit ugly but allows us to test rapidly */
-  public void testToIgnore() throws IOException{
+  //public void testToIgnore() throws IOException{
+  public static void main (String [] args) throws Exception{
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     Sol s = new Sol();
+    SolShellWithEmbeddedZK szk = new SolShellWithEmbeddedZK();
+    szk.setupA();
     System.out.println(EmbeddedZooKeeperServer.zookeeperTestServer.getConnectString());
     ZooKeeper zk = new ZooKeeper(EmbeddedZooKeeperServer.zookeeperTestServer.getConnectString(), 100, new DummyWatcher());
     s.setZookeeper(zk);
