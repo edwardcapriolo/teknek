@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.zookeeper.ZooKeeper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.teknek.zookeeper.DummyWatcher;
