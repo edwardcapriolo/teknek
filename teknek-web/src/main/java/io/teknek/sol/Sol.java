@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javassist.runtime.Desc;
+
 import org.apache.zookeeper.ZooKeeper;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -90,7 +92,29 @@ public class Sol {
   }
   
   private SolReturn processShow(String [] parts){
-    if (parts.length ==3 && parts[1].equalsIgnoreCase("CURRENT") && parts[2].equalsIgnoreCase("PLAN")){
+    if (parts.length == 1 ){
+      return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
+    }
+    if (parts.length == 3 && parts[1].equalsIgnoreCase("LOADED") && parts[2].equalsIgnoreCase("OPERATORS")){
+      StringBuilder sb = new StringBuilder();
+      for (String s: this.operators.keySet()){
+        sb.append(s+"\n");
+      }
+      return new SolReturn(currentNode, sb.toString());
+    }
+    if (parts.length == 3 && parts[1].equalsIgnoreCase("OPERATOR") ){
+      //show operator x
+      OperatorDesc o = this.operators.get(parts[2]);
+      if (o == null){
+        return new SolReturn(currentNode, "operator not found");
+      }
+      StringBuilder sb = new StringBuilder();
+      sb.append( "script:" +o.getScript()+"\n");
+      sb.append( "class:" +o.getTheClass()+"\n");
+      sb.append( "spec:" +o.getSpec()+"\n");
+      return new SolReturn(currentNode, sb.toString());
+    }
+    if (parts.length == 3 && parts[1].equalsIgnoreCase("CURRENT") && parts[2].equalsIgnoreCase("PLAN")){
       return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
     }
     if (parts.length == 2 && parts[1].equalsIgnoreCase("PLANS")){

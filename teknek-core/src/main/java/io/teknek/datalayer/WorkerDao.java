@@ -143,6 +143,7 @@ public class WorkerDao {
   public static void createOrUpdatePlan(Plan plan, ZooKeeper zk) throws WorkerDaoException {
       Stat s;
       try {
+        WorkerDao.createZookeeperBase(zk);
         s = zk.exists(PLANS_ZK+ "/" + plan.getName(), false);
         if (s != null) {
           zk.setData(PLANS_ZK+ "/" + plan.getName(), serializePlan(plan), s.getVersion());
