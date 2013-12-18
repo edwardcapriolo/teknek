@@ -6,12 +6,18 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javassist.runtime.Desc;
 
 import org.apache.zookeeper.ZooKeeper;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig.Feature;
+
+import com.google.common.collect.Sets;
 
 import io.teknek.datalayer.WorkerDao;
 import io.teknek.datalayer.WorkerDaoException;
@@ -94,6 +100,16 @@ public class Sol {
   private SolReturn processShow(String [] parts){
     if (parts.length == 1 ){
       return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
+    }
+    if (parts.length == 3 && parts[1].equalsIgnoreCase("FORMATTED")
+            && parts[2].equalsIgnoreCase("PLAN")) {
+      ObjectMapper om = new ObjectMapper();
+      om.getSerializationConfig().set(Feature.INDENT_OUTPUT, true);
+      try {
+        return new SolReturn(currentNode, om.writeValueAsString(thePlan));
+      } catch (IOException e) {
+        return new SolReturn(currentNode, e.getMessage());
+      }
     }
     if (parts.length == 3 && parts[1].equalsIgnoreCase("LOADED") && parts[2].equalsIgnoreCase("OPERATORS")){
       StringBuilder sb = new StringBuilder();
@@ -299,8 +315,21 @@ public class Sol {
       currentNode = planPrompt;
       return new SolReturn(planPrompt,"");
     }
+    if (parts.length == 4 && parts[0].equalsIgnoreCase("set") && parts[1].equalsIgnoreCase("feedspec")){
+      //set feedspec as groovyclosure
+      String type = parts[3];
+      Set<String> types = Sets.newHashSet("groovyclass", "url", "groovy");
+      if (types.contains(type)){
+        thePlan.getFeedDesc().setSpec(type);
+        return new SolReturn(feedPrompt, "");
+      } else {
+        return new SolReturn(feedPrompt, "Spec currently unsupported spec:" + type + " supported"
+                + types);
+      }
+    }
+    
     //TODO unset here
-    if (parts[0].equalsIgnoreCase("SET")){
+    if (parts.length == 5 && parts[0].equalsIgnoreCase("SET") && parts[1].equalsIgnoreCase("property")){
       //SET PROPERTY topic AS 'firehoze';
       String name = parts[2];
       String val = parts[4];
