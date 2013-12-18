@@ -175,18 +175,35 @@ public class Sol {
       //load io.teknek MyOperator operator as plus2
       String group = parts[1];
       String name = parts[2];
-      //String type = parts[3];
+      String type = parts[3];
       String register = parts[5];
-      OperatorDesc desc = null;
-      try {
-        desc = WorkerDao.loadSavedOperatorDesc(zookeeper, group, name);
-      } catch (WorkerDaoException e) {
-        return new SolReturn(currentNode, e.getMessage());
+
+      
+      if (type.equals("operator")){
+        OperatorDesc desc = null;
+        try {
+          desc = WorkerDao.loadSavedOperatorDesc(zookeeper, group, name);
+        } catch (WorkerDaoException e) {
+          return new SolReturn(currentNode, e.getMessage());
+        }
+        operators.put(register, desc);
+        currentNode = operatorPrompt;
+        currentOperator = desc; //when we exit reset this to null
+        return new SolReturn(operatorPrompt, "");
       }
-      operators.put(register, desc);
-      currentNode = operatorPrompt;
-      currentOperator = desc; //when we exit reset this to null
-      return new SolReturn(operatorPrompt, "");
+      if (type.equals("feed")){
+        FeedDesc feed = null;
+        try {
+          feed = WorkerDao.loadSavedFeedDesc(zookeeper, group, name);
+        } catch (WorkerDaoException e) {
+          return new SolReturn(currentNode, e.getMessage());
+        }
+        this.thePlan.setFeedDesc(feed);
+        currentNode = feedPrompt;
+        return new SolReturn(feedPrompt, "");
+      }
+      
+      
     }
     
     if ("SET".equalsIgnoreCase(parts[0])){

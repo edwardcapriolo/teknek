@@ -17,11 +17,15 @@ package io.teknek.driver;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import io.teknek.collector.Collector;
+import io.teknek.feed.Feed;
+import io.teknek.feed.TestFixedFeed;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
 import io.teknek.model.Tuple;
+import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.TestPlan;
 
@@ -63,6 +67,24 @@ public class TestDriverFactory {
     o.setTheClass("ATry");
     o.setScript("import io.teknek.driver.Minus1Operator\n"+"public class ATry extends Minus1Operator { \n }");
     return o;
+  }
+  
+  public static FeedDesc buildGroovyFeedDesc(){
+    FeedDesc o = new FeedDesc();
+    o.setSpec("groovy");
+    o.setTheClass("FTry");
+    o.setProperties(TestFixedFeed.buildFeedProps());
+    o.setScript("import io.teknek.feed.FixedFeed\n" + "public class FTry extends FixedFeed { "
+            + "public FTry(Map<String,Object> properties){ \n" + "super(properties);\n"
+            + "numberOfPartitions = (Integer) super.properties.get(NUMBER_OF_PARTITIONS);\n"
+            + "numberOfRows = (Integer) super.properties.get(NUMBER_OF_ROWS);\n" + "} \n }");
+    return o;
+  }
+  
+  @Test
+  public void feedTest(){
+    Feed f = DriverFactory.buildFeed(buildGroovyFeedDesc());
+    Assert.assertNotNull(f);
   }
   
   @Test

@@ -30,8 +30,8 @@ import java.util.Map;
 public class FixedFeed extends Feed {
   public static final String NUMBER_OF_PARTITIONS = "number.of.partitions";
   public static final String NUMBER_OF_ROWS = "number.of.rows";
-  int numberOfPartitions;
-  int numberOfRows;
+  protected int numberOfPartitions;
+  protected int numberOfRows;
   
   public FixedFeed(Map<String,Object> properties){
     super(properties);
