@@ -20,6 +20,7 @@ import io.teknek.model.Operator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class OperatorDesc extends DynamicInstantiatable {
 
@@ -34,6 +35,7 @@ public class OperatorDesc extends DynamicInstantiatable {
   
   public OperatorDesc(){
     children = new ArrayList<OperatorDesc>();
+    parameters = new TreeMap<String,Object>();
   }
   
   public OperatorDesc(Operator o){

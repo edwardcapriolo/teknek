@@ -414,6 +414,7 @@ public class Sol {
       return new SolReturn(operatorPrompt, "");
     }
     
+    
     if (parts.length >= 4 && parts[0].equalsIgnoreCase("set")
             && parts[1].equalsIgnoreCase("script")) {
       // set script as stuff you can one liner
@@ -423,6 +424,25 @@ public class Sol {
       }
       currentOperator.setScript(sb.toString());
       return new SolReturn(operatorPrompt, "");
+    }
+    
+    if (parts.length == 5 && parts[0].equalsIgnoreCase("SET") && parts[1].equalsIgnoreCase("property")){
+      //SET PROPERTY topic AS 'firehoze';
+      //SET PROPERTY k AS 45.0
+      String name = parts[2];
+      String val = parts[4];
+      try { 
+        if (val.startsWith("'")) {
+          currentOperator.getParameters().put(name, val.replace("'", ""));
+          return new SolReturn(operatorPrompt, "");
+        } else {
+          currentOperator.getParameters().put(name, Double.parseDouble(val));
+          return new SolReturn(operatorPrompt, "");
+        }
+      } catch (Exception ex){
+        ex.printStackTrace();
+        return new SolReturn(operatorPrompt, "problem settting property "+ex.getMessage());
+      }
     }
     
     if (parts[0].equalsIgnoreCase("inline")){
