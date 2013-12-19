@@ -212,17 +212,19 @@ public class Sol {
         currentNode = feedPrompt;
         return new SolReturn(feedPrompt,"");
       }
-      if (parts[1].equalsIgnoreCase("operator")){
-        //CREATE OPERATOR plus2 AS teknek.samples.Plus2;
-        String name = parts[2];
-        String className = parts[4];
-        OperatorDesc desc = new OperatorDesc();
-        desc.setTheClass(className);
+    }
+    
+    if (parts.length == 3 && parts[0].equalsIgnoreCase("configure") && parts[1].equalsIgnoreCase("operator")){
+      //configure operator plus2
+      String name = parts[2];
+      OperatorDesc desc = operators.get(name);
+      if (desc == null){
+        desc = new OperatorDesc();
         operators.put(name, desc);
-        currentNode = operatorPrompt;
-        currentOperator = desc; //when we exit reset this to null
-        return new SolReturn(operatorPrompt, "");
       }
+      currentNode = operatorPrompt;
+      currentOperator = desc;
+      return new SolReturn(operatorPrompt, "");
     }
     
     if ("LOAD".equalsIgnoreCase(parts[0])){
@@ -371,17 +373,35 @@ public class Sol {
    * @return
    */
   private SolReturn processOperator(String [] parts){
-    if (parts[0].equalsIgnoreCase("set")){
+    if (parts.length == 4 && parts[0].equalsIgnoreCase("set") && parts[1].equalsIgnoreCase("operatorspec") ){
       //set operatorspec as groovyclosure
       String type = parts[3];
-      if (type.equalsIgnoreCase("groovyclosure")){
-        currentOperator.setSpec(parts[3]);
+      Set<String> accepted = Sets.newHashSet("url", "groovyclass", "groovyclosure", "java" );
+      if (accepted.contains(type)){
+        currentOperator.setSpec(type);
         return new SolReturn(operatorPrompt, "");
-      } else if (type.equalsIgnoreCase("groovyclass")){
-        currentOperator.setSpec(parts[3]);
-        return new SolReturn(operatorPrompt, "");
+      } else {
+        return new SolReturn(operatorPrompt, type + " not valid. Accepted:" + accepted);
       }
     }
+    if (parts.length == 4 && parts[0].equalsIgnoreCase("set") && parts[1].equalsIgnoreCase("class") ){
+      //set class as a.b.c
+      String name = parts[3];
+      currentOperator.setTheClass(name);
+      return new SolReturn(operatorPrompt, "");
+    }
+    
+    if (parts.length >= 4 && parts[0].equalsIgnoreCase("set")
+            && parts[1].equalsIgnoreCase("script")) {
+      // set script as stuff you can one liner
+      StringBuilder sb = new StringBuilder();
+      for (int i = 3; i < parts.length; i++) {
+        sb.append(parts[i] + " ");
+      }
+      currentOperator.setScript(sb.toString());
+      return new SolReturn(operatorPrompt, "");
+    }
+    
     if (parts[0].equalsIgnoreCase("inline")){
       currentNode = inlinePrompt;
       inline = new StringBuilder();
