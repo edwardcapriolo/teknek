@@ -25,6 +25,7 @@ public class SolShellWithEmbeddedZK extends EmbeddedZooKeeperServer {
     ZooKeeper zk = new ZooKeeper(EmbeddedZooKeeperServer.zookeeperTestServer.getConnectString(), 100, new DummyWatcher());
     s.setZookeeper(zk);
     String line = null;
+    System.out.print(Sol.rootPrompt);
     while ((line = br.readLine()) != null) {
       SolReturn ret = s.send(line);
       if (ret.getMessage().length()>0){

@@ -460,6 +460,7 @@ public class Sol {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     Sol s = new Sol();
     String line = null;
+    System.out.print(Sol.rootPrompt);
     while ((line = br.readLine()) != null) {
       SolReturn ret = s.send(line);
       if (ret.getMessage().length()>0){
