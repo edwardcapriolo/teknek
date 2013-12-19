@@ -95,6 +95,22 @@ public class Sol {
     if (parts.length == 1 ){
       return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
     }
+    if (parts.length == 3 && parts[1].equalsIgnoreCase("all")&& parts[2].equalsIgnoreCase("plans") ) {
+      StringBuilder sb = new StringBuilder();
+      try {
+        WorkerDao.createZookeeperBase(zookeeper);
+        List<String> plans = WorkerDao.finalAllPlanNames(zookeeper);
+        for (String plan: plans){
+          ObjectMapper om = new ObjectMapper();
+          om.getSerializationConfig().set(Feature.INDENT_OUTPUT, true);
+          Plan p = WorkerDao.findPlanByName(zookeeper, plan);
+          sb.append(om.writeValueAsString(p) + "\n");
+        }
+        return new SolReturn(currentNode, sb.toString());
+      } catch (WorkerDaoException  | IOException e){
+        return new SolReturn(currentNode, e.getMessage());
+      }
+    }
     if (parts.length == 3 && parts[1].equalsIgnoreCase("FORMATTED")
             && parts[2].equalsIgnoreCase("PLAN")) {
       ObjectMapper om = new ObjectMapper();
