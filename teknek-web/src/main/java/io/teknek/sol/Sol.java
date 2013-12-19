@@ -61,14 +61,7 @@ public class Sol {
         //return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
         return processShow(parts);
       }
-      if ("save".equalsIgnoreCase(parts[0])){
-        try {
-          WorkerDao.createOrUpdatePlan(thePlan, zookeeper);
-        } catch (WorkerDaoException e) {
-          return new SolReturn(currentNode, "problem persisting "+e.getMessage());
-        }
-        return new SolReturn(currentNode, "");
-      }
+      
       if ("open".equalsIgnoreCase(parts[0])){
         String plan = parts[1];
         try {
@@ -76,7 +69,8 @@ public class Sol {
         } catch (WorkerDaoException e) {
           return new SolReturn(currentNode, "problem reading "+e.getMessage());
         }
-        return new SolReturn(currentNode, "");
+        currentNode = planPrompt;
+        return new SolReturn(planPrompt, "");
       }
       if (currentNode.equalsIgnoreCase(rootPrompt)){
         return processRoot(parts, command);
@@ -150,18 +144,45 @@ public class Sol {
   }
   
   private SolReturn processRoot(String [] parts, String command){
+    //create plan
     if("create".equalsIgnoreCase(parts[0])){
+      String name = parts[1];
+      List<String> plans = null;
+      try {
+        WorkerDao.createZookeeperBase(zookeeper);
+        plans = WorkerDao.finalAllPlanNames(zookeeper);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, e.getMessage());
+      }
+      if (plans.contains(name)){
+        return new SolReturn(currentNode, "A plan with that name already exists");
+      }
       currentNode = planPrompt;
-      String name = command.substring(command.indexOf(' ')+1);
       thePlan.setName(name);
       return new SolReturn(planPrompt,"");
     }
-    return new SolReturn(planPrompt, "Command not found");
+    
+    return new SolReturn(currentNode, "Command not found");
   }
   
   
   /** These methods are only available from the plan prompt */
   private SolReturn processPlan(String [] parts){
+    if (parts.length == 2 && parts[0].equalsIgnoreCase("clear")
+            && parts[1].equalsIgnoreCase("plan")) {
+      thePlan = new Plan();
+      currentNode = rootPrompt;
+      return new SolReturn(rootPrompt, "");
+    }
+    if ("save".equalsIgnoreCase(parts[0])){
+      try {
+        WorkerDao.createOrUpdatePlan(thePlan, zookeeper);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, "problem persisting "+e.getMessage());
+      }
+      return new SolReturn(currentNode, "");
+    }
+    
     if ("CREATE".equalsIgnoreCase(parts[0])){
       if (parts[1].equalsIgnoreCase("feed")){
         //CREATE FEED myFeed using teknek.kafka.feed
@@ -221,17 +242,11 @@ public class Sol {
       
       
     }
-    
-    if ("SET".equalsIgnoreCase(parts[0])){
-      //myPlan> SET ROOT plus2;
-      String opName = parts[2];
-      if (!operators.containsKey(opName)){
-        return new SolReturn(currentNode, opName + " is not the name of an operator");
-      }
-      thePlan.setRootOperator(operators.get(opName));
-      return new SolReturn(currentNode, "");
-      
+        
+    if ("set".equalsIgnoreCase(parts[0])){
+      return processSet(parts);
     }
+    
     if ("FOR".equalsIgnoreCase(parts[0])){
       //myPlan> FOR plus2 ADD CHILD times5;
       //myPlan> FOR plus2 REMOVE CHILD times5;
@@ -254,9 +269,85 @@ public class Sol {
       return new SolReturn(currentNode, "" );
     }
     
+    if ("exit".equalsIgnoreCase(parts[0])){
+      return processExitPlan(parts);
+    }
+    
     return new SolReturn(currentNode, "No match found" );
   }
   
+  private SolReturn processExitPlan(String [] parts){
+    List<String> plans = null;
+    try {
+      WorkerDao.createZookeeperBase(zookeeper);
+      plans = WorkerDao.finalAllPlanNames(zookeeper);
+      if (plans.contains(thePlan.getName())){
+        Plan p = WorkerDao.findPlanByName(zookeeper, thePlan.getName());
+        String fromZk = new String(WorkerDao.serializePlan(p));
+        String myself = new String(WorkerDao.serializePlan(thePlan));
+        if (!fromZk.equalsIgnoreCase(myself)){
+          return new SolReturn(this.currentNode, "Current Plan differs from save plan. You must run 'save' or 'clear plan'");
+        } else {
+          this.currentNode = rootPrompt;
+          this.thePlan = new Plan();
+          return new SolReturn(rootPrompt, "");
+        }
+      } else {
+        return new SolReturn(this.currentNode, "Current Plan is unsaved. You must run 'save' or 'clear plan'");
+      }
+    } catch (WorkerDaoException e) {
+      return new SolReturn(this.currentNode, e.getMessage());
+    }
+  }
+  private SolReturn processSet(String [] parts){
+    if (parts.length == 3 && "set".equalsIgnoreCase(parts[0]) && "disabled".equalsIgnoreCase(parts[1])){
+      //myPlan> SET disabled true;
+      String opName = parts[2];
+      if (opName.equalsIgnoreCase("true")){
+        thePlan.setDisabled(true);
+        return new SolReturn(currentNode, "");
+      } else if (opName.equalsIgnoreCase("false")){
+        thePlan.setDisabled(false);
+        return new SolReturn(currentNode, "");
+      }
+      return new SolReturn(currentNode, opName+" not acceptable must be true|false");  
+    }
+    
+    if (parts.length == 3 && "set".equalsIgnoreCase(parts[0]) && "root".equalsIgnoreCase(parts[1])){
+      //myPlan> SET ROOT plus2;
+      String opName = parts[2];
+      if (!operators.containsKey(opName)){
+        return new SolReturn(currentNode, opName + " is not the name of an operator");
+      }
+      thePlan.setRootOperator(operators.get(opName));
+      return new SolReturn(currentNode, "");  
+    }
+    
+    Set<String> numericSets = Sets.newHashSet("maxworkers", "tupleretry", "offsetcommitinterval");
+    if (parts.length == 3 && "set".equalsIgnoreCase(parts[0]) && 
+             numericSets.contains(parts[1].toLowerCase()) ){
+      //myPlan> SET maxWorkers 4;
+      String varName = parts[1];
+      Integer value = Integer.parseInt(parts[2]);
+      if (varName.equalsIgnoreCase("maxworkers")){
+        thePlan.setMaxWorkers(value);
+        return new SolReturn(currentNode, "");
+      }
+      if (varName.equalsIgnoreCase("tupleRetry")){
+        thePlan.setTupleRetry(value);
+        return new SolReturn(currentNode, "");
+      }
+      if (varName.equalsIgnoreCase("offsetCommitInterval")){
+        thePlan.setOffsetCommitInterval(value);
+        return new SolReturn(currentNode, "");
+      }  
+    }
+    
+    
+    return new SolReturn(currentNode, "set commmand not found");
+    
+    
+  }
   /**
    * Processing for the operator prompt
    * @param parts
