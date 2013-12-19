@@ -23,6 +23,10 @@ import java.util.Map;
 
 public class OperatorDesc extends DynamicInstantiatable {
 
+  /**
+   * Used to identify an instance of the OperatorDesc
+   */
+  private String name;
 
   private Map<String,Object> parameters;
   
@@ -67,6 +71,12 @@ public class OperatorDesc extends DynamicInstantiatable {
     return this;
   }
 
+  public String getName() {
+    return name;
+  }
 
+  public void setName(String name) {
+    this.name = name;
+  }
   
 }

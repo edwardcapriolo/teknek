@@ -149,12 +149,33 @@ public class Sol {
     return new SolReturn(planPrompt, "Command not found");
   }
   
+  /**
+   * Recursively dive into operators and build map
+   * @param p
+   * @return
+   */
+  private Map<String,OperatorDesc> buildOperatorMap(Plan p){
+    Map<String,OperatorDesc> found = new HashMap<>();
+    if (p.getRootOperator() != null){
+      buildOperatorMapInternal(found, p.getRootOperator());
+    }
+    return found;
+  }
+  
+  private void buildOperatorMapInternal(Map<String,OperatorDesc> found, OperatorDesc o){
+    found.put(o.getName(), o);
+    for (OperatorDesc child : o.getChildren() ){
+      buildOperatorMapInternal(found, child);
+    }
+  }
+  
   private SolReturn processRoot(String [] parts, String command){
     
     if ("open".equalsIgnoreCase(parts[0])){
       String plan = parts[1];
       try {
         thePlan = WorkerDao.findPlanByName(zookeeper, plan);
+        operators = this.buildOperatorMap(thePlan);
       } catch (WorkerDaoException e) {
         return new SolReturn(currentNode, "problem reading "+e.getMessage());
       }
@@ -220,6 +241,7 @@ public class Sol {
       OperatorDesc desc = operators.get(name);
       if (desc == null){
         desc = new OperatorDesc();
+        desc.setName(name);
         operators.put(name, desc);
       }
       currentNode = operatorPrompt;
@@ -309,6 +331,7 @@ public class Sol {
         } else {
           this.currentNode = rootPrompt;
           this.thePlan = new Plan();
+          this.operators = new HashMap<String,OperatorDesc>();
           return new SolReturn(rootPrompt, "");
         }
       } else {
@@ -497,6 +520,5 @@ public class Sol {
   public void setZookeeper(ZooKeeper zookeeper) {
     this.zookeeper = zookeeper;
   }
-  
-  
+   
 }
