@@ -62,16 +62,6 @@ public class Sol {
         return processShow(parts);
       }
       
-      if ("open".equalsIgnoreCase(parts[0])){
-        String plan = parts[1];
-        try {
-          thePlan = WorkerDao.findPlanByName(zookeeper, plan);
-        } catch (WorkerDaoException e) {
-          return new SolReturn(currentNode, "problem reading "+e.getMessage());
-        }
-        currentNode = planPrompt;
-        return new SolReturn(planPrompt, "");
-      }
       if (currentNode.equalsIgnoreCase(rootPrompt)){
         return processRoot(parts, command);
       }
@@ -160,6 +150,17 @@ public class Sol {
   }
   
   private SolReturn processRoot(String [] parts, String command){
+    
+    if ("open".equalsIgnoreCase(parts[0])){
+      String plan = parts[1];
+      try {
+        thePlan = WorkerDao.findPlanByName(zookeeper, plan);
+      } catch (WorkerDaoException e) {
+        return new SolReturn(currentNode, "problem reading "+e.getMessage());
+      }
+      currentNode = planPrompt;
+      return new SolReturn(planPrompt, "");
+    }
     //create plan
     if("create".equalsIgnoreCase(parts[0])){
       String name = parts[1];
