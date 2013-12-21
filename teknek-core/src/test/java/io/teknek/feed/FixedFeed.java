@@ -31,15 +31,14 @@ public class FixedFeed extends Feed {
   
   public FixedFeed(Map<String,Object> properties){
     super(properties);
-    numberOfPartitions = (Integer) super.properties.get(NUMBER_OF_PARTITIONS);
-    numberOfRows = (Integer) super.properties.get(NUMBER_OF_ROWS);
   }
 
   public List<FeedPartition> getFeedPartitions() {
+    numberOfPartitions = ((Number) super.properties.get(NUMBER_OF_PARTITIONS)).intValue();
+    numberOfRows = ((Number) super.properties.get(NUMBER_OF_ROWS)).intValue();
     List<FeedPartition> res = new ArrayList<FeedPartition>();
     for (int i = 0; i < numberOfPartitions; i++) {
-      FixedFeedPartition sf = new FixedFeedPartition(this, String.valueOf(i));
-      res.add(sf);
+      res.add(new FixedFeedPartition(this, String.valueOf(i)));
     }
     return res;
   }
@@ -49,7 +48,7 @@ public class FixedFeed extends Feed {
   }
 }
 
-class FixedFeedPartition extends FeedPartition {
+class FixedFeedPartition extends FeedPartitionAdapter {
 
   private int current = 0;
   private int max = 10;
@@ -66,22 +65,12 @@ class FixedFeedPartition extends FeedPartition {
     t.setField("x", new Integer(current));
     return current++ < max;
   }
-
-  @Override
-  public void initialize() {
-    
-  }
-
-  @Override
-  public void close() {
-
-  }
     
   @Override
   public String getOffset() {
     return current+"";
   }
-
+  
   @Override
   public boolean supportsOffsetManagement() {
     return true;
@@ -92,4 +81,3 @@ class FixedFeedPartition extends FeedPartition {
     this.current = Integer.parseInt(offset);
   }
 }
-

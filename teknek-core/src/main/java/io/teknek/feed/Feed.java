@@ -37,7 +37,13 @@ public abstract class Feed {
    * The properties of the feed
    */
   protected Map<String,Object> properties;
-  
+
+  /**
+   * Note: Do not initialize variables in the constructor. The properties are mutable up until
+   * getFeedPartitions() is called
+   * 
+   * @param properties
+   */
   public Feed(Map<String,Object> properties){
     this.properties = properties;
   }
@@ -64,7 +70,6 @@ public abstract class Feed {
   public Map<String, Object> getProperties() {
     return properties;
   }
-  
   
   public String getName() {
     return name;

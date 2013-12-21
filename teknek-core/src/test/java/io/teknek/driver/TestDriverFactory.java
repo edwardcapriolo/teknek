@@ -17,10 +17,10 @@ package io.teknek.driver;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Map;
 
 import io.teknek.collector.Collector;
 import io.teknek.feed.Feed;
+
 import io.teknek.feed.TestFixedFeed;
 import io.teknek.model.ITuple;
 import io.teknek.model.Operator;
@@ -81,6 +81,54 @@ public class TestDriverFactory {
     return o;
   }
   
+  public static FeedDesc buildPureGroovyFeedDesc(){
+    FeedDesc o = new FeedDesc();
+    o.setSpec("groovy");
+    o.setTheClass("GTry");
+    o.setProperties(TestFixedFeed.buildFeedProps());
+    o.setScript("import io.teknek.feed.*\n"
+            + "import io.teknek.model.*\n" 
+            + "public class GTry extends Feed { \n"
+            + "public GTry(Map<String,Object> properties){ \n" 
+            + "  super(properties);\n"
+            + "}\n"
+            +" public List<FeedPartition> getFeedPartitions() { \n"
+            +"   numberOfPartitions = ((Number) super.properties.get(NUMBER_OF_PARTITIONS)).intValue(); \n"
+            +"   numberOfRows = ((Number) super.properties.get(NUMBER_OF_ROWS)).intValue(); \n"
+            +"   List<FeedPartition> res = new ArrayList<FeedPartition>();\n"
+            +"   for (int i = 0; i < numberOfPartitions; i++) \n"
+            +"     res.add(new FixedFeedPartition(this, String.valueOf(i))); \n"
+            +"   return res; \n"
+            +"  } \n"
+            +"  public Map<String, String> getSuggestedBindParams() { \n"
+            +"    return new HashMap<String, String>(); \n"
+            +"  } \n"
+            +"} \n"
+            +"class FixedFeedPartition extends FeedPartitionAdapter { \n"
+            +"  private int current = 0; \n"
+            +"  private int max = 10; \n"
+            +"  public FixedFeedPartition(Feed f, String partitionId) { \n"
+            +"    super(f , partitionId); \n"
+            +"    if (f.getProperties().get(FixedFeed.NUMBER_OF_ROWS)!=null){ \n"
+            +"      max = Integer.parseInt( f.getProperties().get(FixedFeed.NUMBER_OF_ROWS).toString() ); \n"
+            +"    } \n"
+            +"  } \n"
+            +"  @Override \n"
+            +"  public boolean next(ITuple t) { \n"
+            +"    t.setField(\"x\", new Integer(current)); \n"
+            +"    return current++ < max; \n"
+            +"  } \n"
+            +"} \n");
+   
+    return o;
+  }
+  
+  @Test
+  public void testPureGroovyFeed(){
+    Feed f = DriverFactory.buildFeed(buildPureGroovyFeedDesc());
+    Assert.assertEquals("GTry", f.getClass().getSimpleName());
+  }
+  
   @Test
   public void feedTest(){
     Feed f = DriverFactory.buildFeed(buildGroovyFeedDesc());
@@ -94,12 +142,17 @@ public class TestDriverFactory {
     Assert.assertEquals ("ATry", operator.getClass().getName());
   }
   
-  @Test
-  public void groovyClosureTest() throws InterruptedException{
+  public static OperatorDesc getIdentityGroovyOperator(){
     OperatorDesc o = new OperatorDesc();
     o.setSpec("groovyclosure");
-    o.setTheClass("");
+    o.setTheClass("groovy_identity");
     o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
+    return o;
+  }
+  
+  @Test
+  public void groovyClosureTest() throws InterruptedException{
+    OperatorDesc o = getIdentityGroovyOperator();
     Operator operator = DriverFactory.buildOperator(o);
     operator.setCollector(new Collector());
     Assert.assertNotNull(operator);
