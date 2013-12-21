@@ -293,13 +293,14 @@ public class WorkerDao {
         sb.append(inputLine + "\n");
       in.close();
     } catch (IOException e) {
-
+      logger.warn(e.getMessage());
     }
     ObjectMapper om = new ObjectMapper();
     Bundle b = null;
     try {
       b = om.readValue(sb.toString().getBytes(), Bundle.class);
     } catch ( IOException e) {
+      logger.warn(e.getMessage());
       e.printStackTrace();
     }
     return b;

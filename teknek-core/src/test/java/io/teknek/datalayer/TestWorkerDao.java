@@ -35,9 +35,10 @@ public class TestWorkerDao extends EmbeddedZooKeeperServer {
   
   @Test
   public void readBundleFromUrl() throws MalformedURLException{
-    File f = new File("src/test/resources/bundle_io.teknek_itests_1.0.0.json");
+    File f = new File("src/test/resources/bundle_io.teknek_itests1.0.0.json");
     Bundle b = WorkerDao.getBundleFromUrl(f.toURL());
     Assert.assertEquals("itests", b.getBundleName() );
+    Assert.assertEquals("groovy_identity", b.getOperatorList().get(0).getName());
   }
   
 }
