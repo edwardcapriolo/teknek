@@ -17,12 +17,17 @@ package io.teknek.datalayer;
 
 import io.teknek.daemon.TeknekDaemon;
 import io.teknek.daemon.WorkerStatus;
+import io.teknek.plan.Bundle;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -274,7 +279,30 @@ public class WorkerDao {
     byte [] b = om.writeValueAsBytes(desc);
     return b;
   }
-  
-  
-  
+
+  //TODO om can read streams
+  //throw worker dao exceptions..
+  public static Bundle getBundleFromUrl(URL u) {
+    StringBuffer sb = new StringBuffer();
+    try {
+      URLConnection yc = u.openConnection();
+      BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+
+      String inputLine = null;
+      while ((inputLine = in.readLine()) != null)
+        sb.append(inputLine + "\n");
+      in.close();
+    } catch (IOException e) {
+
+    }
+    ObjectMapper om = new ObjectMapper();
+    Bundle b = null;
+    try {
+      b = om.readValue(sb.toString().getBytes(), Bundle.class);
+    } catch ( IOException e) {
+      e.printStackTrace();
+    }
+    return b;
+  }
+
 }

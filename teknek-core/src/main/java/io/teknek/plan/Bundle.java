@@ -1,5 +1,6 @@
 package io.teknek.plan;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bundle {
@@ -12,7 +13,8 @@ public class Bundle {
   private List<OperatorDesc> operatorList;
 
   public Bundle() {
-
+    feedDescList = new ArrayList<>();
+    operatorList = new ArrayList<>();
   }
 
   public String getPackageName() {

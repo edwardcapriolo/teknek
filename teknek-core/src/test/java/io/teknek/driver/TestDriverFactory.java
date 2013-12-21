@@ -85,6 +85,7 @@ public class TestDriverFactory {
     FeedDesc o = new FeedDesc();
     o.setSpec("groovy");
     o.setTheClass("GTry");
+    o.setName("GTry");
     o.setProperties(TestFixedFeed.buildFeedProps());
     o.setScript("import io.teknek.feed.*\n"
             + "import io.teknek.model.*\n" 
@@ -146,6 +147,7 @@ public class TestDriverFactory {
     OperatorDesc o = new OperatorDesc();
     o.setSpec("groovyclosure");
     o.setTheClass("groovy_identity");
+    o.setName("groovy_identity");
     o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
     return o;
   }
