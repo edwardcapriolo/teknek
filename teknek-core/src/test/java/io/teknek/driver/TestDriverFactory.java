@@ -17,9 +17,11 @@ package io.teknek.driver;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import io.teknek.collector.Collector;
 import io.teknek.feed.Feed;
+import io.teknek.feed.FeedPartition;
 
 import io.teknek.feed.TestFixedFeed;
 import io.teknek.model.ITuple;
@@ -90,6 +92,10 @@ public class TestDriverFactory {
     o.setScript("import io.teknek.feed.*\n"
             + "import io.teknek.model.*\n" 
             + "public class GTry extends Feed { \n"
+            + "public static final String NUMBER_OF_PARTITIONS = \"number.of.partitions\"; \n"
+            + "public static final String NUMBER_OF_ROWS = \"number.of.rows\"; \n"
+            + "protected int numberOfPartitions; \n"
+            + "protected int numberOfRows; \n"
             + "public GTry(Map<String,Object> properties){ \n" 
             + "  super(properties);\n"
             + "}\n"
@@ -128,6 +134,10 @@ public class TestDriverFactory {
   public void testPureGroovyFeed(){
     Feed f = DriverFactory.buildFeed(buildPureGroovyFeedDesc());
     Assert.assertEquals("GTry", f.getClass().getSimpleName());
+    List<FeedPartition> parts = f.getFeedPartitions();
+    ITuple t = new Tuple();
+    parts.get(0).next(t);
+    Assert.assertEquals(0, t.getField("x"));
   }
   
   @Test
@@ -148,7 +158,7 @@ public class TestDriverFactory {
     o.setSpec("groovyclosure");
     o.setTheClass("groovy_identity");
     o.setName("groovy_identity");
-    o.setScript("{ tuple, collector ->  collector.emit(tuple) }");
+    o.setScript("{ tuple, collector ->  collector.emit(tuple) ; println(tuple) }");
     return o;
   }
   

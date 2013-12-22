@@ -66,12 +66,11 @@ public class Sol {
       
       /* next comes global commands that can be called at any level */
       if ("SHOW".equalsIgnoreCase(parts[0])){
-        //return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
         return processShow(parts);
       }
       
       if ("import".equalsIgnoreCase(parts[0])){
-        return processImport();
+        return processImport(parts);
       }
       if (currentNode.equalsIgnoreCase(rootPrompt)){
         return processRoot(parts, command);
@@ -102,6 +101,12 @@ public class Sol {
       }
     }
     Bundle b = WorkerDao.getBundleFromUrl(u);
+    try {
+      WorkerDao.saveBundle(zookeeper, b);
+    } catch (WorkerDaoException e) {
+      return new SolReturn(currentNode, e.getMessage());
+    }
+    return new SolReturn(currentNode, "");
   }
   private SolReturn processShow(String [] parts){
     if (parts.length == 1 ){
