@@ -54,27 +54,21 @@ public class Sol {
   public SolReturn send(String command){
     try {
       String [] parts = command.split("\\s+");
-      /* We want to keep this first because the data is free form 
-       * and could be misinterpreted as something else
-       */
       if ( currentNode.equalsIgnoreCase(inlineOperatorPrompt)){
         return processInline(parts, command);
       }
       if ( currentNode.equalsIgnoreCase(inlineFeedPrompt)){
         return processInlineFeed(parts, command);
       }
-      
-      /* next comes global commands that can be called at any level */
       if ("SHOW".equalsIgnoreCase(parts[0])){
         return processShow(parts);
       }
-      
       if ("import".equalsIgnoreCase(parts[0])){
         return processImport(parts);
       }
       if (currentNode.equalsIgnoreCase(rootPrompt)){
         return processRoot(parts, command);
-      }
+      } 
       if (currentNode.equalsIgnoreCase(planPrompt)){
         return processPlan(parts);
       }
@@ -226,7 +220,9 @@ public class Sol {
       thePlan.setName(name);
       return new SolReturn(planPrompt,"");
     }
-    
+    if ("help".equalsIgnoreCase(parts[0])){
+      return rootHelp(parts);
+    }
     return new SolReturn(currentNode, "Command not found");
   }
   
@@ -255,7 +251,7 @@ public class Sol {
         String name = parts[2];
         FeedDesc feed = new FeedDesc();
         feed.setName(name);
-        feed.setProperties(new TreeMap());
+        feed.setProperties(new TreeMap<>());
         thePlan.setFeedDesc(feed);
         currentNode = feedPrompt;
         return new SolReturn(feedPrompt,"");
@@ -299,8 +295,9 @@ public class Sol {
     return new SolReturn(currentNode, "No match found" );
   }
   
-  
-  private SolReturn processPlanHelp(String [] parts){
+
+  private SolReturn processPlanHelp(String [] parts) {
+
     if (currentNode.equalsIgnoreCase(planPrompt) && parts.length==1){
       StringBuilder sb = new StringBuilder();
       sb.append("FOR: Adjust the order of the operators\n");
@@ -615,7 +612,7 @@ public class Sol {
     System.out.print(Sol.rootPrompt);
     while ((line = br.readLine()) != null) {
       SolReturn ret = s.send(line);
-      if (ret.getMessage().length()>0){
+      if (ret.getMessage().length() > 0) {
         System.out.println(ret.getMessage());
       }
       System.out.print(ret.getPrompt());
@@ -629,5 +626,28 @@ public class Sol {
   public void setZookeeper(ZooKeeper zookeeper) {
     this.zookeeper = zookeeper;
   }
-   
+ 
+  private SolReturn rootHelp(String[] parts) {
+    StringBuilder sb = new StringBuilder();
+    if (currentNode.equalsIgnoreCase(rootPrompt) && parts.length == 1) {
+      sb.append("CREATE PLAN: Make a new plan and begin editing it\n");
+      sb.append("OPEN PLAN: Open a plan stored in zookeeper\n");
+      sb.append("IMPORT: fetch a bundle of operators and load into zookeeper\n");
+      return new SolReturn(currentNode, sb.toString());
+    }
+    if (parts.length > 1 && parts[1].equalsIgnoreCase("IMPORT")) {
+      return new SolReturn(currentNode, "Imports operations and feeds from URLs.\n"
+              + "Syntax: \n\tteknek> import https://..../bundle_io.teknek_itests1.0.0.json\n");
+    }
+    if (parts.length > 1 && parts[1].equalsIgnoreCase("CREATE")) {
+      return new SolReturn(currentNode, "Make a new plan and begin editing\n"
+              + "Syntax: \n\tteknek> create plan x\n");
+    }
+    if (parts.length > 1 && parts[1].equalsIgnoreCase("OPEN")) {
+      return new SolReturn(currentNode, "Loads a plan from zookeeper and begin editing\n"
+              + "Syntax: \n\tteknek> open plan x\n");
+    }
+    return new SolReturn(currentNode,"");
+  }
+  
 }
