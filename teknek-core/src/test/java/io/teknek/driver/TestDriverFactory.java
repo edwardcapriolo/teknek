@@ -104,20 +104,20 @@ public class TestDriverFactory {
             +"   numberOfRows = ((Number) super.properties.get(NUMBER_OF_ROWS)).intValue(); \n"
             +"   List<FeedPartition> res = new ArrayList<FeedPartition>();\n"
             +"   for (int i = 0; i < numberOfPartitions; i++) \n"
-            +"     res.add(new FixedFeedPartition(this, String.valueOf(i))); \n"
+            +"     res.add(new GTryPartition(this, String.valueOf(i))); \n"
             +"   return res; \n"
             +"  } \n"
             +"  public Map<String, String> getSuggestedBindParams() { \n"
             +"    return new HashMap<String, String>(); \n"
             +"  } \n"
             +"} \n"
-            +"class FixedFeedPartition extends FeedPartitionAdapter { \n"
+            +"class GTryPartition extends FeedPartitionAdapter { \n"
             +"  private int current = 0; \n"
             +"  private int max = 10; \n"
-            +"  public FixedFeedPartition(Feed f, String partitionId) { \n"
+            +"  public GTryPartition(Feed f, String partitionId) { \n"
             +"    super(f , partitionId); \n"
-            +"    if (f.getProperties().get(FixedFeed.NUMBER_OF_ROWS)!=null){ \n"
-            +"      max = Integer.parseInt( f.getProperties().get(FixedFeed.NUMBER_OF_ROWS).toString() ); \n"
+            +"    if (f.getProperties().get(GTry.NUMBER_OF_ROWS)!=null){ \n"
+            +"      max = Integer.parseInt( f.getProperties().get(GTry.NUMBER_OF_ROWS).toString() ); \n"
             +"    } \n"
             +"  } \n"
             +"  @Override \n"
@@ -137,6 +137,7 @@ public class TestDriverFactory {
     List<FeedPartition> parts = f.getFeedPartitions();
     ITuple t = new Tuple();
     parts.get(0).next(t);
+    Assert.assertEquals(parts.get(0).getClass().getSimpleName(), "GTryPartition");
     Assert.assertEquals(0, t.getField("x"));
   }
   
