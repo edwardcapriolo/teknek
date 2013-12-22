@@ -6,6 +6,7 @@ import java.util.List;
 public class Bundle {
   private String packageName;
 
+  @Deprecated
   private String bundleName;
 
   private List<FeedDesc> feedDescList;

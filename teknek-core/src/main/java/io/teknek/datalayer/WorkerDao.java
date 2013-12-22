@@ -306,4 +306,12 @@ public class WorkerDao {
     return b;
   }
 
+  public static void saveBundle(ZooKeeper zk, Bundle b) throws WorkerDaoException {
+    for (OperatorDesc o : b.getOperatorList() ){
+      WorkerDao.saveOperatorDesc(zk, o, b.getPackageName(), o.getName());
+    }
+    for (FeedDesc f: b.getFeedDescList()){
+      WorkerDao.saveFeedDesc(zk, f, b.getPackageName(), f.getName());
+    }
+  }
 }

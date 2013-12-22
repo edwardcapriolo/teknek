@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import io.teknek.driver.TestDriverFactory;
 import io.teknek.plan.Bundle;
+import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.zookeeper.DummyWatcher;
 import io.teknek.zookeeper.EmbeddedZooKeeperServer;
@@ -39,6 +40,20 @@ public class TestWorkerDao extends EmbeddedZooKeeperServer {
     Bundle b = WorkerDao.getBundleFromUrl(f.toURL());
     Assert.assertEquals("itests", b.getBundleName() );
     Assert.assertEquals("groovy_identity", b.getOperatorList().get(0).getName());
+  }
+  
+  @Test
+  public void readBundleAndAdd() throws IOException, InterruptedException, WorkerDaoException{
+    File f = new File("src/test/resources/bundle_io.teknek_itests1.0.0.json");
+    Bundle b = WorkerDao.getBundleFromUrl(f.toURL());
+    DummyWatcher dw = new DummyWatcher();
+    ZooKeeper zk = new ZooKeeper(zookeeperTestServer.getConnectString(), 100, dw);
+    Thread.sleep(200);//zk takes a long time so
+    WorkerDao.saveBundle(zk, b);
+    OperatorDesc oDesc = WorkerDao.loadSavedOperatorDesc(zk, b.getPackageName(), "groovy_identity");
+    Assert.assertEquals("groovy_identity", oDesc.getTheClass());
+    FeedDesc fDesc = WorkerDao.loadSavedFeedDesc(zk, b.getPackageName(), "GTry");
+    Assert.assertEquals("GTry", fDesc.getTheClass());
   }
   
 }

@@ -3,6 +3,8 @@ package io.teknek.sol;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import com.google.common.collect.Sets;
 
 import io.teknek.datalayer.WorkerDao;
 import io.teknek.datalayer.WorkerDaoException;
+import io.teknek.plan.Bundle;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OperatorDesc;
 import io.teknek.plan.Plan;
@@ -67,6 +70,9 @@ public class Sol {
         return processShow(parts);
       }
       
+      if ("import".equalsIgnoreCase(parts[0])){
+        return processImport();
+      }
       if (currentNode.equalsIgnoreCase(rootPrompt)){
         return processRoot(parts, command);
       }
@@ -86,6 +92,17 @@ public class Sol {
     return new SolReturn(currentNode,"I am lost! currentNode "+currentNode +" command "+command);
   }
   
+  private SolReturn processImport(String [] parts){
+    URL u = null;
+    if (parts.length==2){
+      try {
+        u = new java.net.URL(parts[1]);
+      } catch (MalformedURLException e) {
+        return new SolReturn(currentNode, e.getMessage());
+      }
+    }
+    Bundle b = WorkerDao.getBundleFromUrl(u);
+  }
   private SolReturn processShow(String [] parts){
     if (parts.length == 1 ){
       return new SolReturn(currentNode, new String(WorkerDao.serializePlan(thePlan)));
