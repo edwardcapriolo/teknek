@@ -11,6 +11,7 @@
 
 <% 
 boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+File uploadedFile = null;
 if (isMultipart){
 	DiskFileItemFactory factory = new DiskFileItemFactory();
 	File repository = new File("/tmp/teknek-web-upload-tmp");
@@ -36,12 +37,18 @@ if (isMultipart){
 	      String contentType = item.getContentType();
 	      boolean isInMemory = item.isInMemory();
 	      long sizeInBytes = item.getSize();
-	      File uploadedFile = new File(finalDir,fileName);
+	      uploadedFile = new File(finalDir,fileName);
 	      item.write(uploadedFile);
 	    }
 	}
 }
 %>
+
+<% if (uploadedFile != null) { %>
+	<font color=RED">File <%=uploadedFile.getName()%> uploaded</font><br>
+	<%= request.getSession().getServletContext().getContextPath()+"/Serve/"+uploadedFile.getName() %><br>
+<% } %>
+
 <form method="POST" enctype="multipart/form-data">
   File to upload: <input type="file" name="upfile"><br/>
   Notes about the file: <input type="text" name="note"><br/>

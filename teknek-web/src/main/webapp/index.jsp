@@ -21,8 +21,9 @@ Configure plans from the <a href="sol/index.jsp">SOL shell</a> <br>
 </table>
 <p>
 experimental:<br>
+<a href="upload/upload.jsp">Upload resources</a><br>
 <a href="operator-lab/index.jsp">Operator Lab</a><br>
 <a href="plan-manager/index.jsp">Plan Manager</a><br>
-</p>p>
+</p>
 </body>
 </html>
