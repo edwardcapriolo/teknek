@@ -25,6 +25,7 @@ import io.teknek.model.GroovyOperator;
 import io.teknek.model.Operator;
 import io.teknek.offsetstorage.Offset;
 import io.teknek.offsetstorage.OffsetStorage;
+import io.teknek.plan.DynamicInstantiatable;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OffsetStorageDesc;
 import io.teknek.plan.OperatorDesc;
@@ -88,18 +89,7 @@ public class DriverFactory {
         throw new RuntimeException(e);
       }
     } else if (operatorDesc.getSpec().equalsIgnoreCase("url")) { 
-      //script is a comma separated list of urls
-      String [] split = operatorDesc.getScript().split(",");
-      List<URL> urls = new ArrayList<URL>();
-      for (String s: split){
-        URL u = null;
-        try {
-          u = new URL(s);
-        } catch (MalformedURLException e) { }
-        if (u != null){
-          urls.add(u);
-        }
-      }
+      List<URL> urls = parseSpecIntoUrlList(operatorDesc);
       try (URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[0]))) {
         Class<?> c = loader.loadClass(operatorDesc.getTheClass());
         operator = (Operator) c.newInstance();
@@ -178,10 +168,36 @@ public class DriverFactory {
               | InvocationTargetException e) {
         throw new RuntimeException(e);
       }
+    } else if (feedDesc.getSpec().equalsIgnoreCase("url")) {
+      List<URL> urls = parseSpecIntoUrlList(feedDesc);
+      try (URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[0]))) {
+        Class feedClass = loader.loadClass(feedDesc.getTheClass());
+        Constructor<Feed> feedCons = (Constructor<Feed>) feedClass.getConstructor(paramTypes);
+        feed = feedCons.newInstance(feedDesc.getProperties());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+              | IOException | NoSuchMethodException | SecurityException | IllegalArgumentException
+              | InvocationTargetException e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+      }
     }
     feed.setName(feedDesc.getName());
     feed.setProperties(feedDesc.getProperties());
     return feed;
   }
   
+  private static List<URL> parseSpecIntoUrlList(DynamicInstantiatable d){
+    String [] split = d.getScript().split(",");
+    List<URL> urls = new ArrayList<URL>();
+    for (String s: split){
+      URL u = null;
+      try {
+        u = new URL(s);
+      } catch (MalformedURLException e) { }
+      if (u != null){
+        urls.add(u);
+      }
+    }
+    return urls;
+  }
 }
