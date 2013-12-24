@@ -131,6 +131,10 @@ public class TeknekDaemon implements Watcher{
       logger.error("did not find plan");
       return;
     }
+    if (plan.isDisabled()){
+      logger.debug("disabled "+ plan.getName());
+      return;
+    }
     logger.debug("trying to acqure lock on " + WorkerDao.PLANS_ZK + "/"+ plan.getName());
     WriteLock l = new WriteLock(zk, WorkerDao.PLANS_ZK + "/"+ plan.getName(), null);
     try {
