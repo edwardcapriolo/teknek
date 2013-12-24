@@ -578,7 +578,10 @@ public class Sol {
       // set script as stuff you can one liner
       StringBuilder sb = new StringBuilder();
       for (int i = 3; i < parts.length; i++) {
-        sb.append(parts[i] + " ");
+        sb.append(parts[i]);
+        if (i < parts.length -1 ){
+          sb.append(" ");
+        }
       }
       thePlan.getFeedDesc().setScript(sb.toString());
       return new SolReturn(feedPrompt, "");
