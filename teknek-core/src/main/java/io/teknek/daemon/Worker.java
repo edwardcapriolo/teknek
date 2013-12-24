@@ -105,6 +105,7 @@ public class Worker implements Watcher {
       } catch (InterruptedException e1) {
         logger.debug(e1);
       }
+      logger.debug("shutdown complete");
     }
   }
   /**

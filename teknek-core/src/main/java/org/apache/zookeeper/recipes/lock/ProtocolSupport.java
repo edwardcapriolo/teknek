@@ -17,7 +17,8 @@
  */
 package org.apache.zookeeper.recipes.lock;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -30,14 +31,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A base class for protocol implementations which provides a number of higher
+ * A base class for protocol implementations which provides a number of higher 
  * level helper methods for working with ZooKeeper along with retrying synchronous
- *  operations if the connection to ZooKeeper closes such as
+ *  operations if the connection to ZooKeeper closes such as 
  *  {@link #retryOperation(ZooKeeperOperation)}
  *
  */
 class ProtocolSupport {
-    private static final Logger LOG = Logger.getLogger(ProtocolSupport.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProtocolSupport.class);
 
     protected final ZooKeeper zookeeper;
     private AtomicBoolean closed = new AtomicBoolean(false);
@@ -58,7 +59,7 @@ class ProtocolSupport {
             doClose();
         }
     }
-
+    
     /**
      * return zookeeper client instance
      * @return zookeeper client instance
@@ -76,7 +77,7 @@ class ProtocolSupport {
     }
 
     /**
-     * set the acl
+     * set the acl 
      * @param acl the acl to set to
      */
     public void setAcl(List<ACL> acl) {
@@ -100,7 +101,7 @@ class ProtocolSupport {
     }
 
     /**
-     * Allow derived classes to perform
+     * Allow derived classes to perform 
      * some custom closing operations to release resources
      */
     protected void doClose() {
@@ -109,10 +110,10 @@ class ProtocolSupport {
 
     /**
      * Perform the given operation, retrying if the connection fails
-     * @return object. it needs to be cast to the callee's expected
+     * @return object. it needs to be cast to the callee's expected 
      * return type.
      */
-    protected Object retryOperation(ZooKeeperOperation operation)
+    protected Object retryOperation(ZooKeeperOperation operation) 
         throws KeeperException, InterruptedException {
         KeeperException exception = null;
         for (int i = 0; i < retryCount; i++) {

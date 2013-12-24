@@ -196,7 +196,8 @@ public class WorkerDao {
     String writeToPath = PLANS_ZK + "/" + plan.getName() + "/" + s.getWorkerUuid();
     try {
       zk.create(writeToPath, s.getFeedPartitionId().getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-      Stat stat = zk.exists(PLANS_ZK+ "/" + plan.getName(), true);
+      logger.debug("Registered as ephemeral "+ writeToPath);
+      zk.exists(PLANS_ZK+ "/" + plan.getName(), true);
     } catch (KeeperException | InterruptedException e) {
       throw new WorkerDaoException(e);
     }

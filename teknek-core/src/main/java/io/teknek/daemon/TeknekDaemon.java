@@ -158,7 +158,11 @@ public class TeknekDaemon implements Watcher{
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
       logger.warn("getting lock", e); 
     } finally {
-      l.unlock();
+      try {
+        l.unlock();
+      } catch (RuntimeException ex){
+        logger.debug(ex);
+      }
     }
   }
   
