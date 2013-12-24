@@ -13,6 +13,7 @@ cd ..
 cd teknek-kafka
 mvn clean install
 mvn eclipse:eclipse
+mvn install assembly:single
 cd ..
 cd teknek-web
 mvn clean install

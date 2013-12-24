@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javassist.runtime.Desc;
-
 import org.apache.zookeeper.ZooKeeper;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
