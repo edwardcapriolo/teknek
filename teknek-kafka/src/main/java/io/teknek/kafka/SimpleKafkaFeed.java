@@ -43,7 +43,7 @@ public class SimpleKafkaFeed extends Feed {
   @Override
   public List<FeedPartition> getFeedPartitions() {
     List<FeedPartition> results = new ArrayList<FeedPartition>();
-    Integer parts = (Integer) properties.get(PARTITIONS);
+    Integer parts = ((Number) properties.get(PARTITIONS)).intValue();
     for (int i = 0; i < parts; i++) {
       SimpleKafkaFeedPartition skf = new SimpleKafkaFeedPartition(this, i+"");
       results.add(skf);
