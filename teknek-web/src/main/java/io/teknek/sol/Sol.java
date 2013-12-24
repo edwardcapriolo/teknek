@@ -246,11 +246,13 @@ public class Sol {
     if (parts.length == 3 && "CONFIGURE".equalsIgnoreCase(parts[0]) && parts[1].equalsIgnoreCase("feed")){
       if (parts[1].equalsIgnoreCase("feed")){
         //CONFIGURE FEED myFeed 
-        String name = parts[2];
-        FeedDesc feed = new FeedDesc();
-        feed.setName(name);
-        feed.setProperties(new TreeMap<>());
-        thePlan.setFeedDesc(feed);
+        if (thePlan.getFeedDesc() == null){
+          String name = parts[2];
+          FeedDesc feed = new FeedDesc();
+          feed.setName(name);
+          feed.setProperties(new TreeMap<>());
+          thePlan.setFeedDesc(feed);
+        }
         currentNode = feedPrompt;
         return new SolReturn(feedPrompt,"");
       }
