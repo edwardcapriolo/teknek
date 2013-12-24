@@ -52,6 +52,7 @@ public class Driver implements Runnable {
   
   public void initialize(){
     driverNode.initialize();
+    fp.initialize();
   }
   
   /**
