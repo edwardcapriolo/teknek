@@ -101,7 +101,9 @@ public class Worker implements Watcher {
     if (zk != null) {
       try {
         zk.close();
+        zk = null;
       } catch (InterruptedException e1) {
+        logger.debug(e1);
       }
     }
   }
