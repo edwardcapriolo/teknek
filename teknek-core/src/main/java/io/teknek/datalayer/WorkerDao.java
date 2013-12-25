@@ -315,4 +315,16 @@ public class WorkerDao {
       WorkerDao.saveFeedDesc(zk, f, b.getPackageName(), f.getName());
     }
   }
+  
+  public static void deletePlan(ZooKeeper zk, Plan p) throws WorkerDaoException {
+    String planNode = PLANS_ZK + "/" + p.getName();
+    try {
+      Stat s = zk.exists(planNode, false);
+      if (s != null) {
+        zk.delete(planNode, s.getVersion());
+      }
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
 }

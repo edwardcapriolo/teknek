@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import io.teknek.daemon.BeLoudOperator;
 import io.teknek.daemon.TeknekDaemon;
+import io.teknek.datalayer.WorkerDao;
 import io.teknek.feed.FixedFeed;
 import io.teknek.plan.FeedDesc;
 import io.teknek.plan.OffsetStorageDesc;
@@ -24,6 +25,7 @@ import io.teknek.zookeeper.ZookeeperOffsetStorage;
 public class RestartAtOffsetTest extends EmbeddedZooKeeperServer {
 
   TeknekDaemon td = null;
+  Plan p;
   
   @Before
   public void setupD(){
@@ -43,7 +45,7 @@ public class RestartAtOffsetTest extends EmbeddedZooKeeperServer {
   @Test
   public void startAtOffset(){
     Map zkOffset = MapBuilder.makeMap(ZookeeperOffsetStorage.ZK_CONNECT, zookeeperTestServer.getConnectString());
-    Plan p = new Plan()
+    p = new Plan()
       .withOffsetStorageDesc(new OffsetStorageDesc()
         .withOperatorClass(ZookeeperOffsetStorage.class.getName())
           .withParameters(zkOffset))
@@ -69,6 +71,7 @@ public class RestartAtOffsetTest extends EmbeddedZooKeeperServer {
   
   @After
   public void shutdown(){
+    td.deletePlan(p);
     td.stop();
   }
 }

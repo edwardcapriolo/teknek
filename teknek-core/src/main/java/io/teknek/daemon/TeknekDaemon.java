@@ -26,12 +26,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.recipes.lock.LockListener;
 import org.apache.zookeeper.recipes.lock.WriteLock;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -120,6 +123,16 @@ public class TeknekDaemon implements Watcher{
     }
   }
   
+  @VisibleForTesting
+  public void deletePlan(Plan plan){
+    try {
+      WorkerDao.deletePlan(zk, plan);
+    } catch (WorkerDaoException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  
   private void considerStarting(String child){
     Plan plan = null;
     try {
@@ -136,25 +149,53 @@ public class TeknekDaemon implements Watcher{
       return;
     }
     logger.debug("trying to acqure lock on " + WorkerDao.PLANS_ZK + "/"+ plan.getName());
+    final CountDownLatch c = new CountDownLatch(1);
     WriteLock l = new WriteLock(zk, WorkerDao.PLANS_ZK + "/"+ plan.getName(), null);
+    l.setLockListener(new LockListener(){
+
+      @Override
+      public void lockAcquired() {
+        logger.debug("counting down");
+        c.countDown();
+      }
+
+      @Override
+      public void lockReleased() {
+      }
+      
+    });
     try {
       boolean gotLock = l.lock();
+      /*
       if (!gotLock){
         return;
+      }*/
+      boolean hasLatch = c.await(3000, TimeUnit.MILLISECONDS);
+      if (hasLatch){
+        /* plan could have been disabled after latch */
+        try {
+          plan = WorkerDao.findPlanByName(zk, child);
+        } catch (WorkerDaoException e) {
+          logger.error(e);
+        }
+        if (plan.isDisabled()){
+          logger.debug("disabled "+ plan.getName());
+          return;
+        }
+        List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
+        int FUDGE_FOR_LOCK = 1;
+        if (children.size() >= plan.getMaxWorkers() + FUDGE_FOR_LOCK) {
+          logger.debug("already running max children:" + children.size() + " planmax:"
+                  + plan.getMaxWorkers());
+          logger.debug("already running max children:" + children.size() + " planmax:"
+                  + plan.getMaxWorkers() + " running:" + children);
+          return;
+        }
+        Worker worker = new Worker(plan, children, this);
+        worker.init();
+        worker.start();
+        addWorkerToList(plan, worker);
       }
-      List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
-      int FUDGE_FOR_LOCK = 1;
-      if (children.size() >= plan.getMaxWorkers() + FUDGE_FOR_LOCK) {
-        logger.debug("already running max children:" + children.size() + " planmax:"
-                + plan.getMaxWorkers());
-        logger.debug("already running max children:" + children.size() + " planmax:"
-                + plan.getMaxWorkers() + " running:" + children);
-        return;
-      }
-      Worker worker = new Worker(plan, children, this);
-      worker.init();
-      worker.start();
-      addWorkerToList(plan, worker);
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
       logger.warn("getting lock", e); 
     } finally {
@@ -167,7 +208,7 @@ public class TeknekDaemon implements Watcher{
   }
   
   private void addWorkerToList(Plan plan, Worker worker) {
-    logger.debug("adding worker " + worker + " to plan "+plan);
+    logger.debug("adding worker " + worker.getMyId() + " to plan "+plan.getName());
     List<Worker> list = workerThreads.get(plan);
     if (list == null) {
       list = Collections.synchronizedList(new ArrayList<Worker>());

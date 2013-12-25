@@ -12,12 +12,14 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*/
+ */
 package io.teknek.daemon;
 
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -30,23 +32,24 @@ import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 
 public class SimpleTopologyTest extends EmbeddedZooKeeperServer {
 
-static TeknekDaemon td = null;
-  
-  @BeforeClass
-  public static void setup(){
+  TeknekDaemon td = null;
+
+  Plan p;
+
+  @Before
+  public void setup() {
     Properties props = new Properties();
     props.put(TeknekDaemon.ZK_SERVER_LIST, zookeeperTestServer.getConnectString());
     td = new TeknekDaemon(props);
     td.init();
   }
-  
+
   @Test
-  public void hangAround(){
-    Plan p = new Plan().withFeedDesc(
+  public void hangAround() {
+    p = new Plan().withFeedDesc(
             new FeedDesc().withFeedClass(FixedFeed.class.getName()).withProperties(
                     MapBuilder.makeMap(FixedFeed.NUMBER_OF_PARTITIONS, 2, FixedFeed.NUMBER_OF_ROWS,
-                            10))).withRootOperator(
-            new OperatorDesc(new BeLoudOperator()));
+                            10))).withRootOperator(new OperatorDesc(new BeLoudOperator()));
     p.setName("yell");
     p.setMaxWorkers(1);
     td.applyPlan(p);
@@ -57,9 +60,10 @@ static TeknekDaemon td = null;
       e.printStackTrace();
     }
   }
-  
-  @AfterClass
-  public static void shutdown(){
+
+  @After
+  public void shutdown() {
+    td.deletePlan(p);
     td.stop();
   }
 }

@@ -148,4 +148,9 @@ public class Worker implements Watcher {
       //remove this class from parent list
     }
   }
+
+  public UUID getMyId() {
+    return myId;
+  }
+  
 }
