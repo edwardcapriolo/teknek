@@ -54,7 +54,7 @@ public class CollectorProcessor implements Runnable {
   public void handleTupple(ITuple tuple) {
     if (children.size() == 0) {
       if (logger.isDebugEnabled()) {
-        logger.debug("No children swallowing " + tuple);
+        logger.debug("No children operators for this operator. Tuple now being passed on " + tuple);
       }
     }
     for (Operator o : children) {
