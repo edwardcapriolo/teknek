@@ -87,8 +87,12 @@ public class Driver implements Runnable {
         };
         Future<Boolean> f = feedExecutor.submit(c);
         try {
+          //TODO this timeout could be problematic in slow feeds...
+          //maybe better for give this a long wait and check the goOnStatus periodically
+          //using future.isDone(), but that is a spinlock
           hasNext = f.get(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e1) {
+          //f.cancel(mayInterruptIfRunning) ??
           continue;
         }
       } else {

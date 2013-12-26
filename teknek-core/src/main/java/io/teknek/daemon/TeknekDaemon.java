@@ -155,12 +155,13 @@ public class TeknekDaemon implements Watcher{
 
       @Override
       public void lockAcquired() {
-        logger.debug("counting down");
+        logger.debug(myId + " counting down");
         c.countDown();
       }
 
       @Override
       public void lockReleased() {
+        logger.debug(myId + " released");
       }
       
     });
