@@ -63,15 +63,6 @@ public class Driver implements Runnable {
     fp.initialize();
   }
   
-  /**
-   * TODO: Currently the way the operators are chained together the offset is incremented as soon as the first operator accepts the tuple.
-   * It may be desirable to only increment the offset when the row is completely processed. This turns out to be a non trivial problem because 
-   * operators may not emit Tuples making tracking at all leafs impossible.
-   * 
-   * In any case the "solution" for this could be to allow the driver factory to produce different drivers with different semantics. The semantics
-   * vary depending on the semantics of the feed system as well, there is likely no one-size fits all solution.
-   * Begin processing the feed in a thread
-   */
   public void run(){
     ExecutorService e = Executors.newSingleThreadExecutor();
     boolean getInFuture = true;
