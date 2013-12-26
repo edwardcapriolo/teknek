@@ -39,10 +39,11 @@ public class Driver implements Runnable {
   private FeedPartition fp;
   private DriverNode driverNode;
   private AtomicBoolean goOn;
-  private AtomicLong tuplesSeen;
+  private long tuplesSeen;
   private OffsetStorage offsetStorage;
   private int offsetCommitInterval;
-
+  private ExecutorService feedExecutor;
+  
   /**
    * 
    * @param fp feed partition to consume from
@@ -54,35 +55,37 @@ public class Driver implements Runnable {
     driverNode = new DriverNode(operator, collectorProcessor);
     this.offsetStorage = offsetStorage;
     goOn = new AtomicBoolean(true);
-    tuplesSeen = new AtomicLong(0);
+    tuplesSeen = 0;
     this.offsetCommitInterval = offsetCommitInterval;
   }
   
   public void initialize(){
     driverNode.initialize();
     fp.initialize();
+    feedExecutor = Executors.newSingleThreadExecutor();
   }
   
   public void run(){
-    ExecutorService e = Executors.newSingleThreadExecutor();
     boolean getInFuture = true;
     boolean hasNext = false;
-    
     do {
       if (!this.getGoOn()){
         break;
       }
       final ITuple t = new Tuple();
-
-     
       if (getInFuture) {
+        /*
+         * This code is in place because if driver is blocking on next() the driver will not be aware
+         * it has been asked to shut down. Maybe this could would not be needed to something should
+         * be interupted.
+         */
         Callable<Boolean> c = new Callable<Boolean>(){
           @Override
           public Boolean call() throws Exception {
             return fp.next(t);
           }
         };
-        Future<Boolean> f = e.submit(c);
+        Future<Boolean> f = feedExecutor.submit(c);
         try {
           hasNext = f.get(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e1) {
@@ -91,7 +94,7 @@ public class Driver implements Runnable {
       } else {
         hasNext = fp.next(t);
       }
-      tuplesSeen.incrementAndGet();
+      tuplesSeen++;
       boolean complete = false;
       int attempts = 0;
       while (attempts++ < driverNode.getCollectorProcessor().getTupleRetry() + 1 && !complete) {
@@ -102,11 +105,11 @@ public class Driver implements Runnable {
         }
       }
       maybeDoOffset();
-      //t = new Tuple();
       if (!hasNext) {
         break;
       }
     } while (goOn.get());
+    feedExecutor.shutdown();
   }
   
   
@@ -115,7 +118,7 @@ public class Driver implements Runnable {
    * To do offset storage we let the topology drain itself out. Then we commit. 
    */
   public void maybeDoOffset(){
-    long seen = tuplesSeen.get();
+    long seen = tuplesSeen;
     if (seen % offsetCommitInterval == 0 && offsetStorage != null && fp.supportsOffsetManagement()){
         drainTopology();
         Offset offset = offsetStorage.getCurrentOffset(); 
