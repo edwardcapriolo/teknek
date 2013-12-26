@@ -31,7 +31,7 @@ import org.junit.Test;
 public class TestFixedFeed {
 
   private static final int EXPECTED_PARTITIONS = 5;
-  private static final int EXPECTED_ROWS = 1000;
+  private static final int EXPECTED_ROWS = 4;
   
   public static Map<String,Object> buildFeedProps(){
     Map<String,Object> props = new HashMap<String,Object>();
@@ -46,13 +46,29 @@ public class TestFixedFeed {
     List<FeedPartition> parts = pf.getFeedPartitions();
     Assert.assertEquals(EXPECTED_PARTITIONS, parts.size());
     ITuple t = new Tuple();
-    
-    parts.get(0).next(t);
+    boolean hasNext = false;
+    hasNext = parts.get(0).next(t);
     Assert.assertEquals( t.getField("x"), 0);
-    parts.get(0).next(t);
+    Assert.assertTrue(hasNext);
+    
+    hasNext = parts.get(0).next(t);
     Assert.assertEquals(t.getField("x"), 1);
-    parts.get(0).next(t);
+    Assert.assertTrue(hasNext);
+    
+    hasNext = parts.get(0).next(t);
     Assert.assertEquals(t.getField("x"), 2);
+    Assert.assertTrue(hasNext);
+    
+    hasNext = parts.get(0).next(t);
+    Assert.assertEquals(t.getField("x"), 3);
+    Assert.assertFalse(hasNext);
+    
+    try {
+      hasNext = parts.get(0).next(t);
+      Assert.fail("Calling next when hasNext = false should throw");
+    } catch (RuntimeException ex) {
+
+    }
 
     parts.get(1).next(t);
     Assert.assertEquals(t.getField("x"), 0);
@@ -66,11 +82,9 @@ public class TestFixedFeed {
     List<FeedPartition> parts = pf.getFeedPartitions();
     Assert.assertEquals(EXPECTED_PARTITIONS, parts.size());
     ITuple t = new Tuple();
-    
-    parts.get(0).setOffset("5");
+    parts.get(0).setOffset("2");
     parts.get(0).next(t);
-    Assert.assertEquals( t.getField("x"), 5);
-
+    Assert.assertEquals( t.getField("x"), 2);
   }
   
   @Test

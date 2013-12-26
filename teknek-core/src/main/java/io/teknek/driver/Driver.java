@@ -15,6 +15,14 @@ limitations under the License.
 */
 package io.teknek.driver;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -65,23 +73,52 @@ public class Driver implements Runnable {
    * Begin processing the feed in a thread
    */
   public void run(){
-    while(goOn.get()){
-      ITuple t = new Tuple();
-      while (fp.next(t)){
-        tuplesSeen.incrementAndGet();
-        boolean complete = false;
-        int attempts = 0;
-        while (attempts++ < driverNode.getCollectorProcessor().getTupleRetry() + 1 && !complete) {
-          try {
-            driverNode.getOperator().handleTuple(t);
-            complete = true;
-          } catch (RuntimeException ex){}
-        }
-        maybeDoOffset();
-        t = new Tuple();
+    ExecutorService e = Executors.newSingleThreadExecutor();
+    boolean getInFuture = true;
+    boolean hasNext = false;
+    
+    do {
+      if (!this.getGoOn()){
+        break;
       }
-    }
+      final ITuple t = new Tuple();
+
+     
+      if (getInFuture) {
+        Callable<Boolean> c = new Callable<Boolean>(){
+          @Override
+          public Boolean call() throws Exception {
+            return fp.next(t);
+          }
+        };
+        Future<Boolean> f = e.submit(c);
+        try {
+          hasNext = f.get(1000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
+          continue;
+        }
+      } else {
+        hasNext = fp.next(t);
+      }
+      tuplesSeen.incrementAndGet();
+      boolean complete = false;
+      int attempts = 0;
+      while (attempts++ < driverNode.getCollectorProcessor().getTupleRetry() + 1 && !complete) {
+        try {
+          driverNode.getOperator().handleTuple(t);
+          complete = true;
+        } catch (RuntimeException ex) {
+        }
+      }
+      maybeDoOffset();
+      //t = new Tuple();
+      if (!hasNext) {
+        break;
+      }
+    } while (goOn.get());
   }
+  
+  
 
   /**
    * To do offset storage we let the topology drain itself out. Then we commit. 

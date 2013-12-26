@@ -62,8 +62,11 @@ class FixedFeedPartition extends FeedPartitionAdapter {
 
   @Override
   public boolean next(ITuple t) {
+    if (current >= max){
+      throw new RuntimeException("This time you have went to far");
+    }
     t.setField("x", new Integer(current));
-    return current++ < max;
+    return ++current < max;
   }
     
   @Override
