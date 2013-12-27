@@ -21,6 +21,7 @@ import io.teknek.zookeeper.EmbeddedZooKeeperServer;
 public class DisablePlanTest extends EmbeddedZooKeeperServer {
 
   private TeknekDaemon td = null;
+  private TeknekDaemon td1 = null;
 
   @Before
   public void before() {
@@ -30,6 +31,11 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
     td = new TeknekDaemon(props);
     td.setRescanMillis(1000);
     td.init();
+    
+    td1 = new TeknekDaemon(props);
+    td1.setRescanMillis(1000);
+    td1.init();
+    
   }
 
   @Test
@@ -47,7 +53,6 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
     } catch (InterruptedException e) {
     }
     Assert.assertNotNull(td.workerThreads);
-    System.out.println(td.workerThreads);
     Assert.assertNotNull(td.workerThreads.get(p));
     Assert.assertEquals(1, td.workerThreads.get(p).size());
 
@@ -65,6 +70,23 @@ public class DisablePlanTest extends EmbeddedZooKeeperServer {
     
     Assert.assertNotNull(td.workerThreads.get(p));
     Assert.assertEquals(0, td.workerThreads.get(p).size());
+    
+    
+    System.out.println("re-enabling");
+    p.setDisabled(false);
+    td.applyPlan(p);
+    
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    Assert.assertNotNull(td.workerThreads.get(p));
+    Assert.assertEquals(1, td.workerThreads.get(p).size());
+    
+    
     
   }
 

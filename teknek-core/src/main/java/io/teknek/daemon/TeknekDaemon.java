@@ -166,9 +166,10 @@ public class TeknekDaemon implements Watcher{
       
     });
     try {
-      boolean gotLock = l.lock();
+      boolean gotLock = l.lock(); 
       /*
       if (!gotLock){
+        logger.debug("did not get lock");
         return;
       }*/
       boolean hasLatch = c.await(3000, TimeUnit.MILLISECONDS);
@@ -181,21 +182,20 @@ public class TeknekDaemon implements Watcher{
         }
         if (plan.isDisabled()){
           logger.debug("disabled "+ plan.getName());
-          return;
+        } else {
+          List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
+          int FUDGE_FOR_LOCK = 1;
+          if (children.size() >= plan.getMaxWorkers() + FUDGE_FOR_LOCK) {
+            logger.debug("already running max children:" + children.size() + " planmax:"
+                    + plan.getMaxWorkers() + " running:" + children);
+          } else {
+            logger.debug("starting worker");
+            Worker worker = new Worker(plan, children, this);
+            worker.init();
+            worker.start();
+            addWorkerToList(plan, worker);
+          }
         }
-        List<String> children = WorkerDao.findWorkersWorkingOnPlan(zk, plan);
-        int FUDGE_FOR_LOCK = 1;
-        if (children.size() >= plan.getMaxWorkers() + FUDGE_FOR_LOCK) {
-          logger.debug("already running max children:" + children.size() + " planmax:"
-                  + plan.getMaxWorkers());
-          logger.debug("already running max children:" + children.size() + " planmax:"
-                  + plan.getMaxWorkers() + " running:" + children);
-          return;
-        }
-        Worker worker = new Worker(plan, children, this);
-        worker.init();
-        worker.start();
-        addWorkerToList(plan, worker);
       }
     } catch (KeeperException | InterruptedException | WorkerDaoException e) {
       logger.warn("getting lock", e); 
@@ -204,6 +204,7 @@ public class TeknekDaemon implements Watcher{
         l.unlock();
       } catch (RuntimeException ex){
         logger.debug(ex);
+        ex.printStackTrace();
       }
     }
   }
