@@ -100,6 +100,7 @@ public class Worker implements Watcher {
     parent.workerThreads.get(plan).remove(this);
     if (zk != null) {
       try {
+        logger.debug("closing " + zk.getSessionId());
         zk.close();
         zk = null;
       } catch (InterruptedException e1) {
