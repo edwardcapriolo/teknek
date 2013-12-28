@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -89,9 +91,11 @@ public class TestTimedGroupByEngine extends EmbeddedCassandraServer{
             .getKey(rowKey)
             .execute().getResult();
    
+    Assert.assertEquals(4, result.size());
+    Assert.assertTrue(result.getColumnNames().contains("host#web1"));
+    Assert.assertEquals(result.getColumnByName("host#web1").getLongValue(), 22);
     for (String name : result.getColumnNames()){
       System.out.println(name + " " + result.getColumnByName(name).getLongValue());
-      
     }
     
   }
