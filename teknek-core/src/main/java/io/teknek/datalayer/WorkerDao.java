@@ -64,9 +64,13 @@ public class WorkerDao {
    */
   public static final String PLANS_ZK = BASE_ZK + "/plans";
   /**
-   * saved stuff
+   * saved feeds and operators
    */
   public static final String SAVED_ZK = BASE_ZK + "/saved";
+  /**
+   * Holds zk locks for chosing plans
+   */
+  public static final String LOCKS_ZK = BASE_ZK + "/locks";
   
   /**
    * Creates all the required base directories in ZK for the application to run 
@@ -88,6 +92,9 @@ public class WorkerDao {
       }
       if (zk.exists(SAVED_ZK, false) == null) {
         zk.create(SAVED_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+      }
+      if (zk.exists(LOCKS_ZK, false) == null) {
+        zk.create(LOCKS_ZK, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
     } catch (KeeperException  | InterruptedException e) {
       e.printStackTrace();
@@ -322,6 +329,18 @@ public class WorkerDao {
       Stat s = zk.exists(planNode, false);
       if (s != null) {
         zk.delete(planNode, s.getVersion());
+      }
+    } catch (KeeperException | InterruptedException e) {
+      throw new WorkerDaoException(e);
+    }
+  }
+  
+  public static void maybeCreatePlanLockDir(ZooKeeper zk, Plan plan) throws WorkerDaoException {
+    try {
+      String planLock = LOCKS_ZK + "/" + plan.getName();
+      if (zk.exists(planLock, false) == null) {
+        logger.debug("Creating " + planLock);
+        zk.create(planLock, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
     } catch (KeeperException | InterruptedException e) {
       throw new WorkerDaoException(e);
