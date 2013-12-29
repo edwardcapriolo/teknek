@@ -66,7 +66,7 @@ public class Driver implements Runnable {
   }
   
   public void run(){
-    boolean getInFuture = true;
+    boolean getInFuture = false;
     boolean hasNext = false;
     do {
       if (!this.getGoOn()){
