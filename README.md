@@ -53,46 +53,29 @@ Teknek provides several out-of-the-box implementations of Feeds an Operators to 
 teknek-cassandra - Cassandra is a nosql data store. This package includes operators to write data and increment counters.
 teknek-kafka - Kafka is a distributed message queue. Teknek can use kafka's partitioning ability to easily achive group-by semantics. Kafka support includes Feed and output operator.
 
-Notes on the domain specifc language (SOL Streaming Operator Language)
+Stream Operator Language (SOL)
 -----
 
-A simple topology read from kafka, send data to operator 
-that adds 2, then operator that times5. Then sends to outtopic
+The goal of SOL is to provide a language to build a Plan by linking Feeds to a tree of Operators. This language allows the user to wire together components without using an IDE. Not only can users wire together compoenents, they can also write code inline for rapid prototyping. 
 
-So if produces 5.
-Operator one is 5 + 2 emits 7
-Operator two 7 * 5 emits 35
-Operator three puts 35 on result topic 
+    teknek> create plan k
+    plan> configure feed k
+    feed> set class as io.teknek.kafka.SimpleKafkaFeed
+    feed> set feedspec as url
+    feed> set script as http://localhost:8080//teknek-web/Serve/teknek-kafka-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+    feed> set property simple.kafka.feed.consumer.group as 'group1'
+    feed> set property simple.kafka.feed.reset.offset as 'yes'
+    feed> set property simple.kafka.feed.partitions as 1
+    feed> set property simple.kafka.feed.topic as 'clickstream'
+    feed> set property simple.kafka.feed.zookeeper.connect as 'localhost:2181'
+    feed> exit
+    plan> import https://raw.github.com/edwardcapriolo/teknek/master/teknek-core/src/test/resources/bundle_io.teknek_itests1.0.0.json
+    plan> load io.teknek groovy_identity operator as groovy_identity
+    operator> exit
+    plan> set root groovy_identity
+    plan> set maxworkers 1
+    plan> set tupleRetry 1
+    plan> set offsetCommitInterval 1
+    plan> save
 
-    teknek> CREATE PLAN myPlan;
-    myPlan> CREATE FEED myFeed using 'teknek.kafka.feed';
-    myFeed> SET PROPERTY 'topic' AS 'firehoze';
-    myFeed> SET PROPERTY 'broker.list' AS 'node1:9999';
-    myFeed> EXIT;
-    myPlan> CREATE OPERATOR plus2 AS 'teknek.samples.Plus2';
-    plus2> SET PROPERTY 'src.tuple' AS 'columnX';
-    plus2> EXIT;
-    myPlan> CREATE OPERATOR times5 AS 'teknek.samples.times5';
-    minus1> SET PROPERTY 'src.tuple' AS 'columnX';
-    minus1> EXIT;
-    myPlan> CREATE OPERATOR outtopic AS 'teknek.kafka.TopicOut';
-    outtopic> SET PROPERTY 'topic' AS 'outputtopic';
-    outtopic> EXIT; 
-    myPlan> SET ROOT 'plus2';
-    myPlan> FOR 'plus2' ADD CHILD 'times5'; 
-    myPlan> FOR 'times5 ADD CHILD 'outtopic';
-    teknek> COPY RUN START; #save settings cisco style
 
-We should also be able to define operators in the CLI (on the fly)
-
-    teknek> DEFINE OPERATOR Times5;
-    operator-Times5> 
-        public void handleTuple(Tuple t) {
-          Tuple result = new Tuple();
-          result.setField("x", ((Integer) t.getField("x")).intValue() * result);
-          collector.emit(result);
-        }
-    ^D
-    Operator compiled successfully
-    teknek> 
-  
