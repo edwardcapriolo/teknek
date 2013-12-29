@@ -124,5 +124,12 @@ public class TestTimedGroupByEngine extends EmbeddedCassandraServer{
     List<Map<String,String>> res = tg.queryByDay(gc.getTime(), "metric#", "metric#~");
     Assert.assertEquals(22+"", res.get(0).get("hits"));
     Assert.assertEquals(23+"", res.get(0).get("misses"));
+    
+    
+    List<Map<String,String>> res2 = tg.queryByDayWithFilter(gc.getTime(), "metric#", "metric#~", "hits");
+    Assert.assertEquals(22+"", res2.get(0).get("hits"));
+    Assert.assertFalse(res2.contains("misses"));
+    
+    
   }
 }

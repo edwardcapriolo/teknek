@@ -98,6 +98,16 @@ public class TimedGroupByEngine {
     }
   }
   
+  public List<Map<String,String>> queryByDayWithFilter(Date start, String sliceStart, String sliceEnd, String filter){
+    List<Map<String,String>> par = queryByDay(start, sliceStart, sliceEnd);
+    String [] parts = filter.split(",");
+    for (String part: parts){
+      par.remove(part);
+    }
+    return par;
+  }
+  
+  
   public List<Map<String,String>> queryByDay(Date start, String sliceStart, String sliceEnd){
     
     String rowKey = TimedGroupByEngine.newByHourDateFormat().format(start);
