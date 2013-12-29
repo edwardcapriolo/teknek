@@ -2,8 +2,11 @@ package io.teknek.cassandra;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.Keyspace;
@@ -15,6 +18,7 @@ import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.model.ColumnFamily;
+import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.serializers.LongSerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
@@ -83,9 +87,6 @@ public class TimedGroupByEngine {
         }
       }
       StringBuilder end = new StringBuilder().append(column).append("#").append(value);
-      //System.out.println("rowkey:"+ byMinuteDateFormat.format(new Date(e.getEventTimeInMillis())));
-      //System.out.println("column:"+ end);
-      //System.out.println("increment:"+ e.getIncrementValue());
       m.withRow(byMinute, byMinuteDateFormat.format(new Date(e.getEventTimeInMillis()))).incrementCounterColumn(end.toString(), e.getIncrementValue());
       m.withRow(byHour, byHourDateFormat.format(new Date(e.getEventTimeInMillis()))).incrementCounterColumn(end.toString(), e.getIncrementValue());
       m.withRow(byDay, byDayDateFormat.format(new Date(e.getEventTimeInMillis()))).incrementCounterColumn(end.toString(), e.getIncrementValue());
@@ -97,7 +98,38 @@ public class TimedGroupByEngine {
     }
   }
   
-  public void query(Date start, Date end, List<String> grouping){
+  public List<Map<String,String>> queryByDay(Date start, String sliceStart, String sliceEnd){
+    
+    String rowKey = TimedGroupByEngine.newByHourDateFormat().format(start);
+    ColumnList<String> result = null;
+    List<Map<String,String>> results = new ArrayList<>();
+    try {
+      result = keyspace.prepareQuery(TimedGroupByEngine.byHour)
+      .getKey(rowKey).withColumnRange(sliceStart, sliceEnd, false, 10000)
+      .execute().getResult();
+    } catch (ConnectionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    Map<String, String> oneRow = new HashMap<String, String>();
+    oneRow.put("timeInMillis", start.getTime() + "");
+    for (String name : result.getColumnNames()){
+      System.out.println(name + " " + result.getColumnByName(name).getLongValue());
+      oneRow.put(name.split("#")[1], result.getColumnByName(name).getLongValue()+"");
+    }
+    results.add(oneRow);
+    return results;
+    /*
+    host+metric#web1+hits 22
+    host#web1 22
+    metric#hits 22
+    metric+host#hits+web1 22 */
+    
+    /*
+    ColumnList<String> result = keyspace.prepareQuery(TimedGroupByEngine.byHour)
+            .getKey(rowKey)
+            .execute().getResult();
+    */
     //stats[yyyy--mm--dd][mm+eventName#eventValue]=7
     //stats[yyyy--mm--dd][mm+age+weight#21+180]=7
     
@@ -105,6 +137,7 @@ public class TimedGroupByEngine {
     //StatsByHour[yyyy-mm-dd-hh][age+weight#20]
     //StatsByDay[yyyy-mm-dd][age+weight#20]
             
+    
     
   }
 }
