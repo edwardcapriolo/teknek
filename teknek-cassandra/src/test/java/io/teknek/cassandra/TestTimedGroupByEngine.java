@@ -122,8 +122,7 @@ public class TestTimedGroupByEngine extends EmbeddedCassandraServer{
     }
 
     List<Map<String,String>> res = tg.queryByDay(gc.getTime(), "metric#", "metric#~");
-    for (Map<String,String> row : res){
-      System.out.println(row);
-    }
+    Assert.assertEquals(22+"", res.get(0).get("hits"));
+    Assert.assertEquals(23+"", res.get(0).get("misses"));
   }
 }
