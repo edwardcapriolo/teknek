@@ -215,6 +215,20 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	</build>
 	<repositories>
 	</repositories>
-
+	
+	<developers>
+    		<developer>
+      			<id>ecapriolo</id>
+      			<name>Edward Capriolo</name>
+      			<email>edlinuxguru@gmail.com</email>
+      			<url></url>
+      			<organization></organization>
+      			<organizationUrl></organizationUrl>
+      			<roles>
+        			<role>developer</role>
+      			</roles>
+      			<timezone>-6</timezone>
+    		</developer>
+  	</developers>
 </project>
 
