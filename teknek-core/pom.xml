@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="ht
-tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.teknek</groupId>
 	<artifactId>teknek-core</artifactId>
 	<name>teknek-core</name>
 	<version>0.0.1-SNAPSHOT</version>
-	<description></description>
+	<description>The core of the teknek platform</description>
 	<packaging>jar</packaging>
 
 	<properties>
 	</properties>
 
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<licenses>
-  		<license>
-    			<name>The Apache Software License, Version 2.0</name>
-    			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    			<distribution>repo</distribution>
-    			<comments>A business-friendly OSS license</comments>
-  		</license>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
 	</licenses>
 
 	<scm>
-                <url>https://github.com/edwardcapriolo/teknek</url>
-                <connection>https://github.com/edwardcapriolo/teknek.git</connection>
-                <developerConnection>scm:git:https://github.com/edwardcapriolo/teknek.git</developerConnection>
-        </scm>
+		<url>https://github.com/edwardcapriolo/teknek</url>
+		<connection>https://github.com/edwardcapriolo/teknek.git</connection>
+		<!--<developerConnection>scm:git:https://github.com/edwardcapriolo/teknek.git</developerConnection> -->
+		<!--<developerConnection>scm:git:git@github.com:juven/git-demo.git</developerConnection> -->
+		<developerConnection>scm:git:git@github.com:edwardcapriolo/teknek.git</developerConnection>
+	</scm>
 	<dependencies>
 
 		<dependency>
@@ -39,33 +45,13 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>15.0</version>
-		</dependency> 
+		</dependency>
 
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
-
-		<!--
-		<dependency>
-			<groupId>net.sf.jopt-simple</groupId>
-			<artifactId>jopt-simple</artifactId>
-			<version>4.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.yammer.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>2.9.3</version>
-		</dependency>
-		-->
 
 		<dependency>
 			<groupId>com.101tec</groupId>
@@ -80,21 +66,15 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<scope>test</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<!-- we may need this later 
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>8.1.0.RC5</version>
-		</dependency>
-		 -->
+
+		<!-- we may need this later <dependency> <groupId>org.eclipse.jetty</groupId> 
+			<artifactId>jetty-server</artifactId> <version>8.1.0.RC5</version> </dependency> -->
 
 		<dependency>
 			<groupId>log4j</groupId>
@@ -124,14 +104,6 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 			<version>3.4.3</version>
 		</dependency>
 
-		<!--
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka_2.9.2</artifactId>
-			<version>0.8.0-beta1</version>
-		</dependency>
-		-->
-
 	</dependencies>
 	<build>
 		<pluginManagement>
@@ -148,27 +120,27 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 						</execution>
 					</executions>
 				</plugin>
-				     <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>com.core.App</mainClass>
-                        <addClasspath>true</addClasspath>
-     <classpathPrefix>lib/</classpathPrefix>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-                <descriptors>
-                    <descriptor>src/main/assembly/assembly.xml</descriptor>
-                </descriptors>
-            </configuration>
-        </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>io.teknek.daemon.TeknekDaemon</mainClass>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib/</classpathPrefix>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<descriptors>
+							<descriptor>src/main/assembly/assembly.xml</descriptor>
+						</descriptors>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
@@ -196,30 +168,6 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>appassembler-maven-plugin
-					</artifactId>
-					<configuration>
-						<programs>
-							<program>
-								<mainClass>MyMain</mainClass>
-								<name>main</name>
-							</program>
-						</programs>
-						<!-- handy snippet for YourKit profiler attachment (Linux 64bit) -->
-						<!-- <extraJvmArguments>-agentpath:/usr/local/yjp/bin/linux-x86-64/libyjpagent.so</extraJvmArguments> -->
-						<repositoryLayout>flat</repositoryLayout>
-					</configuration>
-					<executions>
-						<execution>
-							<phase>install</phase>
-							<goals>
-								<goal>assemble</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>2.4</version>
@@ -229,20 +177,20 @@ tp://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	</build>
 	<repositories>
 	</repositories>
-	
+
 	<developers>
-    		<developer>
-      			<id>ecapriolo</id>
-      			<name>Edward Capriolo</name>
-      			<email>edlinuxguru@gmail.com</email>
-      			<url></url>
-      			<organization></organization>
-      			<organizationUrl></organizationUrl>
-      			<roles>
-        			<role>developer</role>
-      			</roles>
-      			<timezone>-6</timezone>
-    		</developer>
-  	</developers>
+		<developer>
+			<id>ecapriolo</id>
+			<name>Edward Capriolo</name>
+			<email>edlinuxguru@gmail.com</email>
+			<url></url>
+			<organization></organization>
+			<organizationUrl></organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
 </project>
 

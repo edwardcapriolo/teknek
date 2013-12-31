@@ -48,7 +48,7 @@ public class TestWorkerDao extends EmbeddedZooKeeperServer {
     Bundle b = WorkerDao.getBundleFromUrl(f.toURL());
     DummyWatcher dw = new DummyWatcher();
     ZooKeeper zk = new ZooKeeper(zookeeperTestServer.getConnectString(), 100, dw);
-    Thread.sleep(200);//zk takes a long time so
+    Thread.sleep(400);//zk takes a long time so
     WorkerDao.saveBundle(zk, b);
     OperatorDesc oDesc = WorkerDao.loadSavedOperatorDesc(zk, b.getPackageName(), "groovy_identity");
     Assert.assertEquals("groovy_identity", oDesc.getTheClass());
