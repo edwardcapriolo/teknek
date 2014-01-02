@@ -17,7 +17,7 @@ mvn install assembly:single
 cd ..
 cd teknek-web
 mvn clean install
-mvn eclipse:eclipse
+mvn eclipse:eclipse -Dwtpversion=2.0
 cd ..
 cd teknek-stream-stack
 mvn clean install assembly:single
