@@ -34,12 +34,12 @@ Teknek-web - This component provides the front end to configure and manage Tekne
 
 Build Instructions
 ----
-Currently the project is organized as several separate maven projects with dependencies. While using a maven multiple-module project may not be out of the question, for now it seems better to serparate core functionality from plugable integrations. By keeping the classpath thin we can potentially avoid
-complicated classloader issues down the road.
+Currently the project is organized as several separate maven projects with dependencies. While using a maven multiple-module project may not be out of the question, for now it seems better to serparate core functionality from plugable integrations. By keeping the classpath thin we can potentially avoidcomplicated classloader issues down the road. Also the project is now multiple git projects. This project is just a top level build project.
 
 Run these commands:
 
     git clone <this github>
+    sh checkout.sh
     sh build.sh
 
 
