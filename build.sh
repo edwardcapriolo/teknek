@@ -27,3 +27,7 @@ cd teknek-twitter
 mvn clean install
 mvn eclipse:eclipse
 cd ..
+cd teknek-yarn
+mvn clean install
+mvn eclipse:eclipse
+cd ..
